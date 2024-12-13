@@ -10,3 +10,7 @@
     font-family: Gagalin;
     src:url("Gagalin-Regular.otf");
 }
+@font-face {
+    font-family: Garet;
+    src:url('Garet-Book.otf')
+}

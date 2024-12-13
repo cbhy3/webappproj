@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+TossedOut! - About Us
+{% endblock %}
+
+{% block content %}
+<style>
+        body {
+            line-height: 1.6;
+
+        }
+
+        .polaroid {
+            background-color: #faf3e0;
+            border: 1px solid #d3cdbf;
+            box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            margin: 15px;
+            text-align: center;
+            border-radius: 10px;
+            padding-bottom: 120px;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .shop-btn {
+            background-color: #A4846C;
+            color: white;
+            font-size: 1.2em;
+            padding-top:23.5px;
+            border: none;
+            border-radius: 25px;
+            text-transform: uppercase;
+            width: 350px;
+            height: 80px;
+        }
+
+        .shop-btn:hover {
+            background-color: #75563f;
+        }
+        .container{
+            margin-top: 75px;
+
+        }
+        #main {
+           font-family: Garet;
+        }
+        #whatwedo {
+            margin-top: 50px;
+        }
+        #images {
+            margin-top: 100px;
+        }
+        .join {
+            margin-top: 75px;
+        }
+        #started {
+            font-family: Gagalin;
+            font-size: 60px;
+            color: #A4846C;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 30px 0;
+            margin-top: 280px;
+            border-top: 1px solid #ddd;
+        }
+
+        .footer h5 {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .footer a {
+            color: #8c4b24;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5" id="main">
+        <div class="text-center mb-5">
+            <h1>Our Story</h1>
+            <p class="lead">
+                We believe every fruit and vegetable has a story, even if it’s not picture-perfect. We’re here to change the way the world sees "ugly" food and tackle one of the biggest issues of our time: food waste.
+            </p>
+            <p>
+                Every year, millions of pounds of edible produce are discarded because they don’t meet the cosmetic standards of supermarkets. That’s where we come in. By rescuing these quirky, lovable fruits and veggies, we give them a second chance at life – on your plate!
+            </p>
+        </div>
+
+        <div class="text-center mb-5" id = "whatwedo">
+            <h2>What We Do</h2>
+            <p>
+                We partner with farmers and suppliers to bring you fresh, nutritious produce that might have a blemish or be shaped a little differently but tastes just as amazing as the rest. By offering these perfectly imperfect foods at reduced prices, we help you save money while making a positive impact on the planet.
+            </p>
+        </div>
+
+        <div class="row text-center" id = "images">
+            <div class="col-md-4">
+                <div class="polaroid">
+                    <img src='{{ url_for('static', filename = 'fruitsandveg.jpg') }}' alt="Fresh Vegetables">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="polaroid">
+                    <img src="{{ url_for('static', filename = 'image2.jpg') }}" alt="Ingredients and Spices">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="polaroid">
+                    <img src="{{ url_for('static', filename = 'image3.png') }}" alt="Fruit Basket">
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center join" >
+            <h2>Join Us</h2>
+            <p>
+                Whether you’re looking for a cost-effective way to stock up on fresh produce, curious about sustainable eating, or just love a good deal, TossedOut! is here for you. Let’s celebrate the beauty of imperfection – one fruit, one veggie at a time. 🍎🍓
+            </p>
+        </div>
+        <div class="text-center join" >
+            <h1 id = "started">Get Started Today and Make a Difference!</h1>
+        </div>
+        <div class="text-center join" >
+            <a href="shop.html" class="btn shop-btn">Shop Now</a>
+        </div>
+          <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Connect with us</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Instagram</a></li>
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">LinkedIn</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Our Locations</h5>
+                    <p>819633 Airport Blvd<br>107 Ang Mo Kio Street 11<br>230 Victoria Street Singapore 188021</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h5>Contact Us</h5>
+                    <p><a href="#">contact@tossedout.com</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    </div>
+
+{% endblock %}

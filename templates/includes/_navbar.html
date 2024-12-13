@@ -1,8 +1,9 @@
 <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 <script>
-    var w = window.innerWidth;
-var h = window.innerHeight;
 
+function signIn() {
+    return null;
+}
 </script>
 <style>
  body {
@@ -47,10 +48,9 @@ var h = window.innerHeight;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
   text-align: center;
   width: 275px;
-    height: 125px;
+  height: 125px;
+  outline: none;
     bottom: 35px;
-    outline: none;
-
 }
 
 .nav-link:hover {
@@ -58,7 +58,6 @@ var h = window.innerHeight;
 
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
 }
-
 
 .navbar-toggler {
   border: none;
@@ -104,13 +103,23 @@ border-color:white;
        margin-top:35px;
    }
   }
+ .nav-link.active-link {
+  background-color: #eaeaea; /* Change background color */
+  transform: translateY(20px); /* Extend downwards */
+  padding-bottom: 20px; /* Increase bottom padding */
+  border-radius: 10px;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3); /* Add a shadow for depth */
+  color: #000; /* Highlight color */
+  font-weight: bold; /* Make it stand out */
+  transition: all 0.3s ease-in-out;
+}
 </style>
 
 <nav class="navbar navbar-expand-md navbar-light">
     <div class="container-fluid">
       <!-- Logo -->
      <a class="navbar-brand text-center" href="#">
-        <span class="logo-text"> Tosssed Out!</span>
+        <span class="logo-text"> Tossed Out!</span>
         <span class="tagline d-block mt-2">Flawed but Flavourful</span>
       </a>
 
@@ -122,18 +131,18 @@ border-color:white;
       <!-- Navigation Links -->
       <div class="collapse navbar-collapse " id="navbarNav">
         <ul class="navbar-nav mx-auto">
-          <li class="nav-item">
-            <a class="nav-link text-uppercase hover-pop " href="#">About Us</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-uppercase hover-pop" href="#">Catalog</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-uppercase hover-pop" href="#">Sign In</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-uppercase hover-pop" href="#">Cart</a>
-          </li>
+         <li class="nav-item" id="aboutus">
+    <a class="nav-link text-uppercase hover-pop {% if active_page == 'aboutus' %}active-link{% endif %}" href="{{ url_for('about_us') }}">About Us</a>
+</li>
+<li class="nav-item" id="catalog">
+    <a class="nav-link text-uppercase hover-pop {% if active_page == 'catalog' %}active-link{% endif %}" href="{{ url_for('catalog') }}">Catalog</a>
+</li>
+<li class="nav-item" id="signin">
+    <a class="nav-link text-uppercase hover-pop" onclick="signIn()">Sign In</a>
+</li>
+<li class="nav-item" id="cart">
+    <a class="nav-link text-uppercase hover-pop {% if active_page == 'cart' %}active-link{% endif %}" href="{{ url_for('cart') }}">Cart</a>
+</li>
         </ul>
       </div>
     </div>
