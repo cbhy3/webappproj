@@ -11,9 +11,6 @@ def main():
 
 @app.route('/aboutus', methods=['GET', 'POST'])
 def about_us():
-    with shelve.open('users') as db:
-        for i in db:
-            print(i)
     siemail = None
     sipassword = None
     suemail = None
