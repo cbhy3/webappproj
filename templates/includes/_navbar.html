@@ -1,10 +1,4 @@
 <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
-<script>
-
-function signIn() {
-    return null;
-}
-</script>
 <style>
  body {
   background-color: #f8f9fa;
@@ -81,6 +75,9 @@ border-color:white;
       height: 100px;   /* Shorter height */
       padding: 40px 10px; /* Reduced padding */
     }
+      .nav-link.active-link {
+          bottom: 40px
+}
   }
 
   @media (max-width: 1050px) { /* md and smaller */
@@ -90,6 +87,15 @@ border-color:white;
       height: 100px;    /* Further reduced height */
       padding: 30px 8px; /* Reduced padding */
     }
+       .nav-link.active-link {
+  background-color: #eaeaea;
+  transform: translateY(5px);
+  padding-bottom: 20px;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+  color: #000;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+}
   }
    @media (max-width: 760px) { /* md and smaller */
     .nav-link {
@@ -102,16 +108,30 @@ border-color:white;
    .navbar-nav {
        margin-top:35px;
    }
+    .nav-link.active-link {
+  background-color: #eaeaea;
+  transform: translateY(0px);
+  padding-bottom: 20px;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+  color: #000;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+}
   }
  .nav-link.active-link {
-  background-color: #eaeaea; /* Change background color */
-  transform: translateY(20px); /* Extend downwards */
-  padding-bottom: 20px; /* Increase bottom padding */
-  border-radius: 10px;
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3); /* Add a shadow for depth */
-  color: #000; /* Highlight color */
-  font-weight: bold; /* Make it stand out */
+  background-color: #eaeaea;
+  transform: translateY(20px);
+  padding-bottom: 20px;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+  color: #000;
+  font-weight: bold;
   transition: all 0.3s ease-in-out;
+}
+ .form-control, .form-label, .btn, .form-text{
+    font-family: Garet;
+}
+#submit:hover{
+    background-color: #751106;
 }
 </style>
 
@@ -137,8 +157,8 @@ border-color:white;
 <li class="nav-item" id="catalog">
     <a class="nav-link text-uppercase hover-pop {% if active_page == 'catalog' %}active-link{% endif %}" href="{{ url_for('catalog') }}">Catalog</a>
 </li>
-<li class="nav-item" id="signin">
-    <a class="nav-link text-uppercase hover-pop" onclick="signIn()">Sign In</a>
+        <li class="nav-item" id="signin">
+    <a class="nav-link text-uppercase hover-pop" data-bs-toggle="modal" data-bs-target="#signupModal">Sign In</a>
 </li>
 <li class="nav-item" id="cart">
     <a class="nav-link text-uppercase hover-pop {% if active_page == 'cart' %}active-link{% endif %}" href="{{ url_for('cart') }}">Cart</a>
@@ -147,3 +167,65 @@ border-color:white;
       </div>
     </div>
   </nav>
+<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.8); margin-top: 150px">
+            <div class="modal-header">
+                <h1 class="modal-title w-100 text-center" id="signupModalLabel" style="font-family: 'Gagalin', sans-serif; font-weight: bold;">TOSSED OUT!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center" style="margin-bottom: 30px; font-size: 1rem; color: #555; font-family: Lexend">Flawed but Flavourful</p>
+                <form method="POST">
+                    {{ signinform.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ signinform.email.label(class="form-label") }}
+                        {{ signinform.email(class="form-control", placeholder="Enter your email") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ signinform.password.label(class="form-label") }}
+                        {{ signinform.password(class="form-control", placeholder="Enter your password") }}
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="#" class="form-text">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="btn w-100 mt-3" style="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;">Sign Up</button>
+                    <div class="form-text mt-3 text-center">
+                        No Account? <a href="#" data-bs-toggle="modal" data-bs-target="#signupFormModal" data-bs-dismiss="modal" style="text-decoration: none; color: #007bff;">Sign Up</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="signupFormModal" tabindex="-1" aria-labelledby="signupFormModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); margin-top: 150px">
+            <div class="modal-header">
+                <h1 class="modal-title w-100 text-center" id="signupFormModalLabel" style="font-family: 'Gagalin', sans-serif; font-weight: bold;">TOSSED OUT!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center" style="margin-bottom: 30px; font-size: 1rem; color: #555; font-family: Lexend">Flawed but Flavourful</p>
+                <form method="post">
+                    {{ signupform.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ signupform.email.label(class="form-label") }}
+                        {{ signupform.email(class="form-control", placeholder="Enter your email") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ signupform.password.label(class="form-label") }}
+                        {{ signupform.password(class="form-control", placeholder="Create a password") }}
+                    </div>
+                    <button type="submit" class="btn w-100 mt-3" style="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;">Sign Up</button>
+                    <div class="form-text mt-3 text-center">
+                        Already have an account? <a href="#" data-bs-toggle="modal" data-bs-target="#signupModal" data-bs-dismiss="modal" style="text-decoration: none; color: #007bff;">Sign In</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
