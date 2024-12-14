@@ -11,21 +11,30 @@ def main():
 
 @app.route('/aboutus', methods=['GET', 'POST'])
 def about_us():
+    with shelve.open('users') as db:
+        for i in db:
+            print(i)
     siemail = None
     sipassword = None
     suemail = None
     supassword = None
     signinform = signIn()
     signupform = signUp()
-    if signinform.validate_on_submit():
-        siemail = signinform.email.data
-        sipassword = signinform.password.data
-        ## have not made sign in validation
-    if signupform.validate_on_submit():
-        suemail = signupform.email.data
-        supassword = signupform.password.data
-        Customer(suemail,supassword)
-        return redirect(url_for('about_us'))
+    if request.method == 'POST':
+        # Distinguish between forms
+        if 'signin_submit' in request.form and signinform.validate_on_submit():
+            siemail = signinform.email.data
+            sipassword = signinform.password.data
+            # TODO: Add sign-in validation logic here
+            print("Sign-in attempt:", siemail)
+        elif 'signup_submit' in request.form and signupform.validate_on_submit():
+            suemail = signupform.email.data
+            supassword = signupform.password.data
+            print("Sign-up attempt:", suemail)
+            Customer(suemail, supassword)
+            return redirect(url_for('about_us'))
+        else:
+            print("Form validation failed:", signupform.errors, signinform.errors)
 
     return render_template('aboutus.html', active_page='aboutus', signinform=signinform, signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword)
 
