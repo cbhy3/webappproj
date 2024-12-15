@@ -11,3 +11,9 @@ manager class and manager page
 check out  
 
 
+done so far:  
+about us  
+sign up (create customer)  
+sign in with sign in validation for user  
+password encryption  
+users database  
