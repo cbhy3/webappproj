@@ -1,7 +1,9 @@
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, InputRequired, Length, ValidationError
 from wtforms.fields import EmailField, PasswordField
+from flask import session
 import shelve
 
 class signUp(FlaskForm):
@@ -36,3 +38,15 @@ class signIn(FlaskForm):
             raise ValidationError("Email doesn't exist.")
 
 
+class Otp(FlaskForm):
+    otp = StringField('Enter the 6 digit code sent to your email', validators=[DataRequired(),Length(min=6, max = 6)])
+    submit = SubmitField('Submit', name = 'otp_submit')
+    def validate_otp(self,otp):
+        t = session.get('otp')
+        print(t)
+        if str(otp.data) == str(t):
+            print("otp successfully validated")
+            return True
+        else:
+            print(otp.data)
+            raise ValidationError('Invalid OTP entered.')

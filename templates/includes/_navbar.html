@@ -98,27 +98,31 @@ border-color:white;
   transition: all 0.3s ease-in-out;
 }
   }
-   @media (max-width: 760px) { /* md and smaller */
-    .nav-link {
-      font-size: 14px; /* Even smaller font size */
-      width: 100vw;    /* Further reduced width */
-      height: 75px;    /* Further reduced height */
-      padding: 30px 8px; /* Reduced padding */
-        margin-top:5px;
-    }
-   .navbar-nav {
-       margin-top:35px;
+   @media (max-width: 760px) {
+       /* md and smaller */
+       .nav-link {
+           font-size: 14px; /* Even smaller font size */
+           width: 100vw; /* Further reduced width */
+           height: 75px; /* Further reduced height */
+           padding: 30px 8px; /* Reduced padding */
+           margin-top: 5px;
+       }
+
+       .navbar-nav {
+           margin-top: 35px;
+       }
+
+       .nav-link.active-link {
+           background-color: #eaeaea;
+           transform: translateY(0px);
+           padding-bottom: 20px;
+           box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+           color: #000;
+           font-weight: bold;
+           transition: all 0.3s ease-in-out;
+       }
    }
-    .nav-link.active-link {
-  background-color: #eaeaea;
-  transform: translateY(0px);
-  padding-bottom: 20px;
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
-  color: #000;
-  font-weight: bold;
-  transition: all 0.3s ease-in-out;
-}
-  }
+
  .nav-link.active-link {
   background-color: #eaeaea;
   transform: translateY(20px);
@@ -186,7 +190,11 @@ border-color:white;
                 <p class="text-center" style="margin-bottom: 30px; font-size: 1rem; color: #555; font-family: Lexend">Flawed but Flavourful</p>
                 <form method="POST">
                     {{ signinform.hidden_tag() }}
-
+                    {% if registrationSuccessful %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Registration Successful! Please log in to your account.
+                </div>
+                {% endif %}
                     <div class="mb-3">
                         {{ signinform.email.label(class="form-label") }}
                         {{ signinform.email(class="form-control", placeholder="Enter your email") }}
@@ -252,11 +260,42 @@ border-color:white;
                         Already have an account? <a id = "none"onclick='closeM("#signupFormModal")' data-bs-toggle="modal" data-bs-target="#signupModal" data-bs-dismiss="modal" style="text-decoration: none; color: #007bff;">Sign In</a>
                     </div>
                 </form>
+
+
             </div>
         </div>
     </div>
 </div>
+<div class="modal fade" id="otpFormModal" tabindex="-1" aria-labelledby="otpFormModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); margin-top: 150px">
+            <div class="modal-header">
+                <h1 class="modal-title w-100 text-center" id="signupFormModalLabel" style="font-family: 'Gagalin', sans-serif; font-weight: bold;">TOSSED OUT!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center" style="margin-bottom: 30px; font-size: 1rem; color: #555; font-family: Lexend">Flawed but Flavourful</p>
 
+<form method="post">
+                   {{ otpform.hidden_tag() }}
+                   <div class="mb-3">
+                       {{ otpform.otp.label(class="form-label") }}
+                       {{ otpform.otp(class="form-control", placeholder="Enter OTP") }}
+                       {% for error in otpform.otp.errors %}
+                       <span style="color: red;">[{{ error }}]</span>
+                       {% endfor %}
+
+                   </div>
+               <div class="mb-3">
+                   {{ otpform.submit(class = "btn w-100 mt-3", style ="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;") }}
+
+               </div>
+
+               </form>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Check for form errors and reopen the corresponding modal
@@ -264,9 +303,14 @@ border-color:white;
             var signupFormModal = new bootstrap.Modal(document.getElementById('signupFormModal'));
             console.log("doing sign up form")
             signupFormModal.show();
-        {% elif signinform.errors %}
+        {% elif signinform.errors or registrationSuccessful%}
             var signInModal = new bootstrap.Modal(document.getElementById('signupModal'));
             signInModal.show();
+        {% elif otpform.errors or needOTP %}
+            var otpFormModal = new bootstrap.Modal(document.getElementById('otpFormModal'));
+            otpFormModal.show();
         {% endif %}
+
+
     });
 </script>
