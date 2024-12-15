@@ -1,12 +1,19 @@
-COMPLETED SO FAR:
-
-ABOUT US PAGE
-SIGN UP FEATURE WITH NEW CUSTOMERS BEING ADDED TO USERS DATABASE
-PASSWORD ENCRYPTION FOR USERS
+todo:  
 
 
-TODO:
-SIGN IN + VALIDATIONM FOR CUSTOMERS
-CART
-CATALOGUE
-LITERALLY EVERYTHING ELSE 
+profile page   
+
+catalogue     
+cart  
+users able to play the game  
+admin page  
+manager class and manager page  
+check out  
+
+
+done so far:  
+about us  
+sign up (create customer)  
+sign in with sign in validation for user  
+password encryption  
+users database  
