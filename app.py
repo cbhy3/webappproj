@@ -38,7 +38,7 @@ def about_us():
             print("Form validation failed:", signupform.errors, signinform.errors)
 
     return render_template('aboutus.html', active_page='aboutus', signinform=signinform, signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword, current_user=current_user)
-
+## copy this shit into the other pages when finished making them
 @app.route('/catalog')
 def catalog():
     return render_template('index.html', active_page='catalog')
