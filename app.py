@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, request, redirect, url_for
 from Forms import *
 import shelve as shelve
 from customer import Customer
+from currentUser import CurrentUser
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bignuts'
 
@@ -15,6 +16,7 @@ def about_us():
     sipassword = None
     suemail = None
     supassword = None
+    current_user = None
     signinform = signIn()
     signupform = signUp()
     if request.method == 'POST':
@@ -22,8 +24,10 @@ def about_us():
         if 'signin_submit' in request.form and signinform.validate_on_submit():
             siemail = signinform.email.data
             sipassword = signinform.password.data
-            # TODO: Add sign-in validation logic here
             print("Sign-in attempt:", siemail)
+            with shelve.open('users') as usersDB:
+                current_user = usersDB[siemail]
+                ##print(current_user)
         elif 'signup_submit' in request.form and signupform.validate_on_submit():
             suemail = signupform.email.data
             supassword = signupform.password.data
@@ -33,7 +37,7 @@ def about_us():
         else:
             print("Form validation failed:", signupform.errors, signinform.errors)
 
-    return render_template('aboutus.html', active_page='aboutus', signinform=signinform, signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword)
+    return render_template('aboutus.html', active_page='aboutus', signinform=signinform, signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword, current_user=current_user)
 
 @app.route('/catalog')
 def catalog():

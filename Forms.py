@@ -22,4 +22,17 @@ class signIn(FlaskForm):
     email = EmailField('Email', validators=[DataRequired(),Email("Please Enter a Valid Email Address")])
     password = PasswordField('Password', validators=[InputRequired(),Length(min=6, max = 20)])
     submit = SubmitField('Sign In', name = 'signin_submit')
+    def validate_password(self,password):
+        try:
+             with shelve.open('users') as usersDB:
+                  u = usersDB[self.email.data]
+                 ## print(u.verifyUser(password.data))
+
+             if u.verifyUser(password.data):
+                  return True
+             else:
+                 raise ValidationError('Incorrect Password or Email.')
+        except KeyError:
+            raise ValidationError("Email doesn't exist.")
+
 

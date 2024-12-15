@@ -162,7 +162,11 @@ border-color:white;
     <a class="nav-link text-uppercase hover-pop {% if active_page == 'catalog' %}active-link{% endif %}" href="{{ url_for('catalog') }}">Catalog</a>
 </li>
         <li class="nav-item" id="signin">
-    <a class="nav-link text-uppercase hover-pop" data-bs-toggle="modal" data-bs-target="#signupModal">Sign In</a>
+            {% if current_user == None %}
+        <a class="nav-link text-uppercase hover-pop" data-bs-toggle="modal" data-bs-target="#signupModal">Sign In</a>
+            {% else %}
+        <a class="nav-link text-uppercase hover-pop{% if active_page == 'profile' %}active-link{% endif %}" href="{{ url_for('about_us') }}">{{  current_user.email.split('@')[0] }}</a>
+            {% endif %}
 </li>
 <li class="nav-item" id="cart">
     <a class="nav-link text-uppercase hover-pop {% if active_page == 'cart' %}active-link{% endif %}" href="{{ url_for('cart') }}">Cart</a>
