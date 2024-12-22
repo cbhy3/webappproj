@@ -28,6 +28,8 @@ class User:
         hash = bcrypt.hashpw(password.encode('utf-8'), salt)
         return hash.decode('utf-8')
     def verifyUser(self,plainPassword):
-
         return bcrypt.checkpw(plainPassword.encode('utf-8'), self.password.encode('utf-8'))
+
+    def comparePassword(plainPassword, encryptedPassword):
+        return bcrypt.checkpw(plainPassword.encode('utf-8'), encryptedPassword.encode('utf-8'))
     ##

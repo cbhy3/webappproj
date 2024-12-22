@@ -17,3 +17,4 @@ sign up (create customer)
 sign in with sign in validation for user  
 password encryption  
 users database  
+password reset for users who forgot password

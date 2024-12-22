@@ -141,11 +141,11 @@ border-color:white;
    #none:hover {
        cursor: pointer;
    }
-       #newEmail:hover {
+       .text-button:hover {
        cursor: pointer;
 
    }
-       #newEmail {
+       .text-button {
            color: #5694ff; text-align: center;
 
     background: none;
@@ -209,6 +209,10 @@ border-color:white;
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     Registration Successful! Please log in to your account.
                 </div>
+                        {% elif resetsuccessful %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Password Reset Successful! Please log in to your account.
+                </div>
                 {% endif %}
                     <div class="mb-3">
                         {{ signinform.email.label(class="form-label") }}
@@ -227,7 +231,7 @@ border-color:white;
 
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a href="#" class="form-text">Forgot Password?</a>
+                        {{ signinform.forgotpassword(class = "text-button") }}
                     </div>
 
                     {{ signinform.submit(class = "btn w-100 mt-3", style ="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;") }}
@@ -302,10 +306,109 @@ border-color:white;
 
                    </div>
 <div class="justify-content-center">
-                    {{ otpform.newEmail(id = "newEmail") }}
+                    {{ otpform.newEmail(class = "text-button") }}
 </div>
                <div class="mb-3">
                    {{ otpform.submit(class = "btn w-100 mt-3", style ="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;") }}
+
+               </div>
+
+               </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="resetPasswordOTP" tabindex="-1" aria-labelledby="resetPasswordOTPModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); margin-top: 150px">
+            <div class="modal-header">
+                <h1 class="modal-title w-100 text-center" id="signupFormModalLabel" style="font-family: 'Gagalin', sans-serif; font-weight: bold;">TOSSED OUT!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center" style="margin-bottom: 30px; font-size: 1rem; color: #555; font-family: Lexend">Flawed but Flavourful</p>
+
+<form method="post">
+                   {{ resetPasswordOTP.hidden_tag() }}
+                   <div class="mb-3">
+                       {{ resetPasswordOTP.otp.label(class="form-label") }}
+                       {{ resetPasswordOTP.otp(class="form-control", placeholder="Enter OTP") }}
+                       {% for error in resetPasswordOTP.otp.errors %}
+                       <span style="color: red;">[{{ error }}]</span>
+                       {% endfor %}
+
+                   </div>
+
+               <div class="mb-3">
+                   {{ resetPasswordOTP.submit(class = "btn w-100 mt-3", style ="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;") }}
+
+               </div>
+
+               </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="resetPasswordEmail" tabindex="-1" aria-labelledby="resetPasswordEmailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); margin-top: 150px">
+            <div class="modal-header">
+                <h1 class="modal-title w-100 text-center" id="signupFormModalLabel" style="font-family: 'Gagalin', sans-serif; font-weight: bold;">TOSSED OUT!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center" style="margin-bottom: 30px; font-size: 1rem; color: #555; font-family: Lexend">Flawed but Flavourful</p>
+
+<form method="post">
+                   {{ resetpasswordemail.hidden_tag() }}
+                   <div class="mb-3">
+                       {{ resetpasswordemail.email.label(class="form-label") }}
+                       {{ resetpasswordemail.email(class="form-control", placeholder="Enter Email") }}
+                       {% for error in resetpasswordemail.email.errors %}
+                       <span style="color: red;">[{{ error }}]</span>
+                       {% endfor %}
+
+                   </div>
+
+               <div class="mb-3">
+                   {{ resetpasswordemail.submit(class = "btn w-100 mt-3", style ="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;") }}
+
+               </div>
+
+               </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="resetPassword" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); margin-top: 150px">
+            <div class="modal-header">
+                <h1 class="modal-title w-100 text-center" id="signupFormModalLabel" style="font-family: 'Gagalin', sans-serif; font-weight: bold;">TOSSED OUT!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center" style="margin-bottom: 30px; font-size: 1rem; color: #555; font-family: Lexend">Flawed but Flavourful</p>
+
+<form method="post">
+                   {{ resetpassword.hidden_tag() }}
+                   <div class="mb-3">
+                       {{ resetpassword.password.label(class="form-label") }}
+                       {{ resetpassword.password(class="form-control", placeholder="Enter New Password") }}
+                       {% for error in resetpassword.password.errors %}
+                       <span style="color: red;">[{{ error }}]</span>
+                       {% endfor %}
+
+                   </div>
+                <div class="mb-3">
+                    {{ resetpassword.verifypassword.label(class="form-label") }}
+                       {{ resetpassword.verifypassword(class="form-control", placeholder="Re-enter password") }}
+                    {% for error in resetpassword.verifypassword.errors %}
+                       <span style="color: red;">[{{ error }}]</span>
+                       {% endfor %}
+                                    </div>
+               <div class="mb-3">
+                   {{ resetpassword.submit(class = "btn w-100 mt-3", style ="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;") }}
 
                </div>
 
@@ -321,12 +424,25 @@ border-color:white;
             var signupFormModal = new bootstrap.Modal(document.getElementById('signupFormModal'));
             console.log("doing sign up form")
             signupFormModal.show();
-        {% elif signinform.errors or registrationSuccessful%}
+        {% elif signinform.errors or registrationSuccessful or resetsuccessful%}
             var signInModal = new bootstrap.Modal(document.getElementById('signupModal'));
             signInModal.show();
         {% elif otpform.errors or needOTP %}
             var otpFormModal = new bootstrap.Modal(document.getElementById('otpFormModal'));
             otpFormModal.show();
+        {% elif resetPasswordOTP.errors %}
+            var resetotpModal = new bootstrap.Modal(document.getElementById('resetPasswordOTP'));
+            resetotpModal.show();
+        {% elif needresetemail or resetpasswordemail.errors %}
+            console.log("showing email")
+            var resetemailModal = new bootstrap.Modal(document.getElementById('resetPasswordEmail'));
+            resetemailModal.show();
+        {% elif needresetpasswordotp or resetPasswordOTP.errors %}
+            var resetPasswordOTPModal = new bootstrap.Modal(document.getElementById('resetPasswordOTP'));
+            resetPasswordOTPModal.show();
+        {% elif needresetpassword or resetpassword.errors %}
+            var resetPasswordModal = new bootstrap.Modal(document.getElementById('resetPassword'));
+            resetPasswordModal.show();
         {% endif %}
 
 
