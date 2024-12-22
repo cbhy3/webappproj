@@ -13,7 +13,9 @@ def main():
 
 @app.route('/aboutus', methods=['GET', 'POST'])
 def about_us():
-
+    with shelve.open('users') as db:
+        for i in db:
+            del db[i]
     siemail = None
     sipassword = None
     suemail = None
@@ -24,6 +26,7 @@ def about_us():
     otpform = Otp()
     needOTP = False
     registrationSuccessful = False
+    signup = False
     if request.method == 'POST':
         # Distinguish between forms
         if 'signin_submit' in request.form and signinform.validate_on_submit():
@@ -48,11 +51,13 @@ def about_us():
             registrationSuccessful = True
             print("registration successful")
             Customer(session.get('user_email'), session.get('user_password'))
-
+        elif 'new_email_submit' in request.form:
+            needOTP = False
+            signup = True
         else:
             print("Form validation failed:", signupform.errors, signinform.errors, otpform.errors)
 
-    return render_template('aboutus.html', active_page='aboutus', signinform=signinform, signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword, current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful)
+    return render_template('aboutus.html', active_page='aboutus', signinform=signinform, signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword, current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful, signup=signup)
 ## copy this shit into the other pages when finished making them
 @app.route('/catalog')
 def catalog():

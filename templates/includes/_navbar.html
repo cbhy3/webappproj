@@ -138,9 +138,24 @@ border-color:white;
    #submit:hover{
     background-color: #751106;
 }
-   #none:hover{
+   #none:hover {
        cursor: pointer;
    }
+       #newEmail:hover {
+       cursor: pointer;
+
+   }
+       #newEmail {
+           color: #5694ff; text-align: center;
+
+    background: none;
+    border: none;
+
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline; /* Optional: Make it look like a link */
+
+       }
 </style>
 {% from "includes/_formHelper.html" import render_field %}
 <nav class="navbar navbar-expand-md navbar-light">
@@ -286,6 +301,9 @@ border-color:white;
                        {% endfor %}
 
                    </div>
+<div class="justify-content-center">
+                    {{ otpform.newEmail(id = "newEmail") }}
+</div>
                <div class="mb-3">
                    {{ otpform.submit(class = "btn w-100 mt-3", style ="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;") }}
 
@@ -299,7 +317,7 @@ border-color:white;
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Check for form errors and reopen the corresponding modal
-        {% if signupform.errors %}
+        {% if signupform.errors or signup %}
             var signupFormModal = new bootstrap.Modal(document.getElementById('signupFormModal'));
             console.log("doing sign up form")
             signupFormModal.show();
