@@ -1,7 +1,8 @@
 todo:  
 
 
-profile page   
+profile page     
+forgot password  
 
 catalogue     
 cart  
