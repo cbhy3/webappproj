@@ -2,7 +2,6 @@ todo:
 
 
 profile page   
-
 catalogue     
 cart  
 users able to play the game  
@@ -17,4 +16,4 @@ sign up (create customer)
 sign in with sign in validation for user  
 password encryption  
 users database  
-
+added password reset for users who forget password
