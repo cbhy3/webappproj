@@ -1,0 +1,45 @@
+<link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+<style>
+    .side-nav {
+      height: 100vh;
+      width: 350px;
+      background-color: #efefef;
+      position: fixed;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 10px;
+    }
+    .side-nav a {
+      text-decoration: none;
+      color: #000;
+    }
+    .side-nav a:hover {
+      background-color: #e9ecef;
+    }
+    .sidenav-item {
+        font-family: Garet;
+        font-size: 20px;
+        margin-left: 40px;
+        margin-top: 25px;
+
+    }
+</style>
+<body>
+
+<div class="side-nav d-flex flex-column">
+    <div class="sidenav-item d-flex align-items-center">
+
+      <a href="#profile" class="flex-grow-1">Profile</a>
+    </div>
+    <div class="sidenav-item">
+      <a href="#personal-details">Personal Details</a>
+    </div>
+    <div class="sidenav-item">
+      <a href="#order-history">Order History</a>
+    </div>
+    <div class="sidenav-item">
+      <a href="#coupons">Coupons</a>
+    </div>
+  </div>
+</body>
+
+<!--- somebody else please design this and the profile pages for me thanks im so lazy and i hate html !>

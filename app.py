@@ -10,6 +10,8 @@ app.config['SECRET_KEY'] = 'bignuts'
 needresetemail = False
 registrationSuccessful = False
 needOTP = False
+
+
 @app.route('/')
 def main():
     return redirect('/aboutus')
@@ -109,3 +111,85 @@ def cart():
     return render_template('index.html', active_page='cart')
 if __name__ == '__main__':
     app.run(debug=True)
+
+@app.route('/profile')
+def profile():
+    siemail = None
+    sipassword = None
+    suemail = None
+    supassword = None
+    current_user = None
+    global needresetemail
+    signinform = signIn()
+    signupform = signUp()
+    otpform = Otp()
+    resetpasswordemail = resetPasswordEmail()
+    resetPasswordotp = resetPasswordOTP()
+    resetpassword = resetPassword()
+    global needOTP
+    global registrationSuccessful
+    needOTP = False
+    registrationSuccessful = False
+    signup = False
+    needresetpasswordotp = False
+    needresetpassword = False
+    resetsuccessful = False
+    if request.method == 'POST':
+        # Distinguish between forms
+        if 'signin_submit' in request.form and signinform.validate_on_submit():
+            siemail = signinform.email.data
+            sipassword = signinform.password.data
+            print("Sign-in attempt:", siemail)
+            registrationSuccessful = False
+            with shelve.open('users') as usersDB:
+                current_user = usersDB[siemail]
+                ##print(current_user)
+        elif 'forgotpass_submit' in request.form:
+            needresetemail = True
+        elif 'signup_submit' in request.form and signupform.validate_on_submit():
+            suemail = signupform.email.data
+            supassword = signupform.password.data
+            session['user_email'] = suemail
+            session['user_password'] = supassword
+            print("Sign-up attempt:", suemail)
+            needOTP = True
+            otp = generateOTP.__call__(suemail)
+            session['otp'] = otp
+            print(session['otp'])
+        elif 'otp_submit' in request.form and otpform.validate_on_submit():
+            registrationSuccessful = True
+            needOTP = False
+            print("registration successful")
+            Customer(session.get('user_email'), session.get('user_password'))
+            session.pop('user_email')
+            session.pop('user_password')
+        elif 'new_email_submit' in request.form:
+            needOTP = False
+            signup = True
+        elif 'reset_password_email_submit' in request.form and resetpasswordemail.validate_on_submit():
+            resetemail = resetpasswordemail.email.data
+            resetotp = generateOTPforReset.__call__(resetemail)
+            session['resetotp'] = resetotp
+            session['email'] = resetemail
+            print(session['resetotp'])
+            needresetemail = False
+            needresetpasswordotp = True
+        elif 'resetpasswordotp_submit' in request.form and resetPasswordotp.validate_on_submit():
+            needresetpasswordotp = False
+            needresetpassword = True
+            with shelve.open('users') as usersDB:
+                session['oldPassword'] = usersDB[session['email']].password
+        elif 'reset_password_submit' in request.form and resetpassword.validate_on_submit():
+            with shelve.open('users') as usersDB:
+                u = usersDB[session['email']]
+                u.setPassword(resetpassword.password.data)
+                usersDB[session['email']] = u
+                print(u)
+            resetsuccessful = True
+        else:
+            print("Form validation failed:", signupform.errors, signinform.errors, otpform.errors)
+    return render_template('profile.html', active_page='profile', signinform=signinform,
+                           signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword,
+                           current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful,
+                           signup=signup, resetPasswordOTP = resetPasswordotp, needresetemail = needresetemail, resetpasswordemail = resetpasswordemail,
+                           needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful,)
