@@ -1,5 +1,9 @@
 <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
-
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById("default").setAttribute("default", "");
+    })
+</script>
 <style>
  body {
   background-color: #f8f9fa;
@@ -224,7 +228,7 @@ border-color:white;
                     </div>
                     <div class="mb-3">
                         {{ signinform.password.label(class="form-label") }}
-                        {{ signinform.password(class="form-control", placeholder="Enter your password") }}
+                        {{ signinform.password(class="form-control", placeholder="Enter your password", id = "default") }}
                         {% for error in signinform.password.errors %}
                         <span style="color: red;">[{{ error }}]</span>
                         {% endfor %}

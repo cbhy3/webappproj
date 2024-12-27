@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% block head %}
-<title>TossedOut - Game</title>
+{% block content %}
+
   <style>
 
         .game-container {
@@ -12,7 +12,7 @@
             margin: 0;
             background-color: #f0f0f0;
         }
-  .modal {
+  .balls {
     display: none; /* Hidden by default */
     position: fixed;
     z-index: 1000; /* On top of other elements */
@@ -24,7 +24,7 @@
     background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
 }
 
-.modal-content {
+.balls-content {
     background-color: #fff;
     margin: 15% auto;
     padding: 20px;
@@ -175,7 +175,7 @@
 
                 card.style.backgroundColor = "#FFFFFF"
                 img[0].style.visibility = "visible"
-                img[0].src = `/static/images/${chosen}.jpg`
+                img[0].src = `/static/${chosen}.jpg`
                 if (items[chosen][1] == 3){
                     tries = 0;
                     showModal(`Congratulations! You won ${items[chosen][2]}!`);
@@ -195,14 +195,12 @@ function closeModal() {
     modal.style.display = "none";
 }
     </script>
-{% endblock %}
 
 
-{% block body %}
 <body>
 <div class="game-container">
-    <div id="winModal" class="modal">
-    <div class="modal-content">
+    <div id="winModal" class="modal balls">
+    <div class="modal-content balls-content">
         <p id="winMessage"></p>
                 <button class="claim-button" onclick="closeModal()">Claim Prize</button>
 
