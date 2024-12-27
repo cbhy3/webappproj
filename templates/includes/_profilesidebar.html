@@ -1,4 +1,24 @@
 <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+
+<script>
+    function update_tab(tab){
+        fetch('updatep', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                new_tab: tab
+            })
+        })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+        setTimeout(function(){
+            location.reload();
+        },50)
+    }
+</script>
 <style>
     .side-nav {
       height: 100vh;
@@ -24,25 +44,46 @@
     }
 </style>
 <body>
-
+<div class="modal fade" id="signOutModal" tabindex="-1" aria-labelledby="signOutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="signOutModalLabel">Confirm Sign Out</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to sign out?
+                </div>
+                <div class="modal-footer">
+                    <form method = "post">
+             {{ signoutform.hidden_tag() }}
+                {{ signoutform.signout(class="btn btn-danger") }}
+                    {{ signoutform.cancel(class = "btn btn-secondary" )}}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 <div class="side-nav d-flex flex-column">
     <div class="sidenav-item d-flex align-items-center">
 
-      <a href="#profile" class="flex-grow-1">Profile</a>
+      <a href="#profile" onclick = "update_tab('profile')" class="flex-grow-1">Profile</a>
     </div>
     <div class="sidenav-item">
-      <a href="#personal-details">Personal Details</a>
+      <a href="#personal-details" onclick="update_tab('personal_details')">Personal Details</a>
     </div>
     <div class="sidenav-item">
-      <a href="#order-history">Order History</a>
+      <a href="#order-history" onclick = "update_tab('order_history')">Order History</a>
     </div>
     <div class="sidenav-item">
-      <a href="#coupons">Coupons</a>
+      <a href="#coupons" onclick = "update_tab('coupons')">Coupons</a>
     </div>
     <div class="sidenav-item">
-        <a href="#signout">Sign Out</a>
+        <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#signOutModal">
+        Sign Out
+         </a>
     </div>
   </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
-<!--- somebody else please design this and the profile pages for me thanks im so lazy and i hate html !>

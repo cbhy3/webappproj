@@ -5,4 +5,27 @@ Tossed Out! - Profile
 {% endblock %}
 {% block content %}
 {% include "includes/_profilesidebar.html" %}
+    <style>
+    h1{
+        text-align: center;
+    }
+    h3{
+        text-align: center;
+    }
+    </style>
+{% if current_tab == 'profile' %}
+    <h1>your profile</h1>
+    <h3>yeah</h3>
+{% elif current_tab == 'personal_details' %}
+    <h1>your personal details</h1>
+    <h3>yeah</h3>
+{% elif current_tab == 'order_history' %}
+    <h1>your order history</h1>
+    <h3>yeah</h3>
+{% elif current_tab == 'coupons' %}
+    <h1>your coupons</h1>
+    <h3>yeah</h3>
+{% else %}
+    <script>alert("who are you")</script>
+{% endif %}
 {% endblock %}

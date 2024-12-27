@@ -5,7 +5,7 @@ from random import randint
 import shelve
 
 class User:
-    password: str
+
     onlineStatus: bool
     email : str
     userCount = 0
@@ -31,17 +31,11 @@ class User:
         return hash.decode('utf-8')
     def verifyUser(self,plainPassword):
         return bcrypt.checkpw(plainPassword.encode('utf-8'), self.password.encode('utf-8'))
-
+    @staticmethod
     def comparePassword(plainPassword, encryptedPassword):
         return bcrypt.checkpw(plainPassword.encode('utf-8'), encryptedPassword.encode('utf-8'))
     ##
-    def toJSON(self):
-        return json.dumps(
-            self,
-            default=lambda o: o.__dict__,
-            sort_keys=True,
-            indent=4)
     @staticmethod
-    def fromJSON(jsonString):
-        data = json.loads(jsonString)
-        return User(**data)
+
+    def isAdmin(self):
+        return False

@@ -1,9 +1,5 @@
 <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById("default").setAttribute("default", "");
-    })
-</script>
+
 <style>
  body {
   background-color: #f8f9fa;
@@ -188,7 +184,7 @@ border-color:white;
             {% if current_user == None %}
         <a class="nav-link text-uppercase hover-pop" data-bs-toggle="modal" data-bs-target="#signupModal">Sign In</a>
             {% else %}
-        <a class="nav-link text-uppercase hover-pop{% if active_page == 'profile' %}active-link{% endif %}" href="{{ url_for('about_us') }}">{{  current_user.email.split('@')[0] }}</a>
+        <a class="nav-link text-uppercase hover-pop{% if active_page == 'profile' %}active-link{% endif %}" href="{{ url_for('profile') }}">{{  current_user.email.split('@')[0] }}</a>
             {% endif %}
 </li>
 <li class="nav-item" id="cart">
@@ -228,17 +224,18 @@ border-color:white;
                     </div>
                     <div class="mb-3">
                         {{ signinform.password.label(class="form-label") }}
-                        {{ signinform.password(class="form-control", placeholder="Enter your password", id = "default") }}
+                        {{ signinform.password(class="form-control", placeholder="Enter your password") }}
                         {% for error in signinform.password.errors %}
                         <span style="color: red;">[{{ error }}]</span>
                         {% endfor %}
 
                     </div>
-                    <div class="d-flex justify-content-between">
+
+
+                    {{ signinform.submit(class = "btn w-100 mt-3", style ="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;",autofocus="autofocus") }}
+                <div class="d-flex justify-content-between">
                         {{ signinform.forgotpassword(class = "text-button") }}
                     </div>
-
-                    {{ signinform.submit(class = "btn w-100 mt-3", style ="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;") }}
                     <div class="form-text mt-3 text-center">
                         No Account? <a id = "none"onclick = "closeM('signupModal')" data-bs-toggle="modal" data-bs-target="#signupFormModal" data-bs-dismiss="modal" style="text-decoration: none; color: #007bff;">Sign Up</a>
                     </div>
