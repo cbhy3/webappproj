@@ -42,7 +42,9 @@
         margin-top: 25px;
 
     }
-
+    #sideNavBar{
+        margin-top: 40px;
+    }
 </style>
 <body>
 <div class="modal fade" id="signOutModal" tabindex="-1" aria-labelledby="signOutModalLabel" aria-hidden="true">
@@ -67,6 +69,7 @@
     </div>
 
   <div class="side-nav d-flex flex-column" id="sideNav">
+      <div id="sideNavBar">
     <div class="sidenav-item d-flex align-items-center">
       <a href="#profile" onclick="update_tab('profile')" class="flex-grow-1">Profile</a>
     </div>
@@ -82,6 +85,7 @@
     <div class="sidenav-item">
       <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#signOutModal">Sign Out</a>
     </div>
+      </div>
   </div>
 </div>
 </div>

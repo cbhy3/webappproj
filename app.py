@@ -153,6 +153,7 @@ def profile():
     change_email = changeEmail()
     change_emailEmail = None
     need_change_email = None
+    change_password = changePassword()
     if request.method == 'POST' :
 
         if 'signout_submit' in request.form and signoutform.validate_on_submit():
@@ -171,10 +172,8 @@ def profile():
             print(session['otp'])
         elif 'otp_submit' in request.form and otpform.validate_on_submit():
             with shelve.open('users') as usersDB:
-                print(usersDB[session.get('current_user')])
                 temp = copy.deepcopy(usersDB[session.get('current_user')])
                 temp.setEmail(session.get('change_email'))
-                del usersDB[session.get('current_user')]
                 usersDB[temp.getEmail()] = temp
             session['current_user'] = temp.getEmail()
             current_user = temp
@@ -184,6 +183,11 @@ def profile():
         elif 'new_email_submit' in request.form:
             needOTP = False
             need_change_email = True
+        elif 'change_password_submit' in request.form and change_password.validate_on_submit():
+            with shelve.open('users') as usersDB:
+                temp = copy.deepcopy(usersDB[session.get('current_user')])
+                temp.setPassword(change_password.newPassword.data)
+                usersDB[temp.getEmail()] = temp
         else:
             print("Form validation failed:", otpform.errors, change_email.errors)
     if current_user is None:
@@ -193,7 +197,7 @@ def profile():
                            current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful,
                            signup=signup, resetPasswordOTP = resetPasswordotp, needresetemail = needresetemail, resetpasswordemail = resetpasswordemail,
                            needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful, change_email = change_email,
-                           change_emailEmail = change_emailEmail, need_change_email = need_change_email)
+                           change_emailEmail = change_emailEmail, need_change_email = need_change_email, change_password = change_password)
 
 @app.route('/updatep', methods = ['POST'])
 def update_profile_tab():

@@ -113,3 +113,17 @@ class changeEmail(FlaskForm):
         except KeyError:
             raise ValidationError("Something went wrong.")
 
+class changePassword(FlaskForm):
+    oldPassword = PasswordField('Enter your old password', validators=[InputRequired(),Length(min=6, max = 20)])
+    newPassword = PasswordField('Enter your new password', validators=[InputRequired(),Length(min=6, max = 20)])
+    verifyPassword = PasswordField('Re-enter your new password', validators=[InputRequired(),Length(min=6, max = 20), EqualTo('newPassword','Passwords do not match.')])
+    submit = SubmitField('Submit', name = 'change_password_submit')
+    def validate_oldPassword(self,oldPassword):
+        with shelve.open('users') as usersDB:
+            u = usersDB[session.get('current_user')]
+
+            if u.verifyUser(oldPassword.data):
+                return True
+            else:
+                raise ValidationError('Incorrect Password')
+

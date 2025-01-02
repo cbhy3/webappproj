@@ -25,24 +25,27 @@ Tossed Out! - Profile
 
 <div class="container py-5">
 
-                <div class="row mb-3">
-                    <div class="col-md-4 text-end fw-bold">Email Address:</div>
-                    <div class="col-md-8" id="account-email">{{ current_user.email }}</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-4 text-end fw-bold">Things here</div>
-                    <div class="col-md-8" id="order-history">balls</div>
-                </div>
+            <div class="row align-items-center mb-3">
+    <div class="col-md-4 text-end fw-bold">Email Address:</div>
+    <div class="col-md-4" id="account-email">{{ current_user.email }}</div>
+    <div class="col-md-4 text-start">
+        <a class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#changeEmailModal">Change Email</a>
+    </div>
+</div>
+              <div class="row align-items-center mb-3">
+    <div class="col-md-4 text-end fw-bold">Password:</div>
+    <div class="col-md-4" id="password">●●●●●●●●●</div>
+    <div class="col-md-4 text-start">
+        <a class="btn btn-warning" data-bs-toggle = "modal" data-bs-target = "#changePasswordModal">Change Password</a>
+    </div>
+</div>
             <div class="row mb-3">
-                    <div class="col-md-4 text-end fw-bold">Things here</div>
-                    <div class="col-md-8" id="order-history">balls</div>
+                    <div class="col-md-4 text-end fw-bold">Shipping Address</div>
+                    <div class="col-md-8" id="order-history"></div>
                 </div>
-                 <div class="row mb-3">
-                    <div class="col-md-4 text-end fw-bold">Things here</div>
-                    <div class="col-md-8" id="order-history">balls</div>
-                </div>
-                <div class="text-center">
-                    <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changeEmailModal">Change Email</a> <!-- add the change email form -->
+
+
+                    <!-- add the change email form -->
 <div class="modal fade" id="changeEmailModal" tabindex="-1" aria-labelledby="changeEmailModal" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.8); margin-top: 150px">
@@ -80,12 +83,54 @@ Tossed Out! - Profile
         </div>
     </div>
 </div>
-                    <button class="btn btn-danger" onclick="">Change Password</button> <!-- make change password form -->
-                </div>
+                <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.8); margin-top: 150px">
+            <div class="modal-header">
+                <h1 class="modal-title w-100 text-center" id="changePasswordModal" style="font-family: 'Gagalin', sans-serif; font-weight: bold;">TOSSED OUT!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center" style="margin-bottom: 30px; font-size: 1rem; color: #555; font-family: Lexend">Flawed but Flavourful</p>
+                <form method="POST">
+                    {{ change_password.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ change_password.oldPassword.label(class="form-label") }}
+                        {{ change_password.oldPassword(class="form-control", placeholder="Enter your old password") }}
+                        {% for error in change_password.oldPassword.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+
+                    </div>
+                    <div class="mb-3">
+                        {{ change_password.newPassword.label(class="form-label") }}
+                        {{ change_password.newPassword(class="form-control", placeholder="Enter your new password") }}
+                        {% for error in change_password.newPassword.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+
+                    </div>
+                    <div class="mb-3">
+                        {{ change_password.verifyPassword.label(class="form-label") }}
+                        {{ change_password.verifyPassword(class="form-control", placeholder="Re-enter your new password") }}
+                        {% for error in change_password.verifyPassword.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+
+                    </div>
+
+                    {{ change_password.submit(class = "btn w-100 mt-3", style ="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;",autofocus="autofocus") }}
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
             </div>
 {% elif current_tab == 'order_history' %}
-    <h1 style="text-align: center">your order history</h1>
-    <h3 style="text-align: center">yeah</h3>
+    <h1 style="text-align: center">placeholder</h1>
+
 {% elif current_tab == 'coupons' %}
     <h1 style="text-align: center">your coupons</h1>
     <h3 style="text-align: center">yeah</h3>
@@ -100,6 +145,9 @@ Tossed Out! - Profile
         {% elif otpform.errors or needOTP %}
             var otpFormModal = new bootstrap.Modal(document.getElementById('otpFormModal'));
             otpFormModal.show();
+            {% elif change_password.errors %}
+            var changePasswordModal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+            changePasswordModal.show()
         {% endif %}
     })
 </script>
