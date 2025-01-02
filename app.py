@@ -5,7 +5,7 @@ from customer import Customer
 from currentUser import CurrentUser
 from generateOTP import generateOTP, generateOTPforReset
 from manager import Manager
-
+import copy
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bignuts'
 @app.route('/')
@@ -15,12 +15,14 @@ def main():
 @app.route('/aboutus', methods=['GET', 'POST'])
 def about_us():
     #with shelve.open('users') as db:
-      #  for i in db:
-        #   del db[i]                  ## clear user db for testing
+    #    for i in db:
+    #        del db[i]                  ## clear user db for testing
     #with shelve.open('admin') as db:
       # for i in db:
         #   del db[i]
-
+    with shelve.open('users') as usersDB:
+        for i in usersDB:
+            print(i)
     siemail = None
     sipassword = None
     suemail = None
@@ -75,7 +77,6 @@ def about_us():
             Customer(session.get('user_email'), session.get('user_password'))
             session.pop('user_email')
             session.pop('user_password')
-            session.pop('otp')
         elif 'new_email_submit' in request.form:
             needOTP = False
             signup = True
@@ -123,6 +124,7 @@ if __name__ == '__main__':
 current_tab = 'profile'
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
+
     siemail = None
     sipassword = None
     suemail = None
@@ -150,7 +152,8 @@ def profile():
     signoutform  = signOut()
     change_email = changeEmail()
     change_emailEmail = None
-    if request.method == 'POST':
+    need_change_email = None
+    if request.method == 'POST' :
 
         if 'signout_submit' in request.form and signoutform.validate_on_submit():
             current_user = None
@@ -160,25 +163,37 @@ def profile():
             pass
         elif 'change_email_submit' in request.form and change_email.validate_on_submit():
             change_emailEmail = change_email.email.data
+            session['change_email'] = change_emailEmail
+            print(change_email.email.data)
             needOTP = True
             otp = generateOTP.__call__(change_emailEmail)
             session['otp'] = otp
             print(session['otp'])
-            session.pop('otp')
-            if 'otp_submit' in request.form and otpform.validate_on_submit():
-                with shelve.open('users') as usersDB:
-                    usersDB[session.get('current_user')].setEmail(change_emailEmail)
-                needOTP = False
+        elif 'otp_submit' in request.form and otpform.validate_on_submit():
+            with shelve.open('users') as usersDB:
+                print(usersDB[session.get('current_user')])
+                temp = copy.deepcopy(usersDB[session.get('current_user')])
+                temp.setEmail(session.get('change_email'))
+                del usersDB[session.get('current_user')]
+                usersDB[temp.getEmail()] = temp
+            session['current_user'] = temp.getEmail()
+            current_user = temp
+            session.pop('change_email')
+            needOTP = False
             ## add functionality for using a different email in the html, like similiar to the one in the signup
+        elif 'new_email_submit' in request.form:
+            needOTP = False
+            need_change_email = True
         else:
-            print("Form validation failed:",)
+            print("Form validation failed:", otpform.errors, change_email.errors)
     if current_user is None:
         return redirect(url_for('about_us'))
     return render_template('profile.html', active_page='profile',signoutform = signoutform, current_tab = current_tab,signinform=signinform,
                            signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword,
                            current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful,
                            signup=signup, resetPasswordOTP = resetPasswordotp, needresetemail = needresetemail, resetpasswordemail = resetpasswordemail,
-                           needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful,)
+                           needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful, change_email = change_email,
+                           change_emailEmail = change_emailEmail, need_change_email = need_change_email)
 
 @app.route('/updatep', methods = ['POST'])
 def update_profile_tab():

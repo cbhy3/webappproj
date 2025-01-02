@@ -6,12 +6,7 @@ Tossed Out! - Profile
 {% block content %}
 {% include "includes/_profilesidebar.html" %}
     <style>
-    h1{
-        text-align: center;
-    }
-    h3{
-        text-align: center;
-    }
+
     @media (max-width: 2037px){
         .container{
             width: 700px;
@@ -24,8 +19,8 @@ Tossed Out! - Profile
     }
     </style>
 {% if current_tab == 'profile' %}
-    <h1>your balls are sweaty</h1>
-    <h3>yeah</h3>
+    <h1 style = "text-align: center">your balls are sweaty</h1>
+    <h3 style = "text-align: center">yeah</h3>
 {% elif current_tab == 'personal_details' %}
 
 <div class="container py-5">
@@ -47,17 +42,67 @@ Tossed Out! - Profile
                     <div class="col-md-8" id="order-history">balls</div>
                 </div>
                 <div class="text-center">
-                    <button class="btn btn-primary" onclick="">Change Email</button> <!-- add the change email form -->
+                    <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changeEmailModal">Change Email</a> <!-- add the change email form -->
+<div class="modal fade" id="changeEmailModal" tabindex="-1" aria-labelledby="changeEmailModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.8); margin-top: 150px">
+            <div class="modal-header">
+                <h1 class="modal-title w-100 text-center" id="changeEmailModal" style="font-family: 'Gagalin', sans-serif; font-weight: bold;">TOSSED OUT!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center" style="margin-bottom: 30px; font-size: 1rem; color: #555; font-family: Lexend">Flawed but Flavourful</p>
+                <form method="POST">
+                    {{ change_email.hidden_tag() }}
 
+                    <div class="mb-3">
+                        {{ change_email.password.label(class="form-label") }}
+                        {{ change_email.password(class="form-control", placeholder="Enter your password") }}
+                        {% for error in change_email.password.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+
+                    </div>
+                    <div class="mb-3">
+                        {{ change_email.email.label(class="form-label") }}
+                        {{ change_email.email(class="form-control", placeholder="Enter your new email") }}
+                        {% for error in change_email.email.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+
+                    </div>
+
+
+                    {{ change_email.submit(class = "btn w-100 mt-3", style ="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;",autofocus="autofocus") }}
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
                     <button class="btn btn-danger" onclick="">Change Password</button> <!-- make change password form -->
                 </div>
             </div>
-
 {% elif current_tab == 'order_history' %}
-    <h1>your order history</h1>
-    <h3>yeah</h3>
+    <h1 style="text-align: center">your order history</h1>
+    <h3 style="text-align: center">yeah</h3>
 {% elif current_tab == 'coupons' %}
-    <h1>your coupons</h1>
-    <h3>yeah</h3>
+    <h1 style="text-align: center">your coupons</h1>
+    <h3 style="text-align: center">yeah</h3>
 {% endif %}
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if change_email.errors or need_change_email %}
+
+        var changeEmailModal = new bootstrap.Modal(document.getElementById('changeEmailModal'));
+        changeEmailModal.show()
+        {% elif otpform.errors or needOTP %}
+            var otpFormModal = new bootstrap.Modal(document.getElementById('otpFormModal'));
+            otpFormModal.show();
+        {% endif %}
+    })
+</script>
 {% endblock %}
+
+
