@@ -75,6 +75,7 @@ def about_us():
             Customer(session.get('user_email'), session.get('user_password'))
             session.pop('user_email')
             session.pop('user_password')
+            session.pop('otp')
         elif 'new_email_submit' in request.form:
             needOTP = False
             signup = True
@@ -89,6 +90,7 @@ def about_us():
         elif 'resetpasswordotp_submit' in request.form and resetPasswordotp.validate_on_submit():
             needresetpasswordotp = False
             needresetpassword = True
+            session.pop('resetotp')
             with shelve.open('users') as usersDB:
                 session['oldPassword'] = usersDB[session['email']].password
         elif 'reset_password_submit' in request.form and resetpassword.validate_on_submit():
@@ -98,6 +100,8 @@ def about_us():
                 usersDB[session['email']] = u
                 print(u)
             resetsuccessful = True
+            session.pop('oldPassword')
+            session.pop('email')
         else:
             print("Form validation failed:", signupform.errors, signinform.errors, otpform.errors)
 
@@ -144,7 +148,8 @@ def profile():
     needresetpassword = False
     resetsuccessful = False
     signoutform  = signOut()
-
+    change_email = changeEmail()
+    change_emailEmail = None
     if request.method == 'POST':
 
         if 'signout_submit' in request.form and signoutform.validate_on_submit():
@@ -153,6 +158,18 @@ def profile():
             return redirect(url_for('about_us'))
         elif 'signout_cancel_submit' in request.form and signoutform.validate_on_submit():
             pass
+        elif 'change_email_submit' in request.form and change_email.validate_on_submit():
+            change_emailEmail = change_email.email.data
+            needOTP = True
+            otp = generateOTP.__call__(change_emailEmail)
+            session['otp'] = otp
+            print(session['otp'])
+            session.pop('otp')
+            if 'otp_submit' in request.form and otpform.validate_on_submit():
+                with shelve.open('users') as usersDB:
+                    usersDB[session.get('current_user')].setEmail(change_emailEmail)
+                needOTP = False
+            ## add functionality for using a different email in the html, like similiar to the one in the signup
         else:
             print("Form validation failed:",)
     if current_user is None:

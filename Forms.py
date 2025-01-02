@@ -95,3 +95,21 @@ class resetPassword(FlaskForm):
 class signOut(FlaskForm):
     signout = SubmitField('Sign Out', name = 'signout_submit')
     cancel = SubmitField('Cancel', name = 'signout_cancel_submit')
+
+class changeEmail(FlaskForm):
+    password = PasswordField('Enter your password to confirm its you', validators=[InputRequired(),Length(min=6, max = 20)])
+    email = EmailField('Enter your new email', validators=[DataRequired(),Email("Please Enter a Valid Email Address")])
+    submit = SubmitField('Submit', name = 'change_email_submit')
+    def validate_password(self,password):
+        try:
+             with shelve.open('users') as usersDB:
+                  u = usersDB[session.get('current_user')]
+                 ## print(u.verifyUser(password.data))
+
+             if u.verifyUser(password.data):
+                  return True
+             else:
+                 raise ValidationError('Incorrect Password')
+        except KeyError:
+            raise ValidationError("Something went wrong.")
+

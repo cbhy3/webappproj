@@ -12,20 +12,52 @@ Tossed Out! - Profile
     h3{
         text-align: center;
     }
+    @media (max-width: 2037px){
+        .container{
+            width: 700px;
+        }
+    }
+    @media(max-width: 1412px){
+        .container{
+            width: 450px;
+        }
+    }
     </style>
 {% if current_tab == 'profile' %}
-    <h1>your profile</h1>
+    <h1>your balls are sweaty</h1>
     <h3>yeah</h3>
 {% elif current_tab == 'personal_details' %}
-    <h1>your personal details</h1>
-    <h3>yeah</h3>
+
+<div class="container py-5">
+
+                <div class="row mb-3">
+                    <div class="col-md-4 text-end fw-bold">Email Address:</div>
+                    <div class="col-md-8" id="account-email">{{ current_user.email }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 text-end fw-bold">Things here</div>
+                    <div class="col-md-8" id="order-history">balls</div>
+                </div>
+            <div class="row mb-3">
+                    <div class="col-md-4 text-end fw-bold">Things here</div>
+                    <div class="col-md-8" id="order-history">balls</div>
+                </div>
+                 <div class="row mb-3">
+                    <div class="col-md-4 text-end fw-bold">Things here</div>
+                    <div class="col-md-8" id="order-history">balls</div>
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-primary" onclick="">Change Email</button> <!-- add the change email form -->
+
+                    <button class="btn btn-danger" onclick="">Change Password</button> <!-- make change password form -->
+                </div>
+            </div>
+
 {% elif current_tab == 'order_history' %}
     <h1>your order history</h1>
     <h3>yeah</h3>
 {% elif current_tab == 'coupons' %}
     <h1>your coupons</h1>
     <h3>yeah</h3>
-{% else %}
-    <script>alert("who are you")</script>
 {% endif %}
 {% endblock %}
