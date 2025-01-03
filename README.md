@@ -1,3 +1,14 @@
+when first install type this in command prompt:  
+pip install flask  
+pip install flask-wtf  
+pip install mailersend  
+
+pip install wtforms  
+
+pip install bcrypt  
+
+
+
 todo:  
 
 
