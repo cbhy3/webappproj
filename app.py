@@ -4,6 +4,7 @@ import shelve as shelve
 from customer import Customer
 from currentUser import CurrentUser
 from generateOTP import generateOTP, generateOTPforReset
+from Product import Product
 from manager import Manager
 import copy
 app = Flask(__name__)
@@ -114,7 +115,98 @@ def about_us():
 ## copy this shit into the other pages when finished making them
 @app.route('/catalog')
 def catalog():
-    return render_template('index.html', active_page='catalog')
+    with shelve.open('products') as products:
+        all_products = {key: products[key] for key in products}
+    with shelve.open('users') as usersDB:
+        for i in usersDB:
+            print(i)
+    siemail = None
+    sipassword = None
+    suemail = None
+    supassword = None
+    try:
+        current_user = CurrentUser.fromEmail(session.get('current_user'))
+    except:
+        current_user = None
+    needresetemail = False
+    signinform = signIn()
+    signupform = signUp()
+    otpform = Otp()
+    resetpasswordemail = resetPasswordEmail()
+    resetPasswordotp = resetPasswordOTP()
+    resetpassword = resetPassword()
+
+    needOTP = False
+    registrationSuccessful = False
+    signup = False
+    needresetpasswordotp = False
+    needresetpassword = False
+    resetsuccessful = False
+    if request.method == 'POST':
+        # Distinguish between forms
+        if 'signin_submit' in request.form and signinform.validate_on_submit():
+            needresetemail = False
+            siemail = signinform.email.data
+            sipassword = signinform.password.data
+            print("Sign-in attempt:", siemail)
+            registrationSuccessful = False
+            with shelve.open('users') as usersDB:
+                current_user = usersDB[siemail]
+                ##print(current_user)
+            session['current_user'] = current_user.getEmail()
+            session.permanent = True
+        elif 'forgotpass_submit' in request.form:
+            needresetemail = True
+        elif 'signup_submit' in request.form and signupform.validate_on_submit():
+            suemail = signupform.email.data
+            supassword = signupform.password.data
+            session['user_email'] = suemail
+            session['user_password'] = supassword
+            print("Sign-up attempt:", suemail)
+            needOTP = True
+            otp = generateOTP.__call__(suemail)
+            session['otp'] = otp
+            print(session['otp'])
+        elif 'otp_submit' in request.form and otpform.validate_on_submit():
+            registrationSuccessful = True
+            needOTP = False
+            print("registration successful")
+            Customer(session.get('user_email'), session.get('user_password'))
+            session.pop('user_email')
+            session.pop('user_password')
+        elif 'new_email_submit' in request.form:
+            needOTP = False
+            signup = True
+        elif 'reset_password_email_submit' in request.form and resetpasswordemail.validate_on_submit():
+            resetemail = resetpasswordemail.email.data
+            resetotp = generateOTPforReset.__call__(resetemail)
+            session['resetotp'] = resetotp
+            session['email'] = resetemail
+            print(session['resetotp'])
+            needresetemail = False
+            needresetpasswordotp = True
+        elif 'resetpasswordotp_submit' in request.form and resetPasswordotp.validate_on_submit():
+            needresetpasswordotp = False
+            needresetpassword = True
+            session.pop('resetotp')
+            with shelve.open('users') as usersDB:
+                session['oldPassword'] = usersDB[session['email']].password
+        elif 'reset_password_submit' in request.form and resetpassword.validate_on_submit():
+            with shelve.open('users') as usersDB:
+                u = usersDB[session['email']]
+                u.setPassword(resetpassword.password.data)
+                usersDB[session['email']] = u
+                print(u)
+            resetsuccessful = True
+            session.pop('oldPassword')
+            session.pop('email')
+        else:
+            print("Form validation failed:", signupform.errors, signinform.errors, otpform.errors)
+    return render_template('catalog.html', active_page='catalog', products=all_products, signinform=signinform,
+                           signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword,
+                           current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful,
+                           signup=signup, resetPasswordOTP = resetPasswordotp, needresetemail = needresetemail, resetpasswordemail = resetpasswordemail,
+                           needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful,)
 
 @app.route('/cart')
 def cart():
@@ -217,3 +309,102 @@ def Admin():
     except:
         redirect(url_for('about_us'))
     return render_template('admin.html')
+
+@app.route('/product/<int:product_id>')
+def product_detail(product_id):
+    with shelve.open('products') as productsDB:
+        product = productsDB[str(product_id)]
+        if not product:
+            return "Product not found",404
+
+
+    with shelve.open('users') as usersDB:
+        for i in usersDB:
+            print(i)
+    siemail = None
+    sipassword = None
+    suemail = None
+    supassword = None
+    try:
+        current_user = CurrentUser.fromEmail(session.get('current_user'))
+    except:
+        current_user = None
+    needresetemail = False
+    signinform = signIn()
+    signupform = signUp()
+    otpform = Otp()
+    resetpasswordemail = resetPasswordEmail()
+    resetPasswordotp = resetPasswordOTP()
+    resetpassword = resetPassword()
+
+    needOTP = False
+    registrationSuccessful = False
+    signup = False
+    needresetpasswordotp = False
+    needresetpassword = False
+    resetsuccessful = False
+    if request.method == 'POST':
+        # Distinguish between forms
+        if 'signin_submit' in request.form and signinform.validate_on_submit():
+            needresetemail = False
+            siemail = signinform.email.data
+            sipassword = signinform.password.data
+            print("Sign-in attempt:", siemail)
+            registrationSuccessful = False
+            with shelve.open('users') as usersDB:
+                current_user = usersDB[siemail]
+                ##print(current_user)
+            session['current_user'] = current_user.getEmail()
+            session.permanent = True
+        elif 'forgotpass_submit' in request.form:
+            needresetemail = True
+        elif 'signup_submit' in request.form and signupform.validate_on_submit():
+            suemail = signupform.email.data
+            supassword = signupform.password.data
+            session['user_email'] = suemail
+            session['user_password'] = supassword
+            print("Sign-up attempt:", suemail)
+            needOTP = True
+            otp = generateOTP.__call__(suemail)
+            session['otp'] = otp
+            print(session['otp'])
+        elif 'otp_submit' in request.form and otpform.validate_on_submit():
+            registrationSuccessful = True
+            needOTP = False
+            print("registration successful")
+            Customer(session.get('user_email'), session.get('user_password'))
+            session.pop('user_email')
+            session.pop('user_password')
+        elif 'new_email_submit' in request.form:
+            needOTP = False
+            signup = True
+        elif 'reset_password_email_submit' in request.form and resetpasswordemail.validate_on_submit():
+            resetemail = resetpasswordemail.email.data
+            resetotp = generateOTPforReset.__call__(resetemail)
+            session['resetotp'] = resetotp
+            session['email'] = resetemail
+            print(session['resetotp'])
+            needresetemail = False
+            needresetpasswordotp = True
+        elif 'resetpasswordotp_submit' in request.form and resetPasswordotp.validate_on_submit():
+            needresetpasswordotp = False
+            needresetpassword = True
+            session.pop('resetotp')
+            with shelve.open('users') as usersDB:
+                session['oldPassword'] = usersDB[session['email']].password
+        elif 'reset_password_submit' in request.form and resetpassword.validate_on_submit():
+            with shelve.open('users') as usersDB:
+                u = usersDB[session['email']]
+                u.setPassword(resetpassword.password.data)
+                usersDB[session['email']] = u
+                print(u)
+            resetsuccessful = True
+            session.pop('oldPassword')
+            session.pop('email')
+        else:
+            print("Form validation failed:", signupform.errors, signinform.errors, otpform.errors)
+    return render_template('product_detail.html', product = product,active_page='catalog', signinform=signinform,
+                           signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword,
+                           current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful,
+                           signup=signup, resetPasswordOTP = resetPasswordotp, needresetemail = needresetemail, resetpasswordemail = resetpasswordemail,
+                           needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful,)

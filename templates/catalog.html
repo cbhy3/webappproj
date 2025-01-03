@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}
+Tossed Out! - Catalog
+{% endblock %}
+{% block content %}
+<body>
+<h1>Catalog</h1>
+<ul>
+    {% for product in products %}
+    <li>
+        <a href="{{ url_for('product_detail', product_id = product) }}">
+
+        {{ products[product].name }} - {{ products[product].price }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+</body>
+
+{% endblock %}

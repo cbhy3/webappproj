@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}
+Tossed Out! - Profile
+{% endblock %}
+{% block content %}
+<h1> {{ product.name }}</h1>
+    <p>Price: ${{ product.price }}</p>
+    <p>Quantity: {{ product.quantity }}</p>
+    <p>Categories: {{ ', '.join(product.categories) }}</p>
+    <p>Description: {{ product.description }}</p>
+{% endblock %}
