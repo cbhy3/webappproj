@@ -4,18 +4,69 @@
 Tossed Out! - Catalog
 {% endblock %}
 {% block content %}
+    <style>
+    .product-card {
+    width: 18rem; /* Adjust the width of the card */
+    border-radius: 8px;
+}
+
+.product-image {
+    border-radius: 8px 8px 0 0; /* Rounded corners for the image */
+    height: 250px; /* Fixed height for consistency */
+    object-fit: cover; /* Ensures image scaling */
+}
+
+.product-name {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #555;
+}
+
+.product-weight {
+    font-size: 0.9rem;
+    margin-top: -8px;
+}
+
+.product-expiry {
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+.card-footer button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+    </style>
 <body>
 <h1>Catalog</h1>
-<ul>
+<ul class="list-unstyled d-flex flex-wrap justify-content-start">
     {% for product in products %}
-    <li>
-        <a href="{{ url_for('product_detail', product_id = product) }}">
-
-        {{ products[product].name }} - {{ products[product].price }}
-        </a>
-    </li>
+        <li class="m-2">
+            <div class="card product-card shadow-sm">
+                <a href="{{ url_for('product_detail', product_id=product) }}" class="text-decoration-none text-dark">
+                    <img src="{{ products[product].imageUrl }}" class="card-img-top product-image" alt="{{ products[product].name }}">
+                    <div class="card-body">
+                        <h5 class="card-title mb-1">${{ products[product].price }}</h5>
+                        <p class="card-text product-name">{{ products[product].name }}</p>
+                        <p class="text-muted product-weight">{{ products[product].weight }} G</p>
+                        <p class="text-danger product-expiry">Expiry Date: <strong>{{ products[product].expiry }}</strong></p>
+                    </div>
+                </a>
+                <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
+                    <button class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-cart"></i> Add to Cart
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+            </div>
+        </li>
     {% endfor %}
 </ul>
+
 </body>
 
 {% endblock %}

@@ -15,7 +15,7 @@ class User:
         with shelve.open('users') as usersDB:
             usersDB[self.email] = self
         self.userCount += 1
-
+        self.id = User.userCount
     def setPassword(self, password):
         self.password = self.encryptPassword(password)
     def setEmail(self, email):

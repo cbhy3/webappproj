@@ -1,1 +1,99 @@
-<h1> admin</h1>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Form</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<div class="container mt-5">
+    <h1 class="mb-4">Add Product</h1>
+    <form method="POST">
+        {{ add_product.hidden_tag() }}
+
+        <div class="mb-3">
+            {{ add_product.name.label(class="form-label") }}
+            {{ add_product.name(class="form-control", placeholder="Enter product name") }}
+            {% if add_product.name.errors %}
+                <div class="text-danger">
+                    {{ add_product.name.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ add_product.price.label(class="form-label") }}
+            {{ add_product.price(class="form-control", placeholder="Enter product price") }}
+            {% if add_product.price.errors %}
+                <div class="text-danger">
+                    {{ add_product.price.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ add_product.quantity.label(class="form-label") }}
+            {{ add_product.quantity(class="form-control", placeholder="Enter product quantity") }}
+            {% if add_product.quantity.errors %}
+                <div class="text-danger">
+                    {{ add_product.quantity.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ add_product.categories.label(class="form-label") }}
+            {{ add_product.categories(class="form-select") }}
+            {% if add_product.categories.errors %}
+                <div class="text-danger">
+                    {{ add_product.categories.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ add_product.image_url.label(class="form-label") }}
+            {{ add_product.image_url(class="form-control", placeholder="Enter image URL") }}
+            {% if add_product.image_url.errors %}
+                <div class="text-danger">
+                    {{ add_product.image_url.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ add_product.description.label(class="form-label") }}
+            {{ add_product.description(class="form-control", placeholder="Enter product description") }}
+            {% if add_product.description.errors %}
+                <div class="text-danger">
+                    {{ add_product.description.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ add_product.expiry.label(class="form-label") }}
+            {{ add_product.expiry(class="form-control", placeholder="DD/MM/YYYY") }}
+            {% if add_product.expiry.errors %}
+                <div class="text-danger">
+                    {{ add_product.expiry.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ add_product.weight.label(class="form-label") }}
+            {{ add_product.weight(class="form-control", placeholder="Enter product weight") }}
+            {% if add_product.weight.errors %}
+                <div class="text-danger">
+                    {{ add_product.weight.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">{{ add_product.submit.label.text }}</button>
+    </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

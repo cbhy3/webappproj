@@ -7,6 +7,7 @@ from generateOTP import generateOTP, generateOTPforReset
 from Product import Product
 from manager import Manager
 import copy
+import datetime
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bignuts'
 @app.route('/')
@@ -267,6 +268,7 @@ def profile():
                 temp = copy.deepcopy(usersDB[session.get('current_user')])
                 temp.setEmail(session.get('change_email'))
                 usersDB[temp.getEmail()] = temp
+                del usersDB[session.get('current_user')]
             session['current_user'] = temp.getEmail()
             current_user = temp
             session.pop('change_email')
@@ -308,9 +310,16 @@ def Admin():
             isAdmin = adminDB[current_user.email]
     except:
         redirect(url_for('about_us'))
-    return render_template('admin.html')
+    add_product = addProduct()
+    if request.method == 'POST':
+        if  add_product.validate_on_submit():
+            Product(add_product.name.data, add_product.price.data, add_product.quantity.data, add_product.categories.data, add_product.image_url.data, add_product.description.data, add_product.expiry.data, add_product.weight.data)
+            print('new product added')
+        else:
+            print('form validation failed', add_product.errors)
+    return render_template('admin.html', add_product = add_product)
 
-@app.route('/product/<int:product_id>')
+@app.route('/catalog/product/<int:product_id>')
 def product_detail(product_id):
     with shelve.open('products') as productsDB:
         product = productsDB[str(product_id)]

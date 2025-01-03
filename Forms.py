@@ -1,10 +1,14 @@
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
+from wtforms.fields.choices import SelectField, SelectMultipleField
+from wtforms.fields.datetime import DateField
+from wtforms.fields.numeric import FloatField, IntegerField
 from wtforms.validators import DataRequired, Email, EqualTo, InputRequired, Length, ValidationError
 from wtforms.fields import EmailField, PasswordField
 from flask import session
 import shelve
+from Product import Product
 from user import User
 class signUp(FlaskForm):
     email = EmailField('Email', validators=[DataRequired(),Email("Please Enter a Valid Email Address"),])
@@ -127,3 +131,13 @@ class changePassword(FlaskForm):
             else:
                 raise ValidationError('Incorrect Password')
 
+class addProduct(FlaskForm):
+    name = StringField('Enter the product\'s name', validators=[InputRequired()])
+    price = FloatField('Enter the product\'s price', validators=[InputRequired()])
+    quantity = IntegerField('Enter the product\'s quantity', validators=[InputRequired()])
+    categories = SelectMultipleField('Select the product\'s categories', choices=tuple((cat, cat) for cat in Product.valid_categories))
+    image_url = StringField('Enter the product\'s image url', validators=[DataRequired()])
+    description = StringField('Enter the product\'s description', validators=[DataRequired()])
+    expiry = DateField('Enter the product\'s expiry date',validators=[InputRequired()])
+    weight = IntegerField('Enter the product\'s weight', validators=[InputRequired()])
+    submit = SubmitField('Submit', name = 'add_product_submit')
