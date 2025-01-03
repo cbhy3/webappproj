@@ -8,14 +8,13 @@ class User:
 
     onlineStatus: bool
     email : str
-    userCount = 0
+
     def __init__(self, email,password):
         self.email = email
         self.password = self.encryptPassword(password)
         with shelve.open('users') as usersDB:
             usersDB[self.email] = self
-        self.userCount += 1
-        self.id = User.userCount
+
     def setPassword(self, password):
         self.password = self.encryptPassword(password)
     def setEmail(self, email):

@@ -3,7 +3,8 @@ import shelve
 
 
 class Product:
-    count = 0
+    with shelve.open('products') as db:
+        count = len(db)
     valid_categories = ['Fruits', 'Beverages', 'Vegetables', 'Meats' , 'Canned Food', 'Local', 'Discounted']
     def __init__(self, name: str, price: float, quantity: int, categories: [str], imageUrl: str, description: str ,expiry: datetime, weight: int):
         self.id = str(Product.count)
@@ -18,6 +19,7 @@ class Product:
         self.weight = weight
         with shelve.open("products") as products:
             products[self.id] = self
+            Product.count = len(products)
 
     @staticmethod
     def remove_product(id):
@@ -60,9 +62,4 @@ class Product:
             p = products[id]
             p.expiry = expiry.strftime("%d/%m/%Y")
             products[id] = p
-with shelve.open("products") as products:
-    for i in products:
-        del products[i]
-Product("nuts", 30.99, 6, ["Fruits"], "https://i.ibb.co/sQPxFBL/image.png", "just dance dududududud babab dudu jhust dance dababduda babadudud", datetime.date(2025, 12,5), 30)
-Product("balls", 50.99, 6, ["Fruits", "Beverage", "Discounted"], "tetsicles", "i wlka a lonely road the only one that i have ever kjnown dont know whereh it goes but its all on me and i wlak alone " , datetime.date(2025, 3,7), 87)
-Product("huge", 10.99, 6, ["Meats", "Local"], "tetsicles", "hey i just met y ou and thisis crazy so ehres my number call me maybe", datetime.date(2020, 3,7), 90)
+#

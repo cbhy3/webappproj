@@ -312,8 +312,9 @@ def Admin():
         redirect(url_for('about_us'))
     add_product = addProduct()
     if request.method == 'POST':
-        if  add_product.validate_on_submit():
-            Product(add_product.name.data, add_product.price.data, add_product.quantity.data, add_product.categories.data, add_product.image_url.data, add_product.description.data, add_product.expiry.data, add_product.weight.data)
+        if add_product.validate_on_submit() and 'add_product_submit' in request.form:
+            with shelve.open('products') as productsDB:
+                Product(add_product.name.data, add_product.price.data, add_product.quantity.data, add_product.categories.data, add_product.image_url.data, add_product.description.data, add_product.expiry.data, add_product.weight.data)
             print('new product added')
         else:
             print('form validation failed', add_product.errors)
