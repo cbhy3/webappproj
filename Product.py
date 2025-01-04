@@ -7,8 +7,15 @@ class Product:
         count = len(db)
     valid_categories = ['Fruits', 'Beverages', 'Vegetables', 'Meats' , 'Canned Food', 'Local', 'Discounted']
     def __init__(self, name: str, price: float, quantity: int, categories: [str], imageUrl: str, description: str ,expiry: datetime, weight: int):
-        self.id = str(Product.count)
-        Product.count += 1
+        self.id = None
+        while self.id is None:
+            try:
+                with shelve.open('products') as db:
+                    db[str(Product.count)]
+                Product.count += 1
+            except KeyError:
+                self.id = str(Product.count)
+                Product.count += 1
         self.name = name
         self.price = price
         self.quantity = quantity
@@ -31,12 +38,7 @@ class Product:
             p = products[id]
             p.quantity += increment
             products[id] = p
-    @staticmethod
-    def remove_quantity(id , increment):
-        with shelve.open("products") as products:
-            p = products[id]
-            p.quantity -= increment
-            products[id] = p
+
     @staticmethod
     def change_price(id, new_price):
         with shelve.open("products") as products:
@@ -62,4 +64,22 @@ class Product:
             p = products[id]
             p.expiry = expiry.strftime("%d/%m/%Y")
             products[id] = p
-#
+    @staticmethod
+    def change_description(id, description):
+        with shelve.open("products") as products:
+            p = products[id]
+            p.description = description
+            products[id] = p
+
+    @staticmethod
+    def change_weight(id, weight):
+        with shelve.open("products") as products:
+            p = products[id]
+            p.weight = weight
+            products[id] = p
+    @staticmethod
+    def change_image(id, imageUrl):
+        with shelve.open("products") as products:
+            p = products[id]
+            p.imageUrl = imageUrl
+            products[id] = p

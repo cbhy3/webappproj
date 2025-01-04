@@ -302,6 +302,18 @@ def update_profile_tab():
         current_tab = new_tab
         return jsonify(current_tab)
     return jsonify("eat dog"), 400
+
+action = 'Default'
+
+@app.route('/updateadminaction', methods = ['POST'])
+def updateadmin_action():
+    global action
+    action = request.json
+    new_action = action.get('new_action')
+    if new_action:
+        action = new_action
+        return jsonify(action)
+    return jsonify("piss off"), 400
 @app.route('/admin', methods=['GET', 'POST'])
 def Admin():
     try:
@@ -311,14 +323,51 @@ def Admin():
     except:
         redirect(url_for('about_us'))
     add_product = addProduct()
+    modify_product = modifyProduct()
+    global action
     if request.method == 'POST':
         if add_product.validate_on_submit() and 'add_product_submit' in request.form:
             with shelve.open('products') as productsDB:
                 Product(add_product.name.data, add_product.price.data, add_product.quantity.data, add_product.categories.data, add_product.image_url.data, add_product.description.data, add_product.expiry.data, add_product.weight.data)
             print('new product added')
+            return redirect(url_for('Admin'))
+
+        elif 'modify_product_submit' in request.form:
+            with shelve.open('products') as productsDB:
+                if modify_product.name.data:
+                    Product.change_name(modify_product.product.data, modify_product.name.data)
+                    print('name updated')
+                elif modify_product.price.data:
+                    Product.change_price(modify_product.product.data, modify_product.price.data)
+                    print('price updated')
+                elif modify_product.quantity.data:
+                    Product.add_quantity(modify_product.product.data, modify_product.quantity.data)
+                    print('quantity updated')
+                elif modify_product.categories.data:
+                    Product.change_categories(modify_product.product.data, modify_product.categories.data)
+                    print('categories updated')
+                elif modify_product.weight.data:
+                    Product.change_weight(modify_product.product.data, modify_product.weight.data)
+                    print('weight updated')
+                elif modify_product.expiry.data:
+                    Product.update_expiry(modify_product.product.data, modify_product.expiry.data)
+                    print('expiry updated')
+                elif modify_product.description.data:
+                    Product.change_description(modify_product.product.data, modify_product.description.data)
+                    print('quantity updated')
+                elif modify_product.image_url.data:
+                    Product.change_image(modify_product.product.data, modify_product.image_url.data)
+                    print('image url updated')
+                else:
+                    print('error somewhere')
+                return redirect(url_for('Admin'))
+        elif 'delete_submit' in request.form:
+            with shelve.open('products') as productsDB:
+                Product.remove_product(modify_product.product.data)
+            return redirect(url_for('Admin'))
         else:
             print('form validation failed', add_product.errors)
-    return render_template('admin.html', add_product = add_product)
+    return render_template('admin.html', add_product = add_product, action=action , modify_product = modify_product)
 
 @app.route('/catalog/product/<int:product_id>')
 def product_detail(product_id):

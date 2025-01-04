@@ -141,3 +141,27 @@ class addProduct(FlaskForm):
     expiry = DateField('Enter the product\'s expiry date',validators=[InputRequired()])
     weight = IntegerField('Enter the product\'s weight', validators=[InputRequired()])
     submit = SubmitField('Submit', name = 'add_product_submit')
+
+
+class modifyProduct(FlaskForm):
+    product = SelectField('Select the product to modify', validators = [InputRequired()])
+    change = SelectField('What do you want to change', choices = [('name','Name'),('quantity', 'Quantity'), ('expiry', 'Expiry Date'), ('weight', 'Weight'), ('price', 'Price'), ('description', 'Description'), ('imageURL', 'Image URL'), ('categories', 'Categories')])
+    name = StringField('Enter the product\'s new name')
+    quantity = IntegerField('Enter the change in product\'s quantity (Enter a negative value to remove quantity)')
+    expiry = DateField('Enter the product\'s new expiry date')
+    weight = IntegerField('Enter the product\'s new weight')
+    price = FloatField('Enter the product\'s new price')
+    description = StringField('Enter the product\'s new description')
+    image_url = StringField('Enter the product\'s new image url')
+    categories = SelectMultipleField('Select the product\'s new categories')
+    submit = SubmitField('Submit', name = 'modify_product_submit')
+    delete_submit = SubmitField('Delete Product', name = "delete_submit")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        with shelve.open('products') as products:
+            self.product.choices = [
+                (prod, f'{prod} ID: {products[prod].name}, Expiry: {products[prod].expiry}')
+                for prod in products
+            ]
+        self.categories.choices = [(cat, cat) for cat in Product.valid_categories]
