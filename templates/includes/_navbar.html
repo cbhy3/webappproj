@@ -158,6 +158,59 @@ border-color:white;
        }
 </style>
 {% from "includes/_formHelper.html" import render_field %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const signupModal = document.getElementById('signupFormModal');
+        const signupForm = signupModal.querySelector('form');
+
+        const signinModal = document.getElementById('signupModal');
+        const signinForm = signinModal.querySelector('form');
+
+        const otpModal = document.getElementById('otpFormModal');
+        const otpForm = otpModal.querySelector('form');
+
+        const resetPasswordOTPModal = document.getElementById('resetPasswordOTP')
+        const resetPasswordOTPForm = resetPasswordOTPModal.querySelector('form');
+
+        const resetPasswordEmailModal = document.getElementById('resetPasswordEmail');
+        const resetPasswordEmailForm = resetPasswordEmailModal.querySelector('form');
+
+        const resetPasswordModal = document.getElementById('resetPassword');
+        const resetPasswordForm = resetPasswordModal.querySelector('form');
+        // Listen for the modal hidden event
+        signupModal.addEventListener('hidden.bs.modal', () => {
+            signupForm.reset(); // Reset the form fields
+            fetch('/set_signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({signup: false})
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('Failed to update signup status');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+        signinModal.addEventListener('hidden.bs.modal', () => {
+            signinForm.reset(); // Reset the form fields
+        });
+        otpModal.addEventListener('hidden.bs.modal', () => {
+            otpForm.reset(); // Reset the form fields
+        });
+        resetPasswordOTPModal.addEventListener('hidden.bs.modal', () => {
+            resetPasswordOTPForm.reset(); // Reset the form fields
+        });
+        resetPasswordEmailModal.addEventListener('hidden.bs.modal', () => {
+            resetPasswordEmailForm.reset(); // Reset the form fields
+        });
+        resetPasswordModal.addEventListener('hidden.bs.modal', () => {
+            resetPasswordForm.reset(); // Reset the form fields
+        });
+    });
+</script>
 <nav class="navbar navbar-expand-md navbar-light">
     <div class="container-fluid">
       <!-- Logo -->

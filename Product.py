@@ -83,3 +83,5 @@ class Product:
             p = products[id]
             p.imageUrl = imageUrl
             products[id] = p
+    def __str__(self):
+        return f'{self.name}, id: {self.id}'

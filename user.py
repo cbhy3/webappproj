@@ -4,14 +4,18 @@ import bcrypt
 from random import randint
 import shelve
 
+from Product import Product
+
+
 class User:
 
-    onlineStatus: bool
     email : str
-
+    Cart: {Product: int}
+    Codes: [str]
     def __init__(self, email,password):
         self.email = email
         self.password = self.encryptPassword(password)
+        self.Cart = {}
         with shelve.open('users') as usersDB:
             usersDB[self.email] = self
 
@@ -38,3 +42,13 @@ class User:
 
     def isAdmin(self):
         return False
+
+    def addToCart(self, product: Product):
+        try:
+            self.Cart.get(product)
+            self.Cart.update({product: self.Cart[product] + 1})
+        except KeyError as e:
+            self.Cart[product] = 1
+        finally:
+            with shelve.open('users') as usersDB:
+                 usersDB[self.email] = self

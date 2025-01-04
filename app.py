@@ -43,7 +43,7 @@ def about_us():
 
     needOTP = False
     registrationSuccessful = False
-    signup = False
+    global signup
     needresetpasswordotp = False
     needresetpassword = False
     resetsuccessful = False
@@ -114,7 +114,7 @@ def about_us():
                            signup=signup, resetPasswordOTP = resetPasswordotp, needresetemail = needresetemail, resetpasswordemail = resetpasswordemail,
                            needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful,)
 ## copy this shit into the other pages when finished making them
-@app.route('/catalog')
+@app.route('/catalog', methods=['GET', 'POST'])
 def catalog():
     with shelve.open('products') as products:
         all_products = {key: products[key] for key in products}
@@ -139,7 +139,8 @@ def catalog():
 
     needOTP = False
     registrationSuccessful = False
-    signup = False
+    global signup
+
     needresetpasswordotp = False
     needresetpassword = False
     resetsuccessful = False
@@ -215,6 +216,7 @@ def cart():
 if __name__ == '__main__':
     app.run(debug=True)
 current_tab = 'profile'
+signup = False
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
 
@@ -238,7 +240,8 @@ def profile():
 
     needOTP = False
     registrationSuccessful = False
-    signup = False
+    global signup
+
     needresetpasswordotp = False
     needresetpassword = False
     resetsuccessful = False
@@ -314,6 +317,8 @@ def updateadmin_action():
         action = new_action
         return jsonify(action)
     return jsonify("piss off"), 400
+
+
 @app.route('/admin', methods=['GET', 'POST'])
 def Admin():
     try:
@@ -369,7 +374,7 @@ def Admin():
             print('form validation failed', add_product.errors)
     return render_template('admin.html', add_product = add_product, action=action , modify_product = modify_product)
 
-@app.route('/catalog/product/<int:product_id>')
+@app.route('/catalog/product/<int:product_id>', methods = ['GET', 'POST'])
 def product_detail(product_id):
     with shelve.open('products') as productsDB:
         product = productsDB[str(product_id)]
@@ -467,3 +472,31 @@ def product_detail(product_id):
                            current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful,
                            signup=signup, resetPasswordOTP = resetPasswordotp, needresetemail = needresetemail, resetpasswordemail = resetpasswordemail,
                            needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful,)
+
+
+
+@app.route('/catalog/addtocart/<int:product_id>', methods=['GET', 'POST'])
+def addtocart(product_id):
+    try:
+        with shelve.open('users') as usersDB:
+            current_user = usersDB[session.get('current_user')]
+            current_user.addToCart(product_id)
+            for i in current_user.Cart:
+                with shelve.open('products') as productsDB:
+                    print(f'{productsDB[str(i)]},,,, quantity: {current_user.Cart[i]}')
+        return redirect(url_for('catalog'))
+
+    except KeyError as e:
+        print(e)
+        global signup
+        signup = True
+        return redirect(url_for('catalog'))
+
+@app.route('/set_signup', methods=['POST'])
+def set_signup():
+    global signup
+    data = request.get_json()
+    if 'signup' in data:
+        signup = data['signup']
+        return jsonify({'message': 'Signup status updated', 'signup': signup}), 200
+    return jsonify({'error': 'Invalid data'}), 400

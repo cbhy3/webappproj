@@ -16,4 +16,3 @@ class Admin(User):
     def isAdmin(self):
         return True
 
-Admin('brianchng00@outlook.com','balls32')
