@@ -8,6 +8,7 @@ class CurrentUser(User):
     def __init__(self, user: User):
         c = copy.deepcopy(user)
         super().__init__(c.email, c.password)
+    @staticmethod
     def fromEmail(email):
         with shelve.open('users') as usersDB:
             return usersDB[email]

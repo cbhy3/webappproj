@@ -40,6 +40,7 @@ def about_us():
     resetpasswordemail = resetPasswordEmail()
     resetPasswordotp = resetPasswordOTP()
     resetpassword = resetPassword()
+    cart = current_user.Cart
 
     needOTP = False
     registrationSuccessful = False
@@ -112,7 +113,7 @@ def about_us():
                            signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword,
                            current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful,
                            signup=signup, resetPasswordOTP = resetPasswordotp, needresetemail = needresetemail, resetpasswordemail = resetpasswordemail,
-                           needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful,)
+                           needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful, cart = cart)
 ## copy this shit into the other pages when finished making them
 @app.route('/catalog', methods=['GET', 'POST'])
 def catalog():
@@ -140,7 +141,7 @@ def catalog():
     needOTP = False
     registrationSuccessful = False
     global signup
-
+    cart = current_user.Cart
     needresetpasswordotp = False
     needresetpassword = False
     resetsuccessful = False
@@ -208,11 +209,9 @@ def catalog():
                            signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword,
                            current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful,
                            signup=signup, resetPasswordOTP = resetPasswordotp, needresetemail = needresetemail, resetpasswordemail = resetpasswordemail,
-                           needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful,)
+                           needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful, cart = cart)
 
-@app.route('/cart')
-def cart():
-    return render_template('index.html', active_page='cart')
+
 if __name__ == '__main__':
     app.run(debug=True)
 current_tab = 'profile'
@@ -241,6 +240,7 @@ def profile():
     needOTP = False
     registrationSuccessful = False
     global signup
+    cart = current_user.Cart
 
     needresetpasswordotp = False
     needresetpassword = False
@@ -294,7 +294,7 @@ def profile():
                            current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful,
                            signup=signup, resetPasswordOTP = resetPasswordotp, needresetemail = needresetemail, resetpasswordemail = resetpasswordemail,
                            needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful, change_email = change_email,
-                           change_emailEmail = change_emailEmail, need_change_email = need_change_email, change_password = change_password)
+                           change_emailEmail = change_emailEmail, need_change_email = need_change_email, change_password = change_password, cart = cart)
 
 @app.route('/updatep', methods = ['POST'])
 def update_profile_tab():
@@ -492,6 +492,25 @@ def addtocart(product_id):
         signup = True
         return redirect(url_for('catalog'))
 
+@app.route('/catalog/removefromcart/<int:product_id>', methods=['GET', 'POST'])
+def removefromcart(product_id):
+    with shelve.open('users') as usersDB:
+        current_user = usersDB[session.get('current_user')]
+        current_user.removeFromCart(product_id)
+        for i in current_user.Cart:
+            with shelve.open('products') as productsDB:
+                print(f'{productsDB[str(i)]},,,, quantity: {current_user.Cart[i]}')
+    return redirect(url_for('cart'))
+
+@app.route('/catalog/addtocart_cart/<int:product_id>', methods=['GET', 'POST'])
+def addtocart_cart(product_id):
+    with shelve.open('users') as usersDB:
+        current_user = usersDB[session.get('current_user')]
+        current_user.addToCart(product_id)
+        for i in current_user.Cart:
+            with shelve.open('products') as productsDB:
+                print(f'{productsDB[str(i)]},,,, quantity: {current_user.Cart[i]}')
+    return redirect(url_for('cart'))
 @app.route('/set_signup', methods=['POST'])
 def set_signup():
     global signup
@@ -500,3 +519,45 @@ def set_signup():
         signup = data['signup']
         return jsonify({'message': 'Signup status updated', 'signup': signup}), 200
     return jsonify({'error': 'Invalid data'}), 400
+
+
+@app.route('/cart', methods = ['GET', 'POST'])
+def cart():
+    try:
+        with shelve.open('products') as products:
+            all_products = {key: products[key] for key in products}
+        with shelve.open('users') as usersDB:
+            current_user = usersDB[session.get('current_user')]
+        siemail = None
+        sipassword = None
+        suemail = None
+        supassword = None
+        needresetemail = False
+        signinform = signIn()
+        signupform = signUp()
+        otpform = Otp()
+        resetpasswordemail = resetPasswordEmail()
+        resetPasswordotp = resetPasswordOTP()
+        resetpassword = resetPassword()
+        cart = current_user.Cart
+        subtotal = 0
+        for i in cart:
+            subtotal += all_products[str(i)].price * cart.get(i)
+        print(subtotal)
+        needOTP = False
+        registrationSuccessful = False
+        global signup
+        needresetpasswordotp = False
+        needresetpassword = False
+        resetsuccessful = False
+
+        return render_template('cart.html',active_page='cart', products=all_products, signinform=signinform,
+                           signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword,
+                           current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful,
+                           signup=signup, resetPasswordOTP = resetPasswordotp, needresetemail = needresetemail, resetpasswordemail = resetpasswordemail,
+                           needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful, cart = cart, subtotal = subtotal)
+
+    except KeyError as e:
+        print(e)
+        signup = True
+        return redirect(url_for('catalog'))

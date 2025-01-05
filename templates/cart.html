@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+TossedOut! - Cart
+{% endblock %}
+
+{% block content %}
+     <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            var scrollpos = localStorage.getItem('scrollpos');
+            if (scrollpos) window.scrollTo(0, scrollpos);
+        });
+
+        window.onbeforeunload = function(e) {
+            localStorage.setItem('scrollpos', window.scrollY);
+        };
+    </script>
+<div class="container mt-5">
+    <h2 class="text-center">Your Cart</h2>
+    <p class="text-center text-muted">Your item is reserved for 15:00 minutes</p>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for items in cart %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <img src="{{ products[items|string].imageUrl }}" alt="{{ products[items|string].name }}" class="img-fluid" style="width: 80px; height: 80px; object-fit: cover; margin-right: 15px;">
+                            <div>
+                                <h6 class="mb-0">{{ products[items|string].name }}</h6>
+                                <small class="text-muted">Expires on: <span class="text-danger">{{ products[items|string].expiry }}</span></small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${{ products[items|string].price }}</td>
+                    <td>
+                        <div class="input-group">
+                            <a href="{{ url_for('removefromcart', product_id=items) }}" class="btn btn-outline-secondary btn-sm">-</a>
+                            <input type="text" class="form-control text-center" value="{{ cart.get(items) }}" readonly style="width: 50px;">
+                            <a href="{{ url_for('addtocart_cart', product_id=items) }}" class="btn btn-outline-secondary btn-sm">+</a>
+                        </div>
+                    </td>
+                    <td>${{ products[items|string].price * cart.get(items) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-end mt-3">
+        <h5>Subtotal: ${{ subtotal }}</h5>
+    </div>
+</div>
+
+
+<style>
+
+
+    tr {
+        background-color: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        font-family: Garet;
+        font-size: 15px;
+    }
+
+    .cart-item-image img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+    }
+
+    .cart-item-info h5 {
+        font-weight: 500;
+    }
+
+    .cart-item-info p {
+        font-size: 0.9rem;
+    }
+
+    .cart-item-quantity .btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+    }
+
+    .cart-item-subtotal h6 {
+        font-weight: bold;
+    }
+
+    .text-muted span.text-danger {
+        font-weight: bold;
+    }
+
+    .table {
+        margin-bottom: 0; /* Removes extra space below the table */
+    }
+
+    .table thead th {
+        text-align: left;
+        font-weight: bold;
+        padding: 10px;
+        border-bottom: 2px solid #ddd;
+    }
+
+    .d-flex.justify-content-end h5 {
+        font-weight: bold;
+        margin-right: 10px;
+    }
+</style>
+
+{% endblock %}

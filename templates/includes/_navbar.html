@@ -156,6 +156,7 @@ border-color:white;
     text-decoration: underline; /* Optional: Make it look like a link */
 
        }
+
 </style>
 {% from "includes/_formHelper.html" import render_field %}
 <script>
@@ -241,7 +242,9 @@ border-color:white;
             {% endif %}
 </li>
 <li class="nav-item" id="cart">
-    <a class="nav-link text-uppercase hover-pop {% if active_page == 'cart' %}active-link{% endif %}" href="{{ url_for('cart') }}">Cart</a>
+    <a class="nav-link text-uppercase hover-pop {% if active_page == 'cart' %}active-link{% endif %}" href="{{ url_for('cart') }}"
+
+    >Cart {% if cart %} <span id = "cartnum" class="badge bg-danger position-absolute translate-middle-y">{{ cart|length }}</span>{% endif %}</a>
 </li>
         </ul>
       </div>

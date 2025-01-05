@@ -10,7 +10,7 @@ from Product import Product
 class User:
 
     email : str
-    Cart: {Product: int}
+    Cart: {int : int}
     Codes: [str]
     def __init__(self, email,password):
         self.email = email
@@ -43,7 +43,7 @@ class User:
     def isAdmin(self):
         return False
 
-    def addToCart(self, product: Product):
+    def addToCart(self, product):
         try:
             self.Cart.get(product)
             self.Cart.update({product: self.Cart[product] + 1})
@@ -52,3 +52,11 @@ class User:
         finally:
             with shelve.open('users') as usersDB:
                  usersDB[self.email] = self
+
+    def removeFromCart(self, product):
+        if self.Cart.get(product) != 1:
+            self.Cart.update({product: self.Cart[product] - 1})
+        else:
+            self.Cart.pop(product)
+        with shelve.open('users') as usersDB:
+            usersDB[self.email] = self
