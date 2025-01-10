@@ -29,8 +29,10 @@ def about_us():
     sipassword = None
     suemail = None
     supassword = None
+    cart = None
     try:
         current_user = CurrentUser.fromEmail(session.get('current_user'))
+        cart = current_user.Cart
     except:
         current_user = None
     needresetemail = False
@@ -40,7 +42,7 @@ def about_us():
     resetpasswordemail = resetPasswordEmail()
     resetPasswordotp = resetPasswordOTP()
     resetpassword = resetPassword()
-    cart = current_user.Cart
+
 
     needOTP = False
     registrationSuccessful = False
@@ -126,8 +128,10 @@ def catalog():
     sipassword = None
     suemail = None
     supassword = None
+    cart = None
     try:
         current_user = CurrentUser.fromEmail(session.get('current_user'))
+        cart = current_user.Cart
     except:
         current_user = None
     needresetemail = False
@@ -141,7 +145,6 @@ def catalog():
     needOTP = False
     registrationSuccessful = False
     global signup
-    cart = current_user.Cart
     needresetpasswordotp = False
     needresetpassword = False
     resetsuccessful = False
@@ -225,8 +228,11 @@ def profile():
     supassword = None
     global current_tab
     print(current_tab)
+    cart = None
     try:
         current_user = CurrentUser.fromEmail(session.get('current_user'))
+        cart = current_user.Cart
+
     except KeyError:
         current_user = None
     needresetemail = False
@@ -240,7 +246,6 @@ def profile():
     needOTP = False
     registrationSuccessful = False
     global signup
-    cart = current_user.Cart
 
     needresetpasswordotp = False
     needresetpassword = False
@@ -391,6 +396,7 @@ def product_detail(product_id):
     supassword = None
     try:
         current_user = CurrentUser.fromEmail(session.get('current_user'))
+        cart = current_user.Cart
     except:
         current_user = None
     needresetemail = False
@@ -528,6 +534,7 @@ def cart():
             all_products = {key: products[key] for key in products}
         with shelve.open('users') as usersDB:
             current_user = usersDB[session.get('current_user')]
+        cart = current_user.Cart
         siemail = None
         sipassword = None
         suemail = None
@@ -539,7 +546,6 @@ def cart():
         resetpasswordemail = resetPasswordEmail()
         resetPasswordotp = resetPasswordOTP()
         resetpassword = resetPassword()
-        cart = current_user.Cart
         subtotal = 0
         for i in cart:
             subtotal += all_products[str(i)].price * cart.get(i)
