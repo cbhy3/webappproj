@@ -8,8 +8,34 @@ from Product import Product
 from manager import Manager
 import copy
 import datetime
+import threading
+import time
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bignuts'
+
+
+
+def updateCooldown():
+    while True:
+        try:
+            with shelve.open('users', writeback=True) as usersDB:
+                for user_key in usersDB:
+                    user = usersDB[user_key]
+                    if user.Cooldown > 0:
+                        user.decreaseCooldown()
+
+
+        except Exception as e:
+            print(f"Error: {e}")
+        time.sleep(1)
+
+thread = threading.Thread(target=updateCooldown, daemon=True)
+thread.start()
+print("thread started")
+
+if __name__ == '__main__':
+
+    app.run(debug=True)
 @app.route('/')
 def main():
     return redirect('/aboutus')
@@ -20,8 +46,8 @@ def about_us():
     #    for i in db:
     #        del db[i]                  ## clear user db for testing
     #with shelve.open('admin') as db:
-      # for i in db:
-        #   del db[i]
+    #   for i in db:
+    #       del db[i]
     with shelve.open('users') as usersDB:
         for i in usersDB:
             print(i)
@@ -215,8 +241,7 @@ def catalog():
                            needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful, cart = cart)
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
 current_tab = 'profile'
 signup = False
 @app.route('/profile', methods=['GET', 'POST'])
@@ -232,7 +257,9 @@ def profile():
     try:
         current_user = CurrentUser.fromEmail(session.get('current_user'))
         cart = current_user.Cart
-
+        codes = current_user.Codes
+        cooldown = current_user.Cooldown
+        print(codes)
     except KeyError:
         current_user = None
     needresetemail = False
@@ -255,6 +282,7 @@ def profile():
     change_emailEmail = None
     need_change_email = None
     change_password = changePassword()
+    delete_account = deleteAccount()
     if request.method == 'POST' :
 
         if 'signout_submit' in request.form and signoutform.validate_on_submit():
@@ -290,6 +318,12 @@ def profile():
                 temp = copy.deepcopy(usersDB[session.get('current_user')])
                 temp.setPassword(change_password.newPassword.data)
                 usersDB[temp.getEmail()] = temp
+        elif 'delete_submit' in request.form and delete_account.validate_on_submit():
+            with shelve.open('users') as usersDB:
+                del usersDB[session.get('current_user')]
+            current_user = None
+            session.pop('current_user')
+            return redirect(url_for('about_us'))
         else:
             print("Form validation failed:", otpform.errors, change_email.errors)
     if current_user is None:
@@ -299,7 +333,7 @@ def profile():
                            current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful,
                            signup=signup, resetPasswordOTP = resetPasswordotp, needresetemail = needresetemail, resetpasswordemail = resetpasswordemail,
                            needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful, change_email = change_email,
-                           change_emailEmail = change_emailEmail, need_change_email = need_change_email, change_password = change_password, cart = cart)
+                           change_emailEmail = change_emailEmail, need_change_email = need_change_email, change_password = change_password, cart = cart, codes = codes, cooldown = cooldown, delete_account = delete_account)
 
 @app.route('/updatep', methods = ['POST'])
 def update_profile_tab():
@@ -526,7 +560,68 @@ def set_signup():
         return jsonify({'message': 'Signup status updated', 'signup': signup}), 200
     return jsonify({'error': 'Invalid data'}), 400
 
+voucherUsed = False
+codeUsed = None
+discount = None
+gifts = None
+freeShipping = False
+@app.route('/useVoucher/<code>', methods=['POST', 'GET'])
+def useVoucher(code):
+    with shelve.open('users') as usersDB:
+        current_user = usersDB[session.get('current_user')]
+    global voucherUsed
+    global discount
+    global gifts
+    global freeShipping
+    global codeUsed
+    voucherUsed = True
+    if code == 'CHOC':
+        gifts = 'Complementary Chocolate Bar'
+        current_user.removeCode(code)
+        codeUsed = code
+    elif code == 'TOTE':
+        gifts = 'Complementary Tote Bag'
+        current_user.removeCode(code)
+        codeUsed = code
+    elif code == 'SHIP':
+        freeShipping = True
+        current_user.removeCode(code)
+        codeUsed = code
+    elif code == '5OFF':
+        discount = 5
+        current_user.removeCode(code)
+        codeUsed = code
+    elif code == '10OFF':
+        discount = 10
+        current_user.removeCode(code)
+        codeUsed = code
+    elif code == '15OFF':
+        discount = 15
+        current_user.removeCode(code)
+        codeUsed = code
+    elif code == '50OFF':
+        discount = 50
+        current_user.removeCode(code)
+        codeUsed = code
+    return redirect(url_for('cart'))
 
+
+@app.route('/removeVoucher/<code>', methods=['POST', 'GET'])
+def removeVoucher(code):
+    with shelve.open('users') as usersDB:
+        current_user = usersDB[session.get('current_user')]
+    global voucherUsed
+    global discount
+    global gifts
+    global freeShipping
+    global codeUsed
+    voucherUsed = False
+    discount = None
+    gifts = None
+    freeShipping = False
+    current_user.addCode(code)
+    codeUsed = code
+    return redirect(url_for('cart'))
 @app.route('/cart', methods = ['GET', 'POST'])
 def cart():
     try:
@@ -534,6 +629,7 @@ def cart():
             all_products = {key: products[key] for key in products}
         with shelve.open('users') as usersDB:
             current_user = usersDB[session.get('current_user')]
+            codes = current_user.Codes
         cart = current_user.Cart
         siemail = None
         sipassword = None
@@ -556,14 +652,53 @@ def cart():
         needresetpasswordotp = False
         needresetpassword = False
         resetsuccessful = False
+        global voucherUsed
+        global discount
+        global gifts
+        global freeShipping
+        global codeUsed
 
         return render_template('cart.html',active_page='cart', products=all_products, signinform=signinform,
                            signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword,
                            current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful,
                            signup=signup, resetPasswordOTP = resetPasswordotp, needresetemail = needresetemail, resetpasswordemail = resetpasswordemail,
-                           needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful, cart = cart, subtotal = subtotal)
+                           needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful, cart = cart, subtotal = subtotal, codes = codes, voucherUsed = voucherUsed
+                               , discount = discount, gifts = gifts, freeShipping = freeShipping, codeUsed = codeUsed)
 
     except KeyError as e:
         print(e)
         signup = True
         return redirect(url_for('catalog'))
+@app.route('/profile/game', methods = ['GET', 'POST'])
+def game():
+    try:
+        with shelve.open('users') as usersDB:
+            current_user = usersDB[session.get('current_user')]
+            if current_user.Cooldown != 0:
+                return redirect(url_for('profile'))
+    except KeyError as e:
+        return redirect(url_for('about_us'))
+
+
+    return render_template('game.html', active_page='profile',
+                           current_user=current_user,)
+
+@app.route('/profile/givevoucher', methods = ['GET','POST'])
+def giveVoucher():
+    data = request.get_json()
+    if not data or 'code' not in data:
+        return jsonify({'error': 'Invalid data'}), 400
+
+    code = data['code']
+    try:
+        with shelve.open('users') as usersDB:
+            print(usersDB[session.get('current_user')].Codes[code])
+            usersDB[session.get('current_user')].addCode(code)
+            usersDB[session.get('current_user')].updateCooldown(10)
+            print(usersDB[session.get('current_user')].Codes[code])
+    except KeyError as e:
+          return jsonify({'error': 'Database error', 'details': str(e)}), 500
+
+    print(code)
+
+    return jsonify({'success': True, 'message': 'Code redeemed successfully'})

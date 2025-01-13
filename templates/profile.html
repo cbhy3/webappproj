@@ -4,6 +4,7 @@
 Tossed Out! - Profile
 {% endblock %}
 {% block content %}
+
 {% include "includes/_profilesidebar.html" %}
     <style>
 
@@ -18,6 +19,30 @@ Tossed Out! - Profile
         }
     }
     </style>
+    <script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+         var cooldown = {{ cooldown }}
+        if (cooldown !== 0) {
+            var timer = document.getElementById("timer");
+        timer.textContent = `Play again in ${cooldown}`;
+         }
+
+         if (cooldown != 0) {
+             var timer = document.getElementById("timer");
+             setInterval(function () {
+                 if (cooldown != 0) {
+                     cooldown -= 1
+                     timer.textContent = `Play again in ${cooldown}`
+
+                 }
+                 else {
+                     location.reload()
+                 }
+             }, 1000)
+         }
+    })
+
+    </script>
 {% if current_tab == 'profile' %}
     <h1 style = "text-align: center">your balls are sweaty</h1>
     <h3 style = "text-align: center">yeah</h3>
@@ -135,8 +160,46 @@ Tossed Out! - Profile
     <h1 style="text-align: center">placeholder</h1>
 
 {% elif current_tab == 'coupons' %}
-    <h1 style="text-align: center">your coupons</h1>
-    <h3 style="text-align: center">yeah</h3>
+    <div class="container mt-5">
+    <h2 class="text-center mb-4" style = "font-family: Lexend">Your Vouchers</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="list-group">
+                {% for code in codes %}
+                    {% if codes[code] > 0 %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+
+                            {% if code == 'TOTE' %}
+                                <span class="fw-bold" style = "font-family: Garet; font-size: 20px;">Complimentary Tote Bag on Next Purchase ({{ code }})</span>
+                                {% elif code == '10OFF'%}
+                                <span class="fw-bold" style = "font-family: Garet; font-size: 20px;">10% Off ({{ code }})</span>
+                                {% elif code == '15OFF'%}
+                                <span class="fw-bold" style = "font-family: Garet; font-size: 20px;">15% Off ({{ code }})</span>
+                                {% elif code == 'CHOC'%}
+                                <span class="fw-bold" style = "font-family: Garet; font-size: 20px;">Complimentary Chocolate Bar on Next Purchase ({{ code }})</span>
+                                {% elif code == '50OFF' %}
+                                <span class="fw-bold" style = "font-family: Garet; font-size: 20px;">50% Off ({{ code }})</span>
+                                {% elif code == 'SHIP'%}
+                                <span class="fw-bold" style = "font-family: Garet; font-size: 20px;">Free Shipping ({{ code }})</span>
+                                {% elif code == '5OFF' %}
+                                <span class="fw-bold" style = "font-family: Garet; font-size: 20px;">5% Off ({{ code }})</span>
+                                {% endif %}
+                            <span class="badge bg-primary rounded-pill" style="font-size: 20px">{{ codes[code] }}</span> <!-- Voucher quantity -->
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+        {% if cooldown == 0 %}
+            <a class="btn btn-success btn-md" href = {{ url_for('game') }}>Earn Vouchers</a>
+            {% else %}
+            <button class="btn btn-secondary btn-md" id = "timer"></button>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
 {% endif %}
 
     <script>

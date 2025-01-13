@@ -16,3 +16,4 @@ class Admin(User):
     def isAdmin(self):
         return True
 
+

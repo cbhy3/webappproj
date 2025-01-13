@@ -116,6 +116,7 @@
         }
     </style>
     <script>
+        let won;
         var tries = 15;
         const itemDistribution = {
             "Apple": [0.1364, 0, "10% discount on next purchase"],
@@ -177,6 +178,28 @@
                 if (items[chosen][1] == 3){
                     tries = 0;
                     showModal(`Congratulations! You won ${items[chosen][2]}!`);
+                    switch (chosen){
+                        case "Apple":
+                            won = "10OFF"
+                            break;
+                        case "Banana":
+                            won = "15OFF"
+                            break;
+                        case "Grape":
+                            won = "CHOC"
+                            break;
+                        case "Orange":
+                            won = "5OFF"
+                            break;
+                        case "Watermelon":
+                            won = "TOTE"
+                            break;
+                        case "Pineapple":
+                            won = "SHIP"
+                            break;
+                        case "Mango":
+                            won = "50OFF"
+                    }
                 }
                 }
         }
@@ -187,11 +210,31 @@
     winMessage.textContent = message;
     modal.style.display = "block";
 }
-
-function closeModal() {
-    const modal = document.getElementById("winModal");
-    modal.style.display = "none";
+   function redeem() {
+    fetch('givevoucher', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            code: won
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);
+        if (data.success) {
+            window.location.href = '/profile';
+        }
+    })
+    .catch(error => console.error('Error:', error));
 }
+
     </script>
 
 
@@ -200,7 +243,7 @@ function closeModal() {
     <div id="winModal" class="modal balls">
     <div class="modal-content balls-content">
         <p id="winMessage"></p>
-                <button class="claim-button" onclick="closeModal()">Claim Prize</button>
+                <button class="claim-button" onclick = "redeem()" >Claim Prize</button>
 
     </div>
 </div>

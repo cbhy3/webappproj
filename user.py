@@ -8,14 +8,16 @@ from Product import Product
 
 
 class User:
-
     email : str
     Cart: {int : int}
-    Codes: [str]
+    Codes: {str : int}
+    Cooldown: int
     def __init__(self, email,password):
         self.email = email
         self.password = self.encryptPassword(password)
         self.Cart = {}
+        self.Codes = {"TOTE" : 0 , "CHOC" : 0, "SHIP" : 0, "5OFF" : 0, "10OFF" : 0, "15OFF" : 0, "50OFF" : 0}
+        self.Cooldown = 0 #in seconds
         with shelve.open('users') as usersDB:
             usersDB[self.email] = self
 
@@ -58,5 +60,25 @@ class User:
             self.Cart.update({product: self.Cart[product] - 1})
         else:
             self.Cart.pop(product)
+        with shelve.open('users') as usersDB:
+            usersDB[self.email] = self
+
+    def addCode(self, code):
+        self.Codes[code] += 1
+        with shelve.open('users') as usersDB:
+            usersDB[self.email] = self
+
+    def removeCode(self, code):
+        self.Codes[code] -= 1
+        with shelve.open('users') as usersDB:
+            usersDB[self.email] = self
+
+    def updateCooldown(self, newCooldown):
+        self.Cooldown = newCooldown
+        with shelve.open('users') as usersDB:
+            usersDB[self.email] = self
+
+    def decreaseCooldown(self):
+        self.Cooldown -= 1
         with shelve.open('users') as usersDB:
             usersDB[self.email] = self
