@@ -620,7 +620,7 @@ def removeVoucher(code):
     gifts = None
     freeShipping = False
     current_user.addCode(code)
-    codeUsed = code
+    codeUsed = None
     return redirect(url_for('cart'))
 @app.route('/cart', methods = ['GET', 'POST'])
 def cart():
