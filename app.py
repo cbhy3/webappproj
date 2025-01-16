@@ -45,7 +45,7 @@ def about_us():
     #with shelve.open('users') as db:
     #    for i in db:
     #        del db[i]                  ## clear user db for testing
-    #with shelve.open('admin') as db:
+    #with shelve.open('admin') as db:   # REWRITE EVERYTHING TO DO WITH SIGNING IN AND SIGN UP THIS SHIT IS SO BAD
     #   for i in db:
     #       del db[i]
     with shelve.open('users') as usersDB:
@@ -89,9 +89,12 @@ def about_us():
                 ##print(current_user)
             session['current_user'] = current_user.getEmail()
             session.permanent = True
+            return redirect(url_for('about_us'))
+
         elif 'forgotpass_submit' in request.form:
             needresetemail = True
         elif 'signup_submit' in request.form and signupform.validate_on_submit():
+            signup = False
             suemail = signupform.email.data
             supassword = signupform.password.data
             session['user_email'] = suemail
@@ -101,6 +104,8 @@ def about_us():
             otp = generateOTP.__call__(suemail)
             session['otp'] = otp
             print(session['otp'])
+
+
         elif 'otp_submit' in request.form and otpform.validate_on_submit():
             registrationSuccessful = True
             needOTP = False
@@ -108,9 +113,12 @@ def about_us():
             Customer(session.get('user_email'), session.get('user_password'))
             session.pop('user_email')
             session.pop('user_password')
+            return redirect(url_for('about_us'))
+
         elif 'new_email_submit' in request.form:
             needOTP = False
             signup = True
+
         elif 'reset_password_email_submit' in request.form and resetpasswordemail.validate_on_submit():
             resetemail = resetpasswordemail.email.data
             resetotp = generateOTPforReset.__call__(resetemail)
@@ -119,10 +127,10 @@ def about_us():
             print(session['resetotp'])
             needresetemail = False
             needresetpasswordotp = True
+
         elif 'resetpasswordotp_submit' in request.form and resetPasswordotp.validate_on_submit():
             needresetpasswordotp = False
             needresetpassword = True
-            session.pop('resetotp')
             with shelve.open('users') as usersDB:
                 session['oldPassword'] = usersDB[session['email']].password
         elif 'reset_password_submit' in request.form and resetpassword.validate_on_submit():
@@ -132,8 +140,9 @@ def about_us():
                 usersDB[session['email']] = u
                 print(u)
             resetsuccessful = True
-            session.pop('oldPassword')
             session.pop('email')
+            return redirect(url_for('about_us'))
+
         else:
             print("Form validation failed:", signupform.errors, signinform.errors, otpform.errors)
 

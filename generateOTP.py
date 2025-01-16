@@ -4,13 +4,13 @@ from mailersend import emails
 class generateOTP:
     def __call__(email):
         otp = random.randint(100000, 999999)
-        mailer = emails.NewEmail("mlsn.fc2c26b3f492a4d1b8bc5fd6ccffc72f5d157521addd33a0f802b006be703986")
+        mailer = emails.NewEmail("mlsn.93ae3ad51cbd77064dbbce49b6ec7b6cef74a480379e24e8dbfdc43564da1798")
 
         mail_body = {}
 
         mail_from = {
             "name": "Tossed Out!",
-            "email": "tossedout@trial-z3m5jgrz190ldpyo.mlsender.net",
+            "email": "tossedout@trial-zr6ke4n39y9lon12.mlsender.net",
         }
         recipients = [{
             "name" : "Customer",
@@ -29,13 +29,13 @@ class generateOTP:
 class generateOTPforReset(generateOTP):
     def __call__(email):
         otp = random.randint(100000, 999999)
-        mailer = emails.NewEmail("mlsn.fc2c26b3f492a4d1b8bc5fd6ccffc72f5d157521addd33a0f802b006be703986")
+        mailer = emails.NewEmail("mlsn.93ae3ad51cbd77064dbbce49b6ec7b6cef74a480379e24e8dbfdc43564da1798")
 
         mail_body = {}
 
         mail_from = {
             "name": "Tossed Out!",
-            "email": "tossedout@trial-z3m5jgrz190ldpyo.mlsender.net",
+            "email": "tossedout@trial-zr6ke4n39y9lon12.mlsender.net",
         }
         recipients = [{
             "name": "Customer",
