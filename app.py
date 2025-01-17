@@ -40,6 +40,53 @@ if __name__ == '__main__':
 def main():
     return redirect('/aboutus')
 
+login = "SignIn"
+@app.route('/sign_in', methods = ['GET', 'POST'])
+def sign_in():
+    try:
+        current_user = CurrentUser.fromEmail(session.get('current_user'))
+        return redirect(url_for('about_us'))
+    except:
+        current_user = None
+    global login
+    sign_in_form = signIn()
+    sign_up_form = signUp()
+    reset_password_email = resetPasswordEmail()
+    reset_password_otp = resetPasswordOTP()
+    reset_password = resetPassword()
+
+
+    if request.method == 'POST':
+        if sign_in_form.validate_on_submit() and 'signin_submit' in request.form:
+            print("sign in attempt, ", sign_in_form.email.data)
+            with shelve.open('users') as usersDB:
+                current_user = usersDB[sign_in_form.email.data]
+                print(current_user.getEmail())
+            session['current_user'] = current_user.getEmail()
+            session.permanent = True
+            return redirect(url_for('about_us'))
+        elif sign_up_form.validate_on_submit() and 'signup_submit' in request.form:
+            session["sign_up_email"] = sign_up_form.email.data
+            session["sign_up_password"] = sign_up_form.password.data
+            email = session['sign_up_email']
+            login = "OTP"
+            otp = generateOTP().__call__(email)
+            session["otp"] = otp
+            print(otp)
+    return render_template('signin.html', sign_in_form = sign_in_form, sign_up_form = sign_up_form, reset_password = reset_password, reset_password_otp = reset_password_otp, reset_password_email = reset_password_email, login = login)
+
+@app.route('/change_login_action', methods = ['GET', 'POST'])
+def change_login_action():
+    global login
+    print(login)
+    data = request.json
+    new_login = data.get('new_login')
+    print(new_login)
+    if new_login:
+        login = new_login
+        print(login)
+        return jsonify(login)
+    return jsonify("eat dog"), 400
 @app.route('/aboutus', methods=['GET', 'POST'])
 def about_us():
     #with shelve.open('users') as db:
@@ -51,106 +98,17 @@ def about_us():
     with shelve.open('users') as usersDB:
         for i in usersDB:
             print(i)
-    siemail = None
-    sipassword = None
-    suemail = None
-    supassword = None
     cart = None
     try:
         current_user = CurrentUser.fromEmail(session.get('current_user'))
         cart = current_user.Cart
     except:
         current_user = None
-    needresetemail = False
-    signinform = signIn()
-    signupform = signUp()
-    otpform = Otp()
-    resetpasswordemail = resetPasswordEmail()
-    resetPasswordotp = resetPasswordOTP()
-    resetpassword = resetPassword()
 
 
-    needOTP = False
-    registrationSuccessful = False
-    global signup
-    needresetpasswordotp = False
-    needresetpassword = False
-    resetsuccessful = False
-    if request.method == 'POST':
-        # Distinguish between forms
-        if 'signin_submit' in request.form and signinform.validate_on_submit():
-            needresetemail = False
-            siemail = signinform.email.data
-            sipassword = signinform.password.data
-            print("Sign-in attempt:", siemail)
-            registrationSuccessful = False
-            with shelve.open('users') as usersDB:
-                current_user = usersDB[siemail]
-                ##print(current_user)
-            session['current_user'] = current_user.getEmail()
-            session.permanent = True
-            return redirect(url_for('about_us'))
 
-        elif 'forgotpass_submit' in request.form:
-            needresetemail = True
-        elif 'signup_submit' in request.form and signupform.validate_on_submit():
-            signup = False
-            suemail = signupform.email.data
-            supassword = signupform.password.data
-            session['user_email'] = suemail
-            session['user_password'] = supassword
-            print("Sign-up attempt:", suemail)
-            needOTP = True
-            otp = generateOTP.__call__(suemail)
-            session['otp'] = otp
-            print(session['otp'])
-
-
-        elif 'otp_submit' in request.form and otpform.validate_on_submit():
-            registrationSuccessful = True
-            needOTP = False
-            print("registration successful")
-            Customer(session.get('user_email'), session.get('user_password'))
-            session.pop('user_email')
-            session.pop('user_password')
-            return redirect(url_for('about_us'))
-
-        elif 'new_email_submit' in request.form:
-            needOTP = False
-            signup = True
-
-        elif 'reset_password_email_submit' in request.form and resetpasswordemail.validate_on_submit():
-            resetemail = resetpasswordemail.email.data
-            resetotp = generateOTPforReset.__call__(resetemail)
-            session['resetotp'] = resetotp
-            session['email'] = resetemail
-            print(session['resetotp'])
-            needresetemail = False
-            needresetpasswordotp = True
-
-        elif 'resetpasswordotp_submit' in request.form and resetPasswordotp.validate_on_submit():
-            needresetpasswordotp = False
-            needresetpassword = True
-            with shelve.open('users') as usersDB:
-                session['oldPassword'] = usersDB[session['email']].password
-        elif 'reset_password_submit' in request.form and resetpassword.validate_on_submit():
-            with shelve.open('users') as usersDB:
-                u = usersDB[session['email']]
-                u.setPassword(resetpassword.password.data)
-                usersDB[session['email']] = u
-                print(u)
-            resetsuccessful = True
-            session.pop('email')
-            return redirect(url_for('about_us'))
-
-        else:
-            print("Form validation failed:", signupform.errors, signinform.errors, otpform.errors)
-
-    return render_template('aboutus.html', active_page='aboutus', signinform=signinform,
-                           signupform=signupform, siemail=siemail,sipassword=sipassword,suemail=suemail,supassword=supassword,
-                           current_user=current_user, needOTP=needOTP, otpform=otpform, registrationSuccessful=registrationSuccessful,
-                           signup=signup, resetPasswordOTP = resetPasswordotp, needresetemail = needresetemail, resetpasswordemail = resetpasswordemail,
-                           needresetpasswordotp = needresetpasswordotp, needresetpassword = needresetpassword, resetpassword = resetpassword, resetsuccessful=resetsuccessful, cart = cart)
+    return render_template('aboutus.html', active_page='aboutus',
+                           current_user=current_user, cart = cart)
 ## copy this shit into the other pages when finished making them
 @app.route('/catalog', methods=['GET', 'POST'])
 def catalog():

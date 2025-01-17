@@ -27,7 +27,6 @@ class signUp(FlaskForm):
 class signIn(FlaskForm):
     email = EmailField('Email', validators=[Email("Please Enter a Valid Email Address")])
     password = PasswordField('Password', validators=[Length(min=6, max = 20)])
-    forgotpassword = SubmitField('Forgot Password', name = 'forgotpass_submit')
     submit = SubmitField('Sign In', name = 'signin_submit')
 
     def validate_password(self,password):

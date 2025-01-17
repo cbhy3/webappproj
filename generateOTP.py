@@ -2,6 +2,7 @@ import random
 from mailersend import emails
 
 class generateOTP:
+    @staticmethod
     def __call__(email):
         otp = random.randint(100000, 999999)
         mailer = emails.NewEmail("mlsn.93ae3ad51cbd77064dbbce49b6ec7b6cef74a480379e24e8dbfdc43564da1798")
@@ -27,6 +28,7 @@ class generateOTP:
 
 
 class generateOTPforReset(generateOTP):
+    @staticmethod
     def __call__(email):
         otp = random.randint(100000, 999999)
         mailer = emails.NewEmail("mlsn.93ae3ad51cbd77064dbbce49b6ec7b6cef74a480379e24e8dbfdc43564da1798")
