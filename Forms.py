@@ -25,7 +25,7 @@ class signUp(FlaskForm):
 
 
 class signIn(FlaskForm):
-    email = EmailField('Email', validators=[Email("Please Enter a Valid Email Address")])
+    email = EmailField('Email', validators=[Email("Please Enter a Valid Email Address"), DataRequired()])
     password = PasswordField('Password', validators=[Length(min=6, max = 20)])
     submit = SubmitField('Sign In', name = 'signin_submit')
 
@@ -44,9 +44,8 @@ class signIn(FlaskForm):
 
 
 class Otp(FlaskForm):
-    otp = StringField('Enter the 6 digit code sent to your email', validators=[Length(min=6, max = 6)])
+    otp = StringField('Enter the 6 digit code sent to your email', validators=[Length(min=6, max = 6), DataRequired()], )
     submit = SubmitField('Submit', name = 'otp_submit')
-    newEmail = SubmitField('Use a different Email Address.', name = 'new_email_submit')
     def validate_otp(self,otp):
         t = session.get('otp')
         print(t)

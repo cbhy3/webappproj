@@ -54,10 +54,10 @@ def sign_in():
     reset_password_email = resetPasswordEmail()
     reset_password_otp = resetPasswordOTP()
     reset_password = resetPassword()
-
+    otp_form = Otp()
 
     if request.method == 'POST':
-        if sign_in_form.validate_on_submit() and 'signin_submit' in request.form:
+        if 'signin_submit' in request.form and sign_in_form.validate_on_submit() :
             print("sign in attempt, ", sign_in_form.email.data)
             with shelve.open('users') as usersDB:
                 current_user = usersDB[sign_in_form.email.data]
@@ -65,7 +65,7 @@ def sign_in():
             session['current_user'] = current_user.getEmail()
             session.permanent = True
             return redirect(url_for('about_us'))
-        elif sign_up_form.validate_on_submit() and 'signup_submit' in request.form:
+        elif 'signup_submit' in request.form and sign_up_form.validate_on_submit() :
             session["sign_up_email"] = sign_up_form.email.data
             session["sign_up_password"] = sign_up_form.password.data
             email = session['sign_up_email']
@@ -73,7 +73,22 @@ def sign_in():
             otp = generateOTP().__call__(email)
             session["otp"] = otp
             print(otp)
-    return render_template('signin.html', sign_in_form = sign_in_form, sign_up_form = sign_up_form, reset_password = reset_password, reset_password_otp = reset_password_otp, reset_password_email = reset_password_email, login = login)
+            return redirect(url_for('sign_in'))
+        elif 'otp_submit' in request.form and otp_form.validate_on_submit() :
+            Customer(session.get('sign_up_email'), session.get('sign_up_password'))
+            session['current_user'] = session.get('sign_up_email')
+            session.permanent = True
+            session.pop('sign_up_email')
+            session.pop('sign_up_password')
+            return redirect(url_for('about_us'))
+        else:
+            sign_in_form.email.data = ""
+            sign_in_form.password.data = ""
+            sign_up_form.password.data = ""
+            sign_up_form.email.data = ""
+            otp_form.otp.data = ""
+            print("something went wrong somewhere")
+    return render_template('signin.html', sign_in_form = sign_in_form, sign_up_form = sign_up_form, reset_password = reset_password, reset_password_otp = reset_password_otp, reset_password_email = reset_password_email, login = login, otp_form = otp_form)
 
 @app.route('/change_login_action', methods = ['GET', 'POST'])
 def change_login_action():
