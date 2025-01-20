@@ -11,11 +11,15 @@ class User:
     email : str
     Cart: {int : int}
     Codes: {str : int}
+    Addresses: [str]
+    Orders: [int]
     Cooldown: int
     def __init__(self, email,password):
         self.email = email
         self.password = self.encryptPassword(password)
+        self.Addresses = []
         self.Cart = {}
+        self.Orders = []
         self.Codes = {"TOTE" : 0 , "CHOC" : 0, "SHIP" : 0, "5OFF" : 0, "10OFF" : 0, "15OFF" : 0, "50OFF" : 0}
         self.Cooldown = 0 #in seconds
         with shelve.open('users') as usersDB:
@@ -80,5 +84,13 @@ class User:
 
     def decreaseCooldown(self):
         self.Cooldown -= 1
+        with shelve.open('users') as usersDB:
+            usersDB[self.email] = self
+    def addAddress(self, address):
+        self.Addresses.append(address)
+        with shelve.open('users') as usersDB:
+            usersDB[self.email] = self
+    def removeAddress(self, address):
+        self.Addresses.pop(address)
         with shelve.open('users') as usersDB:
             usersDB[self.email] = self

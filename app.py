@@ -133,7 +133,7 @@ def about_us():
     #with shelve.open('users') as db:
     #    for i in db:
     #        del db[i]                  ## clear user db for testing
-    #with shelve.open('admin') as db:   # REWRITE EVERYTHING TO DO WITH SIGNING IN AND SIGN UP THIS SHIT IS SO BAD
+    #with shelve.open('admin') as db:
     #   for i in db:
     #       del db[i]
     with shelve.open('users') as usersDB:
@@ -195,11 +195,13 @@ def profile():
     cart = None
     codes = None
     cooldown = None
+    addresses = None
     try:
         current_user = CurrentUser.fromEmail(session.get('current_user'))
         cart = current_user.Cart
         codes = current_user.Codes
         cooldown = current_user.Cooldown
+        addresses = current_user.Addresses
         print(codes)
     except KeyError:
         current_user = None
@@ -209,6 +211,7 @@ def profile():
     change_emailEmail = None
     change_password = changePassword()
     delete_account = deleteAccount()
+    add_address = addAddress()
     global success
     global toggleEmail
     print(success)
@@ -259,13 +262,28 @@ def profile():
             return redirect(url_for('about_us'))
         elif 'delete_cancel_submit' in request.form:
             return redirect(url_for('profile'))
+        elif 'add_address_submit' in request.form and add_address.validate_on_submit():
+
+            address = ', '.join(
+                filter(None, [
+                    add_address.zip.data,
+                    add_address.street.data.title(),
+                    add_address.buildingName.data.title() if add_address.buildingName.data else None,
+                    str(add_address.blockNumber.data) if add_address.blockNumber.data else None,
+                    add_address.unitNumber.data
+                ])
+            )
+            current_user.addAddress(address)
+            success = "Address added successfully"
+            return redirect(url_for('profile'))
         else:
             print("Form validation failed:", otpform.errors, change_email.errors)
     if current_user is None:
         return redirect(url_for('about_us'))
     return render_template('profile.html', active_page='profile',signoutform = signoutform, current_tab = current_tab,
                            current_user=current_user,  otpform=otpform, change_email = change_email,
-                           change_emailEmail = change_emailEmail, change_password = change_password, cart = cart, codes = codes, cooldown = cooldown, delete_account = delete_account, toggleEmail = toggleEmail, success = success)
+                           change_emailEmail = change_emailEmail, change_password = change_password, cart = cart, codes = codes,
+                           cooldown = cooldown, delete_account = delete_account, toggleEmail = toggleEmail, success = success, add_address = add_address, addresses = addresses)
 
 @app.route('/updatep', methods = ['POST'])
 def update_profile_tab():
@@ -278,7 +296,14 @@ def update_profile_tab():
     return jsonify("eat dog"), 400
 
 action = 'Default'
-
+@app.route('/remove_address/<int:addresss>', methods = ['GET', 'POST'])
+def remove_address(addresss):
+    global success
+    with shelve.open('users') as usersDB:
+        current_user = CurrentUser.fromEmail(session.get('current_user'))
+    current_user.removeAddress(addresss)
+    success = "Address removed successfully"
+    return redirect(url_for('profile'))
 @app.route('/updateadminaction', methods = ['POST'])
 def updateadmin_action():
     global action
@@ -293,11 +318,14 @@ def updateadmin_action():
 @app.route('/admin', methods=['GET', 'POST'])
 def Admin():
     try:
-        current_user = User.fromJSON(session['current_user'])
+
         with shelve.open('admin') as adminDB:
-            isAdmin = adminDB[current_user.email]
+            admin = adminDB[session.get('current_user')]
+            for i in adminDB:
+                print(i)
+
     except:
-        redirect(url_for('about_us'))
+        return redirect(url_for('about_us'))
     add_product = addProduct()
     modify_product = modifyProduct()
     global action

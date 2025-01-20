@@ -4,12 +4,14 @@ from wtforms import StringField, SubmitField
 from wtforms.fields.choices import SelectField, SelectMultipleField
 from wtforms.fields.datetime import DateField
 from wtforms.fields.numeric import FloatField, IntegerField
-from wtforms.validators import DataRequired, Email, EqualTo, InputRequired, Length, ValidationError
+from wtforms.validators import DataRequired, Email, EqualTo, InputRequired, Length, ValidationError, Regexp, Optional
 from wtforms.fields import EmailField, PasswordField
 from flask import session
 import shelve
 from Product import Product
 from user import User
+from addressValidator import streetValidator
+
 class signUp(FlaskForm):
     email = EmailField('Email', validators=[DataRequired(),Email("Please Enter a Valid Email Address"),])
     password = PasswordField('Password', validators=[InputRequired(),Length(min=6, max = 20)])
@@ -190,3 +192,22 @@ class modifyProduct(FlaskForm):
                 for prod in products
             ]
         self.categories.choices = [(cat, cat) for cat in Product.valid_categories]
+
+class addAddress(FlaskForm):
+    zip = StringField('Enter your zip code', validators=[InputRequired(), Length(min=6, max = 6)])
+    street = StringField('Enter your Street Name', validators=[InputRequired()])
+    buildingName = StringField('Enter your Building Name (If Applicable)', validators=[Optional()])
+    blockNumber = StringField('Enter your Block Number (If Applicable)', validators=[Regexp('^(?:[1-9]\d{0,2})(?:[A-Z])?$', message = "Enter a valid Block Number"), Optional()])
+    unitNumber = StringField('Enter your Unit Number (If Applicable)', validators=[Regexp('#\d{2}-\d{1,4}',message ="Enter a valid unit number"), Optional()])
+    submit = SubmitField('Submit', name = 'add_address_submit')
+    def validate_zip(self,zip):
+        try:
+            int(zip.data)
+            return True
+        except:
+            raise ValidationError('Zip Code must be a number.')
+    def validate_street(self,street):
+        if streetValidator.validate(street.data):
+            return True
+        else:
+            raise ValidationError('Enter a valid Singapore Street Name')

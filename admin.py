@@ -16,4 +16,4 @@ class Admin(User):
     def isAdmin(self):
         return True
 
-
+Admin("admin@tossedout.com", "balls32")

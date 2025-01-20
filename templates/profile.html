@@ -7,7 +7,9 @@ Tossed Out! - Profile
 
 {% include "includes/_profilesidebar.html" %}
     <style>
-
+    body {
+        font-family: Garet;
+    }
     @media (max-width: 2037px){
         .container{
             width: 700px;
@@ -38,6 +40,17 @@ Tossed Out! - Profile
     }
 
     #email-form-container.active {
+        max-height: 750px;
+        opacity: 1;
+    }
+     #address-form-container {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease, opacity 0.5s ease;
+        opacity: 0;
+    }
+
+    #address-form-container.active {
         max-height: 750px;
         opacity: 1;
     }
@@ -119,8 +132,59 @@ Tossed Out! - Profile
   background-color: #fff;
   border-radius: 0 0 0.5rem 0.5rem;
   transition: width 0.03s linear;
+}.address-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between items */
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: auto;
 }
 
+.address-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    color: #333;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.address-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.delete-button {
+    padding: 8px 12px;
+    background-color: #d20005; /* Red color for delete */
+    color: #ffffff; /* White text */
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #ffffff; /* White text */
+    text-decoration: none; /* Remove underline */
+    transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+    background-color: #9c0005; /* Darker red on hover */
+    color: #f2f2f2
+}
+
+.delete-button:active {
+    background-color: #6f0005; /* Even darker red on click */
+    color: #f2f2f2;
+}
     </style>
     <script>
     document.addEventListener("DOMContentLoaded", function(event) {
@@ -172,7 +236,7 @@ Tossed Out! - Profile
     .catch(error => console.error('Error:', error));
  setTimeout(() => {
     popup.style.display = 'none';
-  }, 3000);
+  }, 3250);
   const progressBar = document.getElementById('progress-bar');
   const progressBarContainer = document.getElementById('progress-bar-container');
  let progress = 0;
@@ -204,7 +268,14 @@ Tossed Out! - Profile
             form.reset();
         }
     });
-
+document.getElementById('toggle-address-form').addEventListener('click', function () {
+        const formContainer = document.getElementById('address-form-container');
+        formContainer.classList.toggle('active');
+        const form = formContainer.querySelector('form');
+        if (!formContainer.classList.contains('active')) {
+            form.reset();
+        }
+    });
     });
 
 
@@ -310,12 +381,69 @@ Tossed Out! - Profile
     </form>
 </div>
     <div class="row align-items-center mb-3">
-    <div class="col-md-4 text-end fw-bold">Shipping Address:</div>
-    <div class="col-md-4" id="shippingaddress"></div>
-    <div class="col-md-4 text-start">
-        <a class="btn btn-secondary" data-bs-toggle = "modal" data-bs-target = "#">Add Shipping Address</a>
-    </div>
+    <div class="col-md-4 text-end fw-bold">Shipping Addresses:</div>
+    <div class="col-md-4" id="shippingaddress"><div class="address-list">
+    {% for address in addresses %}
+        <div class="address-item">
+            <span>{{ address }} </span>
+        <a class="delete-button" href = "{{ url_for('remove_address', addresss = addresses.index(address)) }}">Delete</a>
+        </div>
+    {% endfor %}
 </div>
+    </div>
+    {% if addresses|length < 6 %}
+    <div class="col-md-4 text-start">
+        <a class="btn btn-secondary" id = "toggle-address-form">Add Shipping Address</a>
+    </div>
+        {% endif %}
+</div>
+<div class="d-flex justify-content-center" id="address-form-container">
+    <form method="POST" class="w-50">
+        {{ add_address.hidden_tag() }}
+
+        <div class="mb-3">
+            {{ add_address.zip.label(class="form-label") }}
+            {{ add_address.zip(class="form-control", placeholder="Enter your zip code") }}
+            {% for error in add_address.zip.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ add_address.street.label(class="form-label") }}
+            {{ add_address.street(class="form-control", placeholder="Enter your street name") }}
+            {% for error in add_address.street.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ add_address.buildingName.label(class="form-label") }}
+            {{ add_address.buildingName(class="form-control", placeholder="Enter your building name") }}
+            {% for error in add_address.buildingName.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div class="mb-3">
+            {{ add_address.blockNumber.label(class="form-label") }}
+            {{ add_address.blockNumber(class="form-control", placeholder="Enter your block number") }}
+            {% for error in add_address.blockNumber.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div class="mb-3">
+            {{ add_address.unitNumber.label(class="form-label") }}
+            {{ add_address.unitNumber(class="form-control", placeholder="Enter your unit number") }}
+            {% for error in add_address.unitNumber.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ add_address.submit(class="btn w-100", style="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px; margin-bottom: 60px;", autofocus="autofocus") }}
+        </div>
+    </form>
+</div>
+
 </div>
 {% elif current_tab == 'order_history' %}
     <h1 style="text-align: center">placeholder</h1>
@@ -375,6 +503,9 @@ Tossed Out! - Profile
         {% elif change_password.errors %}
             const formContainerrr = document.getElementById('password-form-container');
         formContainerrr.classList.toggle('active');
+        {% elif add_address.errors %}
+            const formContainerrrr = document.getElementById('address-form-container');
+        formContainerrrr.classList.toggle('active');
         {% endif %}
 
     })
