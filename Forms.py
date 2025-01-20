@@ -119,7 +119,7 @@ class deleteAccount(FlaskForm):
 class changeEmail(FlaskForm):
     password = PasswordField('Enter your password to confirm its you', validators=[InputRequired(),Length(min=6, max = 20)])
     email = EmailField('Enter your new email', validators=[DataRequired(),Email("Please Enter a Valid Email Address")])
-    submit = SubmitField('Submit', name = 'change_email_submit')
+    submit = SubmitField('Send One-Time Password to your new email', name = 'change_email_submit')
     def validate_password(self,password):
         try:
              with shelve.open('users') as usersDB:
@@ -132,6 +132,7 @@ class changeEmail(FlaskForm):
                  raise ValidationError('Incorrect Password')
         except KeyError:
             raise ValidationError("Something went wrong.")
+
 
 class changePassword(FlaskForm):
     oldPassword = PasswordField('Enter your old password', validators=[InputRequired(),Length(min=6, max = 20)])
@@ -146,6 +147,14 @@ class changePassword(FlaskForm):
                 return True
             else:
                 raise ValidationError('Incorrect Password')
+    def validate_newPassword(self,newPassword):
+        with shelve.open('users') as usersDB:
+            u = usersDB[session.get('current_user')]
+            if User.comparePassword(newPassword.data, u.password):
+                raise ValidationError('New password has to be different than your old one.')
+            else:
+                print("new password validated")
+                return True
 
 class addProduct(FlaskForm):
     name = StringField('Enter the product\'s name', validators=[InputRequired()])

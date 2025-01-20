@@ -99,7 +99,17 @@
         padding: 0;
 
     }
-
+.popup {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1050;
+      display: none;
+      padding: 1rem 2rem;
+      border-radius: 0.5rem;
+      color: white;
+    }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -136,6 +146,9 @@
     </script>
 </head>
 <body>
+<div id="popup" class="popup bg-success">
+    text
+  </div>
     <a class="close-button" aria-label="Close" id = "close" href = {{ url_for('about_us') }}>&times;</a>
     <div class="container d-flex justify-content-center align-items-center vh-100">
     <div class="form-wrapper position-relative">
@@ -183,7 +196,7 @@
         <p class="mt-3">Already have an account? <button onclick = redeem('SignIn') class = "a-button">Sign in</button></p>
         </div>
     {% elif login == 'ResetPasswordEmail' %}
-     <!-- TODO: THERES GONNA BE 3 PARTS TO THIS PART, ASKING FOR EMAIL, OTP AND THEN FINALLY RESET PASSWORD PROMPT -->
+
         <div class ="login-container">
         <h3 class = "tosd"> Tossed Out!</h3>
         <h2 class = "text-center">Password Reset</h2>

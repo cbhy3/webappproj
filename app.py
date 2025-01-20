@@ -166,12 +166,25 @@ def catalog():
         current_user = None
 
 
-    return render_template('catalog.html', active_page='catalog', products=all_products, cart = cart)
+    return render_template('catalog.html', active_page='catalog', products=all_products, cart = cart, current_user = current_user)
 
 
 
 current_tab = 'profile'
-
+toggleEmail = None
+success = None
+@app.route('/change_success', methods = ['GET', 'POST'])
+def change_success():
+    global success
+    print(success)
+    data = request.json
+    new_success = data.get('new_success')
+    print(new_success)
+    if new_success == "None":
+        success = None
+        print(success)
+        return jsonify(success)
+    return jsonify("eat dog"), 400
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
 
@@ -191,28 +204,32 @@ def profile():
     except KeyError:
         current_user = None
     otpform = Otp()
-    needOTP = False
     signoutform  = signOut()
     change_email = changeEmail()
     change_emailEmail = None
-    need_change_email = None
     change_password = changePassword()
     delete_account = deleteAccount()
+    global success
+    global toggleEmail
+    print(success)
     if request.method == 'POST' :
         if 'signout_submit' in request.form and signoutform.validate_on_submit():
             current_user = None
             session.pop('current_user')
             return redirect(url_for('about_us'))
         elif 'signout_cancel_submit' in request.form and signoutform.validate_on_submit():
-            pass
+
+            return redirect(url_for('profile'))
         elif 'change_email_submit' in request.form and change_email.validate_on_submit():
             change_emailEmail = change_email.email.data
             session['change_email'] = change_emailEmail
             print(change_email.email.data)
-            needOTP = True
             otp = generateOTP.__call__(change_emailEmail)
             session['otp'] = otp
             print(session['otp'])
+            toggleEmail = True
+            success = "Please check your new email for the 6 digit code we just sent."
+
         elif 'otp_submit' in request.form and otpform.validate_on_submit():
             with shelve.open('users') as usersDB:
                 temp = copy.deepcopy(usersDB[session.get('current_user')])
@@ -222,28 +239,33 @@ def profile():
             session['current_user'] = temp.getEmail()
             current_user = temp
             session.pop('change_email')
-            needOTP = False
-        elif 'new_email_submit' in request.form:
-            needOTP = False
-            need_change_email = True
+            toggleEmail = False
+            success = "Email changed successfully"
+            return redirect(url_for('profile'))
+
         elif 'change_password_submit' in request.form and change_password.validate_on_submit():
             with shelve.open('users') as usersDB:
                 temp = copy.deepcopy(usersDB[session.get('current_user')])
                 temp.setPassword(change_password.newPassword.data)
                 usersDB[temp.getEmail()] = temp
+            success = "Password changed successfully"
+            return redirect(url_for('profile'))
+
         elif 'delete_submit' in request.form and delete_account.validate_on_submit():
             with shelve.open('users') as usersDB:
                 del usersDB[session.get('current_user')]
             current_user = None
             session.pop('current_user')
             return redirect(url_for('about_us'))
+        elif 'delete_cancel_submit' in request.form:
+            return redirect(url_for('profile'))
         else:
             print("Form validation failed:", otpform.errors, change_email.errors)
     if current_user is None:
         return redirect(url_for('about_us'))
     return render_template('profile.html', active_page='profile',signoutform = signoutform, current_tab = current_tab,
-                           current_user=current_user, needOTP=needOTP, otpform=otpform, change_email = change_email,
-                           change_emailEmail = change_emailEmail, need_change_email = need_change_email, change_password = change_password, cart = cart, codes = codes, cooldown = cooldown, delete_account = delete_account)
+                           current_user=current_user,  otpform=otpform, change_email = change_email,
+                           change_emailEmail = change_emailEmail, change_password = change_password, cart = cart, codes = codes, cooldown = cooldown, delete_account = delete_account, toggleEmail = toggleEmail, success = success)
 
 @app.route('/updatep', methods = ['POST'])
 def update_profile_tab():

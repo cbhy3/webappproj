@@ -18,9 +18,44 @@ Tossed Out! - Profile
             width: 450px;
         }
     }
+
+    #password-form-container {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease, opacity 0.5s ease;
+        opacity: 0;
+    }
+
+    #password-form-container.active {
+        max-height: 750px;
+        opacity: 1;
+    }
+     #email-form-container {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease, opacity 0.5s ease;
+        opacity: 0;
+    }
+
+    #email-form-container.active {
+        max-height: 750px;
+        opacity: 1;
+    }
+    .popup {
+      position: fixed;
+      top: 145px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1050;
+      display: none;
+      padding: 1rem 2rem;
+      border-radius: 0.5rem;
+      color: white;
+    }
     </style>
     <script>
     document.addEventListener("DOMContentLoaded", function(event) {
+
          var cooldown = {{ cooldown }}
         if (cooldown !== 0) {
             var timer = document.getElementById("timer");
@@ -41,8 +76,57 @@ Tossed Out! - Profile
              }, 1000)
          }
     })
+    document.addEventListener("DOMContentLoaded", function(event) {
+        {% if success %}
+            document.getElementById("popup").style.display = "block";
+            fetch('change_success', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            new_success: "None"
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);
+        if (data.success) {
+            window.location.href = '/profile';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+
+        {% endif %}
+     document.getElementById('toggle-password-form').addEventListener('click', function () {
+        const formContainer = document.getElementById('password-form-container');
+        formContainer.classList.toggle('active');
+        const form = formContainer.querySelector('form');
+        if (!formContainer.classList.contains('active')) {
+            form.reset();
+        }
+    });
+     document.getElementById('toggle-email-form').addEventListener('click', function () {
+        const formContainer = document.getElementById('email-form-container');
+        formContainer.classList.toggle('active');
+        const form = formContainer.querySelector('form');
+        if (!formContainer.classList.contains('active')) {
+            form.reset();
+        }
+    });
+
+    });
+
 
     </script>
+<div id="popup" class="popup bg-success">
+    {{ success }} <button type="button" class="btn-close btn-close-white ms-3" aria-label="Close" onclick="document.getElementById('popup').style.display = 'None'"></button>
+  </div>
 {% if current_tab == 'profile' %}
     <h1 style = "text-align: center">ball</h1>
     <h3 style = "text-align: center">yeah</h3>
@@ -54,108 +138,97 @@ Tossed Out! - Profile
     <div class="col-md-4 text-end fw-bold">Email Address:</div>
     <div class="col-md-4" id="account-email">{{ current_user.email }}</div>
     <div class="col-md-4 text-start">
-        <a class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#changeEmailModal">Change Email</a>
+        <a class="btn btn-secondary" id = "toggle-email-form">Change Email</a>
     </div>
 </div>
+<div class="d-flex flex-column align-items-center" id="email-form-container">
+    <form method="POST" class="w-50 mb-4">
+        {{ change_email.hidden_tag() }}
+
+        <div class="mb-3">
+            {{ change_email.password.label(class="form-label") }}
+            {{ change_email.password(class="form-control", placeholder="Enter your password") }}
+            {% for error in change_email.password.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ change_email.email.label(class="form-label") }}
+            {{ change_email.email(class="form-control", placeholder="Enter your new email") }}
+            {% for error in change_email.email.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+
+        <div>
+            {{ change_email.submit(class="btn w-100", style="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px; margin-bottom: 60px;", autofocus="autofocus") }}
+        </div>
+    </form>
+    <form method="POST" class="w-50">
+    {{ otpform.hidden_tag() }}
+         <div class="mb-3">
+            {{ otpform.otp.label(class="form-label") }}
+            {{ otpform.otp(class="form-control", placeholder="Enter the 6 digit code sent to your new email") }}
+            {% for error in otpform.otp.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+    <div>
+            {{ otpform.submit(class="btn w-100", style="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px; margin-bottom: 60px;", autofocus="autofocus") }}
+        </div>
+    </form>
+</div>
+
               <div class="row align-items-center mb-3">
     <div class="col-md-4 text-end fw-bold">Password:</div>
     <div class="col-md-4" id="password">●●●●●●●●●</div>
     <div class="col-md-4 text-start">
-        <a class="btn btn-warning" data-bs-toggle = "modal" data-bs-target = "#changePasswordModal">Change Password</a>
+        <a class="btn btn-warning" id="toggle-password-form">Change Password</a>
     </div>
 </div>
-                <div class="row align-items-center mb-3">
+<div class="d-flex justify-content-center" id="password-form-container">
+    <form method="POST" class="w-50">
+        {{ change_password.hidden_tag() }}
+
+        <div class="mb-3">
+            {{ change_password.oldPassword.label(class="form-label") }}
+            {{ change_password.oldPassword(class="form-control", placeholder="Enter your old password") }}
+            {% for error in change_password.oldPassword.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ change_password.newPassword.label(class="form-label") }}
+            {{ change_password.newPassword(class="form-control", placeholder="Enter your new password") }}
+            {% for error in change_password.newPassword.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ change_password.verifyPassword.label(class="form-label") }}
+            {{ change_password.verifyPassword(class="form-control", placeholder="Re-enter your new password") }}
+            {% for error in change_password.verifyPassword.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ change_password.submit(class="btn w-100", style="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px; margin-bottom: 60px;", autofocus="autofocus") }}
+        </div>
+    </form>
+</div>
+    <div class="row align-items-center mb-3">
     <div class="col-md-4 text-end fw-bold">Shipping Address:</div>
     <div class="col-md-4" id="shippingaddress"></div>
     <div class="col-md-4 text-start">
         <a class="btn btn-secondary" data-bs-toggle = "modal" data-bs-target = "#">Add Shipping Address</a>
     </div>
 </div>
-
-
-                    <!-- add the change email form -->
-<div class="modal fade" id="changeEmailModal" tabindex="-1" aria-labelledby="changeEmailModal" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.8); margin-top: 150px">
-            <div class="modal-header">
-                <h1 class="modal-title w-100 text-center" id="changeEmailModal" style="font-family: 'Gagalin', sans-serif; font-weight: bold;">TOSSED OUT!</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p class="text-center" style="margin-bottom: 30px; font-size: 1rem; color: #555; font-family: Lexend">Flawed but Flavourful</p>
-                <form method="POST">
-                    {{ change_email.hidden_tag() }}
-
-                    <div class="mb-3">
-                        {{ change_email.password.label(class="form-label") }}
-                        {{ change_email.password(class="form-control", placeholder="Enter your password") }}
-                        {% for error in change_email.password.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-
-                    </div>
-                    <div class="mb-3">
-                        {{ change_email.email.label(class="form-label") }}
-                        {{ change_email.email(class="form-control", placeholder="Enter your new email") }}
-                        {% for error in change_email.email.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-
-                    </div>
-
-
-                    {{ change_email.submit(class = "btn w-100 mt-3", style ="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;",autofocus="autofocus") }}
-
-                </form>
-            </div>
-        </div>
-    </div>
 </div>
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModal" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.8); margin-top: 150px">
-            <div class="modal-header">
-                <h1 class="modal-title w-100 text-center" id="changePasswordModal" style="font-family: 'Gagalin', sans-serif; font-weight: bold;">TOSSED OUT!</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p class="text-center" style="margin-bottom: 30px; font-size: 1rem; color: #555; font-family: Lexend">Flawed but Flavourful</p>
-                <form method="POST">
-                    {{ change_password.hidden_tag() }}
-
-                    <div class="mb-3">
-                        {{ change_password.oldPassword.label(class="form-label") }}
-                        {{ change_password.oldPassword(class="form-control", placeholder="Enter your old password") }}
-                        {% for error in change_password.oldPassword.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-
-                    </div>
-                    <div class="mb-3">
-                        {{ change_password.newPassword.label(class="form-label") }}
-                        {{ change_password.newPassword(class="form-control", placeholder="Enter your new password") }}
-                        {% for error in change_password.newPassword.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-
-                    </div>
-                    <div class="mb-3">
-                        {{ change_password.verifyPassword.label(class="form-label") }}
-                        {{ change_password.verifyPassword(class="form-control", placeholder="Re-enter your new password") }}
-                        {% for error in change_password.verifyPassword.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-
-                    </div>
-
-                    {{ change_password.submit(class = "btn w-100 mt-3", style ="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;",autofocus="autofocus") }}
-
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-            </div>
 {% elif current_tab == 'order_history' %}
     <h1 style="text-align: center">placeholder</h1>
 
@@ -204,17 +277,18 @@ Tossed Out! - Profile
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        {% if change_email.errors or need_change_email %}
+        {% if change_email.errors or toggleEmail %}
+         const formContainer = document.getElementById('email-form-container');
+        formContainer.classList.toggle('active');
 
-        var changeEmailModal = new bootstrap.Modal(document.getElementById('changeEmailModal'));
-        changeEmailModal.show()
-        {% elif otpform.errors or needOTP %}
-            var otpFormModal = new bootstrap.Modal(document.getElementById('otpFormModal'));
-            otpFormModal.show();
-            {% elif change_password.errors %}
-            var changePasswordModal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
-            changePasswordModal.show()
+        {% elif otpform.errors %}
+             const formContainerr = document.getElementById('email-form-container');
+        formContainerr.classList.toggle('active');
+        {% elif change_password.errors %}
+            const formContainerrr = document.getElementById('password-form-container');
+        formContainerrr.classList.toggle('active');
         {% endif %}
+
     })
 </script>
 {% endblock %}
