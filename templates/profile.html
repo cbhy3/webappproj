@@ -41,17 +41,86 @@ Tossed Out! - Profile
         max-height: 750px;
         opacity: 1;
     }
-    .popup {
-      position: fixed;
-      top: 145px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1050;
-      display: none;
-      padding: 1rem 2rem;
-      border-radius: 0.5rem;
-      color: white;
-    } /* this is the css for the popup for whoeveer is styling it
+   .popup {
+  position: fixed;
+  top: 180px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  display: none;
+  padding: 1.5rem 2rem;
+  border-radius: 0.5rem;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #56ac56;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.popup button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  border: white;
+  color: white;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.popup button:hover {
+  color: #e9ecef; /* Lighter color on hover */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+.popup {
+  position: fixed;
+  top: 180px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  display: none;
+  padding: 1.5rem 2rem;
+  border-radius: 0.5rem;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #56ac56;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.progress-bar-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0;
+  background-color: #fff;
+  border-radius: 0 0 0.5rem 0.5rem;
+  transition: width 0.03s linear;
+}
+
     </style>
     <script>
     document.addEventListener("DOMContentLoaded", function(event) {
@@ -101,7 +170,23 @@ Tossed Out! - Profile
         }
     })
     .catch(error => console.error('Error:', error));
+ setTimeout(() => {
+    popup.style.display = 'none';
+  }, 3000);
+  const progressBar = document.getElementById('progress-bar');
+  const progressBarContainer = document.getElementById('progress-bar-container');
+ let progress = 0;
+  const interval = setInterval(() => {
+    progress += 1;
+    progressBar.style.width = progress + '%';
 
+    if (progress >= 100) {
+      clearInterval(interval);
+      setTimeout(() => {
+        popup.style.display = 'none';
+      }, 500); // delay hiding the popup for a smooth transition
+    }
+  }, 30); // update progress every 30ms to complete in 3 seconds
         {% endif %}
      document.getElementById('toggle-password-form').addEventListener('click', function () {
         const formContainer = document.getElementById('password-form-container');
@@ -124,8 +209,11 @@ Tossed Out! - Profile
 
 
     </script>
-<div id="popup" class="popup bg-success">    <!--WHOEVER IS STYLING THE POPUP, THIS IS THE POPUP -->
+<div id="popup" class="popup bg-success">
     {{ success }} <button type="button" class="btn-close btn-close-white ms-3" aria-label="Close" onclick="document.getElementById('popup').style.display = 'None'"></button>
+ <div id="progress-bar-container" class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar"></div>
+    </div>
   </div>
 {% if current_tab == 'profile' %}
     <h1 style = "text-align: center">ball</h1>
