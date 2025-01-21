@@ -66,7 +66,10 @@ class User:
             self.Cart.pop(product)
         with shelve.open('users') as usersDB:
             usersDB[self.email] = self
-
+    def clearCart(self):
+        self.Cart.clear()
+        with shelve.open('users') as usersDB:
+            usersDB[self.email] = self
     def addCode(self, code):
         self.Codes[code] += 1
         with shelve.open('users') as usersDB:

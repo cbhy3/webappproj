@@ -6,6 +6,7 @@ from currentUser import CurrentUser
 from generateOTP import generateOTP, generateOTPforReset
 from Product import Product
 from manager import Manager
+from Order import Order
 import copy
 import datetime
 import threading
@@ -510,16 +511,24 @@ def cart():
 
         subtotal = 0
         for i in cart:
-            subtotal += all_products[str(i)].price * cart.get(i)
-        print(subtotal)
+            if all_products[str(i)].quantity > cart.get(i):
+                subtotal += all_products[str(i)].price * cart.get(i)
+            else:
+                print("out of stock")
+        subtotal += 5
         global voucherUsed
         global discount
         global gifts
         global freeShipping
+        if discount:
+            subtotal -= round((subtotal*(discount/100)),2)
+        if freeShipping:
+            subtotal -= 5
+
         global codeUsed
 
         return render_template('cart.html',active_page='cart', products=all_products, cart = cart, subtotal = subtotal, codes = codes, voucherUsed = voucherUsed
-                               , discount = discount, gifts = gifts, freeShipping = freeShipping, codeUsed = codeUsed)
+                               , discount = discount, gifts = gifts, freeShipping = freeShipping, codeUsed = codeUsed, current_user = current_user)
 
     except KeyError as e:
         print(e)
@@ -558,3 +567,27 @@ def giveVoucher():
     print(code)
 
     return jsonify({'success': True, 'message': 'Code redeemed successfully'})
+
+@app.route('/cart/checkout/<subtotal>/', methods = ['GET', 'POST'])
+def checkOut( subtotal):
+
+        global codeUsed
+        global voucherUsed
+        global discount
+        global gifts
+        global freeShipping
+
+
+        voucher = codeUsed
+        print(voucher)
+        with shelve.open('users') as usersDB:
+            current_user = usersDB[session.get('current_user')]
+            cart = current_user.Cart
+            Order(subtotal, cart, voucher, session.get('current_user'))
+            current_user.clearCart()
+            voucherUsed = False
+            codeUsed = None
+            discount = None
+            gifts = None
+            freeShipping = False
+        return redirect(url_for('cart'))

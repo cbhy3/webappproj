@@ -54,6 +54,7 @@ Tossed Out! - Catalog
 <h1>Catalog</h1>
 <ul class="list-unstyled d-flex flex-wrap justify-content-start">
     {% for product in products %}
+        {% if products[product].quantity > 0 %}
         <li class="m-2">
             <div class="card product-card shadow-sm">
                 <a href="{{ url_for('product_detail', product_id=product) }}" class="text-decoration-none text-dark">
@@ -75,6 +76,7 @@ Tossed Out! - Catalog
                 </div>
             </div>
         </li>
+        {% endif %}
     {% endfor %}
 </ul>
 

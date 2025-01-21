@@ -38,6 +38,7 @@ class Product:
             p = products[id]
             p.quantity += increment
             products[id] = p
+            print(f'New quantity for product {id}: {p.quantity}')
 
     @staticmethod
     def change_price(id, new_price):

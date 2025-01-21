@@ -45,11 +45,19 @@ TossedOut! - Cart
                     </td>
                     <td>${{ products[items|string].price }}</td>
                     <td>
+                        {% if products[items|string].quantity > cart.get(items) %}
                         <div class="input-group">
                             <a href="{{ url_for('removefromcart', product_id=items) }}" class="btn btn-outline-secondary btn-sm">-</a>
                             <input type="text" class="form-control text-center" value="{{ cart.get(items) }}" readonly style="width: 50px;">
                             <a href="{{ url_for('addtocart_cart', product_id=items) }}" class="btn btn-outline-secondary btn-sm">+</a>
                         </div>
+                        {% else %}
+                        <div class="input-group">
+                            <a href="{{ url_for('removefromcart', product_id=items) }}" class="btn btn-outline-secondary btn-sm">-</a>
+                            <input type="text" class="form-control text-center" value="Out of Stock" readonly style="width: 50px;">
+                            <a href="" class="btn btn-outline-secondary btn-sm">+</a>
+                        </div>
+                        {% endif %}
                     </td>
                     <td>${{ products[items|string].price * cart.get(items) }}</td>
                 </tr>
@@ -60,35 +68,37 @@ TossedOut! - Cart
 
     <div class="d-flex flex-column align-items-end mt-3">
     {% if gifts %}
-
+<div class="d-flex flex-column align-items-end mb-2">
     <div class="d-flex align-items-center justify-content-end mb-2">
 
         <h5 class="mb-0">Comes with {{ gifts }}</h5>
        <a href="{{ url_for('removeVoucher', code = codeUsed) }}" class="btn btn-sm btn-primary me-2">Remove Voucher</a>
-    </div>
-    <h5 class="mb-0">Subtotal: ${{ subtotal }}</h5>
-
+    </div><h5 class="mb-0">Shipping -  $5</h5>
+    <h5 class="mb-0">Subtotal: ${{ subtotal  }}</h5>
+</div>
     {% elif discount %}
-
+<div class="d-flex flex-column align-items-end mb-2">
     <div class="d-flex align-items-center justify-content-end mb-2">
 
         <h5 class="mb-0">{{ discount }}% Discount</h5>
     <a href="{{ url_for('removeVoucher', code = codeUsed) }}" class="btn btn-sm btn-primary me-2">Remove Voucher</a>
     </div>
-    <h5 class="mb-0">Subtotal: ${{ (subtotal * ((100 - discount) / 100) )|round(3)}}</h5>
-
+        </div><h5 class="mb-0">Shipping -  $5</h5>
+    <h5 class="mb-0">Subtotal: ${{ subtotal }}</h5>
+        </div>
     {% elif freeShipping %}
-
+<div class="d-flex flex-column align-items-end mb-2">
     <div class="d-flex align-items-center justify-content-end mb-2">
 
         <h5 class="mb-0">Free Shipping</h5>
     <a href="{{ url_for('removeVoucher', code = codeUsed) }}" class="btn btn-sm btn-primary me-2">Remove Voucher</a>
     </div>
     <h5 class="mb-0">Subtotal: ${{ subtotal }}</h5>
-
+</div>
     {% else %}
 
     <div class="d-flex align-items-center justify-content-end mb-2">
+    </div><h5 class="mb-0">Shipping -  $5</h5>
         <h5 class="mb-0">Subtotal: ${{ subtotal }}</h5>
     </div>
 
@@ -96,7 +106,7 @@ TossedOut! - Cart
 </div>
 
     {% if not voucherUsed %}
-    <div class="mt-5 p-3 border rounded bg-light" style="max-width: 100%;">
+    <div class="mt-5 p-3 border rounded bg-light " style="max-width: 50%; margin-left: auto; margin-right: auto; ">
         <h5 class="text-primary mb-3">Available Vouchers:</h5>
         <ul class="list-group">
             {% for code in codes %}
@@ -111,11 +121,35 @@ TossedOut! - Cart
     </div>
     {% endif %}
 </div>
-
+<div class="container text-center mt-5">
+        <a class="btn checkout-btn" href = "{{ url_for('checkOut', voucher = codeUsed, subtotal = subtotal) }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+  <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+</svg> Proceed to Checkout
+        </a>
+    </div>
 </div>
 
 <style>
-
+    body{
+        font-family: Garet;
+    }
+    .checkout-btn {
+            background-color: #28a745; /* Green color */
+            color: white;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .checkout-btn:hover {
+            background-color: #218838; /* Darker green */
+            transform: scale(1.05);
+        }
+        .checkout-btn:active {
+            background-color: #1e7e34; /* Even darker green */
+            transform: scale(0.95);
+        }
     .list-group-item {
         transition: background-color 0.3s ease;
     }
