@@ -185,6 +185,58 @@ Tossed Out! - Profile
     background-color: #6f0005; /* Even darker red on click */
     color: #f2f2f2;
 }
+
+#orders-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+#orders-wrapper {
+    overflow-x: hidden;
+    overflow-y: auto;    /* Allow vertical scrolling */
+    width: calc(100vw * 0.5859);
+    max-height: calc(62.5vh);
+    padding-right: 15px;  /* Prevent content from getting cut off on the right side */
+}
+
+[id^="order-card-"] {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+[id^="order-card-"] .card-title {
+    font-size: 1.2rem;
+    color: #333;
+    font-weight: bold;
+}
+
+[id^="order-card-"] .product-img {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #ddd;
+}
+
+[id^="order-card-"] .card-body p {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+[id^="order-card-"] .card-body strong {
+    color: #000;
+}
+
+[id^="order-card-"] .text-muted {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+[id^="order-card-"] .card-body hr {
+    margin: 1rem 0;
+    border-top: 1px solid #eee;
+}
+
     </style>
     <script>
     document.addEventListener("DOMContentLoaded", function(event) {
@@ -446,7 +498,42 @@ document.getElementById('toggle-address-form').addEventListener('click', functio
 
 </div>
 {% elif current_tab == 'order_history' %}
-    <h1 style="text-align: center">placeholder</h1>
+<div id="orders-container" class="container my-5">
+    <div id="orders-wrapper" class="overflow-auto">
+        <div class="row">
+            {% for order in orders %}
+            <div id="order-card-{{ order.id }}" class="col-md-8 mx-auto mb-4">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">Order ID: {{ order.id }}</h5>
+                        <hr>
+                        <h6 class="mb-3">Products:</h6>
+                        <div class="row">
+                            {% for i in order.Products %}
+                            <div class="col-md-12 d-flex align-items-center mb-3">
+                                <img src="{{ order.Products[i][1].imageUrl }}" class="product-img me-3" width="80" height="80" alt="Product Image">
+                                <div>
+                                    <strong>{{ order.Products[i][0] }} x</strong> - {{ order.Products[i][1].name }}<br>
+                                    <span class="text-muted">${{ order.Products[i][1].price }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <hr>
+                        <p><strong>Subtotal:</strong> ${{ order.subtotal }}</p>
+                        {% if order.voucher %}
+                        <p><strong>Vouchers:</strong> {{ order.voucher }}</p>
+                        {% endif %}
+                        <p><strong>Status:</strong> {{ order.status|split_camel_case }}</p>
+                        <p><strong>Payment Reference Number:</strong> {{ order.payment_method }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
 
 {% elif current_tab == 'coupons' %}
     <div class="container mt-5">

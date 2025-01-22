@@ -2,7 +2,7 @@ import copy
 
 from Product import Product
 import shelve
-
+import datetime
 
 
 class Order:
@@ -16,6 +16,9 @@ class Order:
         self.voucher = voucher
         self.user = user
         self.Products = {}
+        self.payment_method = None
+        self.date = datetime.datetime.now().strftime("%d/%m/%Y")
+        self.datetime = datetime.datetime.now()
         i = 0
         for products in cart:
             with shelve.open('products') as Products:
@@ -25,7 +28,7 @@ class Order:
                 else:
                     print("not enough quantity")
                 i+=1
-        self.status = "In Progress"
+        self.status = "PaymentPending"
         self.id = 0
         with shelve.open('Orders') as Orders:
             highest = 0
@@ -45,6 +48,16 @@ class Order:
             order.status = status
             Orders[id] = order
     @staticmethod
+    def getStatus(id):
+        with shelve.open('Orders') as Orders:
+            order = Orders[id]
+            return order.status
+    @staticmethod
+    def getUser(id):
+        with shelve.open('Orders') as Orders:
+            order = Orders[id]
+            return order.user
+    @staticmethod
     def print_order(id):
         with shelve.open('Orders') as Orders:
             for i in Orders[id].Products:
@@ -52,4 +65,19 @@ class Order:
                     print(x)
             print(Orders[id].voucher)
             print(Orders[id].user)
+    @staticmethod
+    def cancel_order(id):
+        try:
+            with shelve.open('Orders') as Orders:
+                for i in Orders[id].Products:
+                    Product.add_quantity( Orders[id].Products[i][1].id, Orders[id].Products[i][0])
+                del Orders[id]
+        except:
+            print("order not found")
+    @staticmethod
+    def update_payment_method(id, payment_method):
+        with shelve.open('Orders') as Orders:
+            order = Orders[id]
+            order.payment_method = payment_method
+            Orders[id] = order
 

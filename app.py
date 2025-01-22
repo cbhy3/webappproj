@@ -1,4 +1,8 @@
-from flask import Flask, render_template, redirect, request, redirect, url_for, session, jsonify
+import base64
+import random
+import re
+
+from flask import Flask, render_template, redirect, request, redirect, url_for, session, jsonify, send_file
 from Forms import *
 import shelve as shelve
 from customer import Customer
@@ -11,6 +15,7 @@ import copy
 import datetime
 import threading
 import time
+import generatePayNowQR
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bignuts'
 
@@ -24,7 +29,6 @@ def updateCooldown():
                     user = usersDB[user_key]
                     if user.Cooldown > 0:
                         user.decreaseCooldown()
-
 
         except Exception as e:
             print(f"Error: {e}")
@@ -186,6 +190,12 @@ def change_success():
         print(success)
         return jsonify(success)
     return jsonify("eat dog"), 400
+
+
+@app.template_filter('split_camel_case')
+def split_camel_case(value):
+    return ' '.join(re.findall(r'[A-Z][^A-Z]*', value))
+app.jinja_env.filters['split_camel_case'] = split_camel_case
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
 
@@ -197,6 +207,12 @@ def profile():
     codes = None
     cooldown = None
     addresses = None
+    users_orders = []
+    with shelve.open('Orders') as ordersDB:
+        for i in ordersDB:
+            if ordersDB[i].user == session.get('current_user'):
+                users_orders.append(copy.deepcopy(ordersDB[i]))
+    users_orders.sort(key=lambda order: order.datetime, reverse=True)
     try:
         current_user = CurrentUser.fromEmail(session.get('current_user'))
         cart = current_user.Cart
@@ -284,7 +300,7 @@ def profile():
     return render_template('profile.html', active_page='profile',signoutform = signoutform, current_tab = current_tab,
                            current_user=current_user,  otpform=otpform, change_email = change_email,
                            change_emailEmail = change_emailEmail, change_password = change_password, cart = cart, codes = codes,
-                           cooldown = cooldown, delete_account = delete_account, toggleEmail = toggleEmail, success = success, add_address = add_address, addresses = addresses)
+                           cooldown = cooldown, delete_account = delete_account, toggleEmail = toggleEmail, success = success, add_address = add_address, addresses = addresses, orders = users_orders)
 
 @app.route('/updatep', methods = ['POST'])
 def update_profile_tab():
@@ -568,26 +584,95 @@ def giveVoucher():
 
     return jsonify({'success': True, 'message': 'Code redeemed successfully'})
 
-@app.route('/cart/checkout/<subtotal>/', methods = ['GET', 'POST'])
-def checkOut( subtotal):
+payment_session = {}
+@app.route('/cart/checkout/<subtotal>', methods = ['GET', 'POST'])
+def checkOut(subtotal):
 
+
+
+
+        voucher = codeUsed
+        print(voucher)
+
+        with shelve.open('users') as usersDB:
+            current_user = usersDB[session.get('current_user')]
+            cart = current_user.Cart
+            newOrder = Order(subtotal, cart, voucher, session.get('current_user'))
+        id = newOrder.id
+        payment_session[session.get('current_user')] = 600
+
+        payment_thread = threading.Thread(target=updatePaymentSession, args=(session.get('current_user'),str(id)), daemon=True)
+        payment_thread.start()
+        return redirect(url_for('payment', orderid=id))
+
+def updatePaymentSession(user_id, orderid):
+    try:
+        while payment_session.get(user_id, 0) > 0:
+            payment_session[user_id] -= 1
+            print(payment_session[user_id])
+            time.sleep(1)
+        payment_session.pop(user_id, None)
+        if payment_session[user_id] == 0:
+            Order.cancel_order(orderid)
+    except Exception as e:
+        print(f"Error in payment session thread: {e}")
+
+@app.route('/payment/<orderid>' , methods = ['GET', 'POST'])
+def payment(orderid):
+    try:
+        if payment_session[session.get('current_user')] > 0:
+            with shelve.open('Orders') as orders:
+                order = orders[str(orderid)]
+                order_clone = copy.deepcopy(order)
+                if order.user == session.get('current_user'):
+                    qr = generatePayNowQR.generatePayNowQR(str(orders[str(orderid)].subtotal), random.randint(10000000, 99999999))
+                    img_64 = base64.b64encode(qr[0].read()).decode('utf-8')
+                    return render_template('payment.html', order = order_clone, img_64=img_64, ref = qr[1], session = payment_session[session.get('current_user')])
+                else:
+                    return redirect(url_for('cart'))
+        else:
+
+            return redirect(url_for('cart'))
+    except:
+
+        return redirect(url_for('cart'))
+
+
+@app.route('/payment/cancel_order/<orderid>', methods = ['GET', 'POST'])
+def cancel_order(orderid):
+    if Order.getUser(orderid) == session.get('current_user') and Order.getStatus(orderid) == "PaymentPending":
+        Order.cancel_order(str(orderid))
+        payment_session.pop(session.get('current_user'))
+        return redirect(url_for('cart'))
+    else:
+        return redirect(url_for('cart'))
+
+
+@app.route('/payment/confirmorder/<orderid>/<ref>', methods = ['GET', 'POST'])
+def confirm_order(orderid, ref):
+    if Order.getUser(orderid) == session.get('current_user') and Order.getStatus(orderid) == "PaymentPending":
         global codeUsed
         global voucherUsed
         global discount
         global gifts
         global freeShipping
-
-
-        voucher = codeUsed
-        print(voucher)
+        global success
+        global current_tab
+        voucherUsed = False
+        codeUsed = None
+        discount = None
+        gifts = None
+        freeShipping = False
+        current_tab = "order_history"
+        success = "Order successfully placed!"
+        payment_session.pop(session.get('current_user'))
         with shelve.open('users') as usersDB:
             current_user = usersDB[session.get('current_user')]
-            cart = current_user.Cart
-            Order(subtotal, cart, voucher, session.get('current_user'))
             current_user.clearCart()
-            voucherUsed = False
-            codeUsed = None
-            discount = None
-            gifts = None
-            freeShipping = False
+        Order.updateStatus(orderid, "PaymentProcessing")
+        Order.update_payment_method(orderid, f'PN{ref}')
+        return redirect(url_for('profile'))
+    else:
+        print('something went wrong')
+        Order.cancel_order(orderid)
         return redirect(url_for('cart'))
