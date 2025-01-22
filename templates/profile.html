@@ -520,6 +520,7 @@ document.getElementById('toggle-address-form').addEventListener('click', functio
                             {% endfor %}
                         </div>
                         <hr>
+                        <p><strong>Shipping Address: </strong> {{ order.address }}</p>
                         <p><strong>Subtotal:</strong> ${{ order.subtotal }}</p>
                         {% if order.voucher %}
                         <p><strong>Vouchers:</strong> {{ order.voucher }}</p>

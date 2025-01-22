@@ -98,10 +98,10 @@ TossedOut! - Cart
     {% else %}
 
     <div class="d-flex align-items-center justify-content-end mb-2">
-    </div><h5 class="mb-0">Shipping -  $5</h5>
+    </div>
+        <h5 class="mb-0">Shipping -  $5</h5>
         <h5 class="mb-0">Subtotal: ${{ subtotal }}</h5>
     </div>
-
     {% endif %}
 </div>
 
@@ -120,17 +120,86 @@ TossedOut! - Cart
         </ul>
     </div>
     {% endif %}
-</div>
+<div class="container address-container border rounded bg-light">
+        <h2 class="text-center mb-4">Select an Address</h2>
+        {% for address in addresses %}
+            <label class="address-item d-flex align-items-center p-2 border rounded mb-2" for="{{ address }}">
+            <span class="">{{ address }}</span>
+            <input type="radio" name="address" id="{{ address }}" class="ms-2" onclick="updateAddress('{{ address }}')">
+        </label>
+        {% endfor %}
+    </div>
+    {% if selected_address %}
 <div class="container text-center mt-5">
-        <a class="btn checkout-btn" href = "{{ url_for('checkOut', voucher = codeUsed, subtotal = subtotal) }}">
+        <a class="btn checkout-btn" href = "{{ url_for('checkOut', subtotal = subtotal, address = selected_address) }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
   <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
 </svg> Proceed to Checkout
         </a>
     </div>
+    {% else %}
+    <div class="container text-center mt-5">
+        <a class="btn btn-secondary" href = "">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+  <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+</svg> Select an Address
+        </a>
+    </div>
+    {% endif %}
 </div>
-
+<script>
+function updateAddress(selectedAddress) {
+        fetch('/update-address', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ address: selectedAddress }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+        setTimeout(function(){
+            location.reload();
+        },50)
+    }
+</script>
 <style>
+.address-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 30px;
+            padding: 20px;
+        }
+        .address-item {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.5);
+            box-shadow: rgba(0, 0, 0, 0.3) 0px 5px 5px;
+            padding: 20px;
+            border-radius: 10px;
+            width: 600px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .address-item:hover {
+    transform: translateY(-5px);
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 10px 15px;
+}
+        .address-item span {
+            margin-right: auto;
+            margin-left: auto;
+            font-size: 1.2rem;
+        }
+        .address-item input[type="radio"] {
+            transform: scale(1.2);
+        }
     body{
         font-family: Garet;
     }
@@ -148,6 +217,20 @@ TossedOut! - Cart
         }
         .checkout-btn:active {
             background-color: #1e7e34; /* Even darker green */
+            transform: scale(0.95);
+        }
+        .btn-secondary {
+
+            color: white;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-secondary:hover {
+            transform: scale(1.05);
+        }
+        .btn-secondary:active {
             transform: scale(0.95);
         }
     .list-group-item {

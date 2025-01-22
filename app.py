@@ -523,6 +523,7 @@ def cart():
         with shelve.open('users') as usersDB:
             current_user = usersDB[session.get('current_user')]
             codes = current_user.Codes
+            Addresses = current_user.Addresses
         cart = current_user.Cart
 
         subtotal = 0
@@ -536,6 +537,7 @@ def cart():
         global discount
         global gifts
         global freeShipping
+        global selected_address
         if discount:
             subtotal -= round((subtotal*(discount/100)),2)
         if freeShipping:
@@ -544,12 +546,21 @@ def cart():
         global codeUsed
 
         return render_template('cart.html',active_page='cart', products=all_products, cart = cart, subtotal = subtotal, codes = codes, voucherUsed = voucherUsed
-                               , discount = discount, gifts = gifts, freeShipping = freeShipping, codeUsed = codeUsed, current_user = current_user)
+                               , discount = discount, gifts = gifts, freeShipping = freeShipping, codeUsed = codeUsed, current_user = current_user, addresses = Addresses, selected_address = selected_address)
 
     except KeyError as e:
         print(e)
         signup = True
         return redirect(url_for('catalog'))
+
+selected_address = None
+
+@app.route('/update-address', methods=['POST'])
+def update_address():
+    global selected_address
+    data = request.get_json()
+    selected_address = data.get('address')
+    return jsonify({"message": "Address updated successfully", "selected_address": selected_address})
 @app.route('/profile/game', methods = ['GET', 'POST'])
 def game():
     try:
@@ -585,8 +596,8 @@ def giveVoucher():
     return jsonify({'success': True, 'message': 'Code redeemed successfully'})
 
 payment_session = {}
-@app.route('/cart/checkout/<subtotal>', methods = ['GET', 'POST'])
-def checkOut(subtotal):
+@app.route('/cart/checkout/<subtotal>/<address>', methods = ['GET', 'POST'])
+def checkOut(subtotal,address):
 
 
 
@@ -597,7 +608,7 @@ def checkOut(subtotal):
         with shelve.open('users') as usersDB:
             current_user = usersDB[session.get('current_user')]
             cart = current_user.Cart
-            newOrder = Order(subtotal, cart, voucher, session.get('current_user'))
+            newOrder = Order(subtotal, cart, voucher, session.get('current_user'), address)
         id = newOrder.id
         payment_session[session.get('current_user')] = 600
 
@@ -658,6 +669,7 @@ def confirm_order(orderid, ref):
         global freeShipping
         global success
         global current_tab
+
         voucherUsed = False
         codeUsed = None
         discount = None

@@ -11,7 +11,7 @@ class Order:
     status = "Inactive"
     Products : { Product :int}
 
-    def __init__(self, subtotal, cart, voucher, user):
+    def __init__(self, subtotal, cart, voucher, user, address):
         self.subtotal = subtotal
         self.voucher = voucher
         self.user = user
@@ -19,6 +19,7 @@ class Order:
         self.payment_method = None
         self.date = datetime.datetime.now().strftime("%d/%m/%Y")
         self.datetime = datetime.datetime.now()
+        self.address = address
         i = 0
         for products in cart:
             with shelve.open('products') as Products:
