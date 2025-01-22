@@ -5,7 +5,9 @@ pip install mailersend
 pip install wtforms  
 pip install bcrypt  
 pip install email_validator  
-pip install geopy
+pip install qrcode[pil]  
+
+
 
 
 
