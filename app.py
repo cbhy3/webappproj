@@ -217,6 +217,7 @@ def profile():
         current_user = CurrentUser.fromEmail(session.get('current_user'))
         cart = current_user.Cart
         codes = current_user.Codes
+        totalCodes = sum(codes.values())
         cooldown = current_user.Cooldown
         addresses = current_user.Addresses
         print(codes)
@@ -300,7 +301,7 @@ def profile():
     return render_template('profile.html', active_page='profile',signoutform = signoutform, current_tab = current_tab,
                            current_user=current_user,  otpform=otpform, change_email = change_email,
                            change_emailEmail = change_emailEmail, change_password = change_password, cart = cart, codes = codes,
-                           cooldown = cooldown, delete_account = delete_account, toggleEmail = toggleEmail, success = success, add_address = add_address, addresses = addresses, orders = users_orders)
+                           cooldown = cooldown, delete_account = delete_account, toggleEmail = toggleEmail, success = success, add_address = add_address, addresses = addresses, orders = users_orders, totalCodes= totalCodes)
 
 @app.route('/updatep', methods = ['POST'])
 def update_profile_tab():
@@ -331,7 +332,37 @@ def updateadmin_action():
         return jsonify(action)
     return jsonify("piss off"), 400
 
+sort_orders = "date_latest"
+@app.route('/update_orders_sort', methods = ['POST'])
+def update_orders_sort():
+    global sort_orders
+    sort = request.json
+    new_sort = sort.get('new_action')
+    if new_sort:
+        sort_orders = new_sort
+        print(sort_orders)
+        return jsonify(new_sort)
+    return jsonify("piss off"), 400
 
+def parse_order(s):
+    pattern = re.compile(
+        r'^(?=.*user_(?P<user>[^\s@]+@[^\s@]+\.[^\s@]+)(?=_))?(?=.*order_id_(?P<order_id>\d+))?(?=.*ref_num_(?P<ref_num>PN\d{8}))?.*date_(?P<state>latest|earliest)$'
+    )
+    match = pattern.match(s)
+    if match:
+        return {
+            'state': f"date_{match.group('state')}",
+            'user': match.group('user'),
+            'orderId': match.group('order_id'),
+            'refNum': match.group('ref_num')
+        }
+    return None
+
+
+@app.route('/change_order_status/<order_id>/<new_status>', methods = ['GET','POST'])
+def change_order_status(order_id, new_status):
+    Order.updateStatus(order_id, new_status)
+    return redirect(url_for('Admin'))
 @app.route('/admin', methods=['GET', 'POST'])
 def Admin():
     try:
@@ -345,6 +376,91 @@ def Admin():
         return redirect(url_for('about_us'))
     add_product = addProduct()
     modify_product = modifyProduct()
+    global sort_orders
+    orders = []
+    print(f"i got hoes {sort_orders}")
+    sort_conditions = parse_order(sort_orders)
+    print(f"i got no hoes{sort_conditions}")
+    v = 0
+    if sort_conditions['state'] == 'date_latest':
+        with shelve.open('Orders') as ordersDB:
+            if sort_conditions['user']:
+                v+=1
+                for i in ordersDB:
+
+                    first_u = sort_conditions['user'].index('_')
+                    print(ordersDB[i].user, sort_conditions['user'][:first_u])
+                    if ordersDB[i].user == sort_conditions['user'][:first_u]:
+                        orders.append(copy.deepcopy(ordersDB[i]))
+            if sort_conditions['orderId']:
+                if v == 0:
+                    v += 1
+                    for i in ordersDB:
+                        print(ordersDB[i].id, sort_conditions['orderId'])
+                        if str(ordersDB[i].id) == str(sort_conditions['orderId']):
+                            orders.append(copy.deepcopy(ordersDB[i]))
+                else:
+                    for i in orders:
+
+                        if str(i.id) != str(sort_conditions['orderId']):
+                            orders.remove(i)
+            if sort_conditions['refNum']:
+                if v == 0:
+                    v += 1
+                    for i in ordersDB:
+                        print(ordersDB[i].payment_method, sort_conditions['refNum'])
+                        if ordersDB[i].payment_method == sort_conditions['refNum']:
+                            orders.append(copy.deepcopy(ordersDB[i]))
+                else:
+                    print(orders)
+                    for z in orders:
+                        print(z.payment_method, sort_conditions['refNum'])
+                        if z.payment_method != sort_conditions['refNum']:
+
+                            orders.remove(z)
+            if v == 0:
+                for i in ordersDB:
+                    orders.append(copy.deepcopy(ordersDB[i]))
+        orders.sort(key=lambda order: order.datetime, reverse=True)
+    elif sort_conditions['state'] == 'date_earliest':
+        with shelve.open('Orders') as ordersDB:
+            if sort_conditions['user']:
+                v += 1
+                for i in ordersDB:
+
+                    first_u = sort_conditions['user'].index('_')
+                    print(ordersDB[i].user, sort_conditions['user'][:first_u])
+                    if ordersDB[i].user == sort_conditions['user'][:first_u]:
+                        orders.append(copy.deepcopy(ordersDB[i]))
+            if sort_conditions['orderId']:
+                if v == 0:
+                    v += 1
+                    for i in ordersDB:
+                        print(ordersDB[i].id, sort_conditions['orderId'])
+                        if str(ordersDB[i].id) == str(sort_conditions['orderId']):
+                            orders.append(copy.deepcopy(ordersDB[i]))
+                else:
+                    for i in orders:
+
+                        if str(i.id) != str(sort_conditions['orderId']):
+                            orders.remove(i)
+            if sort_conditions['refNum']:
+                if v == 0:
+                    v += 1
+                    for i in ordersDB:
+                        print(ordersDB[i].payment_method, sort_conditions['refNum'])
+                        if ordersDB[i].payment_method == sort_conditions['refNum']:
+                            orders.append(copy.deepcopy(ordersDB[i]))
+                else:
+                    print(orders)
+                    for z in orders:
+                        print(z.payment_method, sort_conditions['refNum'])
+                        if z.payment_method != sort_conditions['refNum']:
+                            orders.remove(z)
+            if v == 0:
+                for i in ordersDB:
+                    orders.append(copy.deepcopy(ordersDB[i]))
+        orders.sort(key=lambda order: order.datetime, reverse=False)
     global action
     if request.method == 'POST':
         if add_product.validate_on_submit() and 'add_product_submit' in request.form:
@@ -388,7 +504,7 @@ def Admin():
             return redirect(url_for('Admin'))
         else:
             print('form validation failed', add_product.errors)
-    return render_template('admin.html', add_product = add_product, action=action , modify_product = modify_product)
+    return render_template('admin.html', add_product = add_product, action=action , modify_product = modify_product, orders = orders)
 
 @app.route('/catalog/product/<int:product_id>', methods = ['GET', 'POST'])
 def product_detail(product_id):

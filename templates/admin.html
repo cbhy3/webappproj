@@ -50,12 +50,26 @@
             location.reload();
         },50)
     }
+         document.addEventListener("DOMContentLoaded", function(event) {
+            var scrollpos = localStorage.getItem('scrollposAdmin');
+            if (scrollpos) window.scrollTo(0, scrollpos);
+        });
+
+        window.onbeforeunload = function(e) {
+            localStorage.setItem('scrollposAdmin', window.scrollY);
+        };
+
+
 </script>
 <div class="container mt-5">
      {% if action == 'Default' %}
         <button class="btn btn-custom" onclick = "update_action('AddProduct')">Add Product</button>
         <br>
         <button class="btn btn-custom" onclick = "update_action('ModifyProduct')">Modify/ Delete Product</button>
+        <br>
+         <button class="btn btn-custom" onclick = "update_action('ViewOrders')">View Orders</button>
+        <br>
+          <a class="btn btn-custom" href = "{{ url_for("about_us") }}">Home</a>
         <br>
      {% elif action == 'AddProduct' %}
     <h1 class="mb-4">Add Product</h1>
@@ -266,6 +280,226 @@
          </div>
          </form>
          <button class="btn btn-custom" onclick = "update_action('Default')">Back</button>
+
+     {% elif action == "ViewOrders" %}
+         <style>
+         .product-img {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.02);
+}
+
+.text-primary {
+    color: #007bff !important;
+}
+
+.text-success {
+    color: #28a745 !important;
+}
+
+.text-secondary {
+    color: #6c757d !important;
+}
+
+.badge {
+    font-size: 0.9rem;
+    padding: 0.5em 0.7em;
+}
+
+hr {
+    border-top: 1px solid #eaeaea;
+}
+.input-group {
+    width: 800px;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.input-group .form-control {
+    border: none;
+    box-shadow: none;
+}
+
+.input-group .form-select {
+    border: none;
+    box-shadow: none;
+}
+
+.input-group .btn-primary {
+    border: none;
+    background-color: #007bff;
+    transition: background-color 0.3s ease;
+}
+
+.input-group .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.input-group .btn-primary i {
+    margin-right: 0.5rem;
+}
+.back-btn {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+        }
+
+         </style>
+         <button onclick = "update_action('Default')"class="btn btn-primary back-btn">
+        <i class="bi bi-arrow-left"></i> Back
+    </button>
+         <div class="container py-4">
+    <div class="row justify-content-center">
+            <div class="input-group shadow-sm">
+                <input
+                    type="text"
+                    id="search_orders"
+                    class="form-control"
+                    placeholder="User email"
+                    aria-label="Search by user email"
+                    aria-describedby="search-button">
+                <input
+                    type="text"
+                    class="form-control"
+                    id="order-id-input"
+                    placeholder="Order ID"
+                    aria-label="Search by order ID">
+                <input
+                    type="text"
+                    class="form-control"
+                    id="reference-input"
+                    placeholder="Reference number"
+                    aria-label="Search by reference number">
+                <select class="form-select" id = "select_date" aria-label="Select filter">
+                    <option value="date_latest" selected>Date (Latest)</option>
+                    <option value="date_earliest">Date (Earliest)</option>
+                </select>
+                <button class="btn btn-primary" id="search-button" type="button">
+                    Search
+                </button>
+            </div>
+        </div>
+
+</div>
+         <script>
+         document.addEventListener("DOMContentLoaded", function(event) {
+             document.getElementById("search_orders").value = ""
+             document.getElementById("order-id-input").value = ""
+             document.getElementById("reference-input").value = ""
+         })
+         function update_search_orders(action){
+        fetch('update_orders_sort', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                new_action: action
+            })
+        })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+        setTimeout(function(){
+            location.reload();
+        },50)
+    }
+
+        function generate_order_condition(){
+            const user = document.getElementById('search_orders').value.trim()
+            const order_id = document.getElementById('order-id-input').value.trim()
+            const ref_num = document.getElementById('reference-input').value.trim()
+            const date = document.getElementById('select_date').value
+
+            let result = date;
+            if (ref_num) result = `ref_num_${ref_num}_${result}`;
+            if (user) result =`user_${user}_${result}`;
+            if (order_id) result = `order_id_${order_id}_${result}`;
+
+            return result;
+        }
+
+         document.getElementById("search-button").onclick = function() {update_search_orders(generate_order_condition()); }
+         document.getElementById("select-date").onchange = function() {update_search_orders(generate_order_condition()); }
+
+         </script>
+<div class="container py-4">
+    {% for order in orders %}
+    <div id="order-card-{{ order.id }}" class="col-md-8 mx-auto mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-body">
+                <h5 class="card-title text-primary fw-bold">Order ID: {{ order.id }}</h5>
+                <hr>
+                <h6 class="mb-3 text-secondary">Products:</h6>
+                <div class="row">
+                    {% for i in order.Products %}
+                    <div class="col-md-12 d-flex align-items-center mb-3">
+                        <img src="{{ order.Products[i][1].imageUrl }}" class="product-img me-3 rounded" width="80" height="80" alt="Product Image">
+                        <div>
+                            <strong class="text-dark">{{ order.Products[i][0] }} x</strong> -
+                            <span class="text-muted">{{ order.Products[i][1].name }}</span><br>
+                            <span class="text-success fw-bold">${{ order.Products[i][1].price }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <hr>
+                <p><strong>Order Placed By:</strong> <span class="text-muted">{{ order.user }}</span></p>
+                <p><strong>Date Placed:</strong> <span class="text-muted">{{ order.date }}</span></p>
+                <p><strong>Shipping Address:</strong> <span class="text-muted">{{ order.address }}</span></p>
+                <p><strong>Subtotal:</strong> <span class="text-success fw-bold">${{ order.subtotal }}</span></p>
+                {% if order.voucher %}
+                <p><strong>Vouchers:</strong> <span class="badge bg-info text-dark">{{ order.voucher }}</span></p>
+                {% endif %}
+                <p>
+                <strong>Status:</strong>
+
+              <button id="dropdownMenuButton{{ order.id }}" class="btn badge
+        {% if order.status == "PaymentProcessing" %} bg-warning
+        {% elif order.status == "OrderProcessed" %} bg-info
+        {% elif order.status in ["InPreparation", "OutForDelivery"] %} bg-primary
+        {% elif order.status == "Delivered" %} bg-success
+        {% else %} bg-muted
+        {% endif %}
+        dropdown-toggle"
+        data-bs-toggle="dropdown" aria-expanded="false" >
+    {{ order.status|split_camel_case }}
+</button>
+<ul class="dropdown-menu" aria-labelledby=`dropdownMenuButton{{ order.id }}` id = "dropdown{{ order.id }}">
+    <li><a class="dropdown-item" href="{{ url_for("change_order_status", order_id=order.id, new_status="PaymentProcessing") }}">Payment Processing</a></li>
+    <li><a class="dropdown-item" href="{{ url_for("change_order_status", order_id=order.id, new_status="OrderProcessed") }}">Order Processed</a></li>
+    <li><a class="dropdown-item" href="{{ url_for("change_order_status", order_id=order.id, new_status="InPreparation") }}">In Preparation</a></li>
+    <li><a class="dropdown-item" href="{{ url_for("change_order_status", order_id=order.id, new_status="OutForDelivery") }}">Out For Delivery</a></li>
+    <li><a class="dropdown-item" href="{{ url_for("change_order_status", order_id=order.id, new_status="Delivered") }}">Delivered</a></li>
+    <li><a class="dropdown-item" href="{{ url_for("change_order_status", order_id=order.id, new_status="Inactive") }}">Inactive</a></li>
+</ul>
+            </p>
+                <p><strong>Payment Reference Number:</strong> <span class="text-muted">{{ order.payment_method }}</span></p>
+            </div>
+        </div>
+    </div>
+        <style>
+        .dropdown-menu{
+            position: relative;
+
+        }
+        </style>
+        <script>
+        document.getElementById("dropdownMenuButton{{ order.id }}").addEventListener("click", function() {
+            document.getElementById("dropdown{{ order.id }}").classList.toggle("show");
+        })
+        </script>
+    {% endfor %}
+</div>
     {% endif %}
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -527,6 +527,8 @@ document.getElementById('toggle-address-form').addEventListener('click', functio
                         {% endif %}
                         <p><strong>Status:</strong> {{ order.status|split_camel_case }}</p>
                         <p><strong>Payment Reference Number:</strong> {{ order.payment_method }}</p>
+                        <p><strong>Date Placed:</strong> <span class="text-muted">{{ order.date }}</span></p>
+
                     </div>
                 </div>
             </div>
@@ -541,6 +543,7 @@ document.getElementById('toggle-address-form').addEventListener('click', functio
     <h2 class="text-center mb-4" style = "font-family: Lexend">Your Vouchers</h2>
     <div class="row justify-content-center">
         <div class="col-md-8">
+        {% if totalCodes > 0 %}
             <div class="list-group">
                 {% for code in codes %}
                     {% if codes[code] > 0 %}
@@ -565,7 +568,9 @@ document.getElementById('toggle-address-form').addEventListener('click', functio
                         </div>
                     {% endif %}
                 {% endfor %}
-
+        {% else %}
+            <h3 style="text-align: center; font-family: Garet">You have no vouchers. Start earning now!</h3>
+            {% endif %}
             </div>
         {% if cooldown == 0 %}
             <a class="btn btn-success btn-md" href = {{ url_for('game') }}>Earn Vouchers</a>
