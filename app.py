@@ -221,7 +221,7 @@ def profile():
         cooldown = current_user.Cooldown
         addresses = current_user.Addresses
         print(codes)
-    except KeyError:
+    except:
         current_user = None
     otpform = Otp()
     signoutform  = signOut()
@@ -297,7 +297,7 @@ def profile():
         else:
             print("Form validation failed:", otpform.errors, change_email.errors)
     if current_user is None:
-        return redirect(url_for('about_us'))
+        return redirect(url_for('sign_in'))
     return render_template('profile.html', active_page='profile',signoutform = signoutform, current_tab = current_tab,
                            current_user=current_user,  otpform=otpform, change_email = change_email,
                            change_emailEmail = change_emailEmail, change_password = change_password, cart = cart, codes = codes,
@@ -538,7 +538,7 @@ def addtocart(product_id):
                     print(f'{productsDB[str(i)]},,,, quantity: {current_user.Cart[i]}')
         return redirect(url_for('catalog'))
 
-    except KeyError as e:
+    except:
         return redirect(url_for('sign_in'))
 
 @app.route('/catalog/removefromcart/<int:product_id>', methods=['GET', 'POST'])
@@ -553,13 +553,16 @@ def removefromcart(product_id):
 
 @app.route('/catalog/addtocart_cart/<int:product_id>', methods=['GET', 'POST'])
 def addtocart_cart(product_id):
-    with shelve.open('users') as usersDB:
-        current_user = usersDB[session.get('current_user')]
-        current_user.addToCart(product_id)
-        for i in current_user.Cart:
-            with shelve.open('products') as productsDB:
-                print(f'{productsDB[str(i)]},,,, quantity: {current_user.Cart[i]}')
-    return redirect(url_for('cart'))
+    try:
+        with shelve.open('users') as usersDB:
+            current_user = usersDB[session.get('current_user')]
+            current_user.addToCart(product_id)
+            for i in current_user.Cart:
+                with shelve.open('products') as productsDB:
+                    print(f'{productsDB[str(i)]},,,, quantity: {current_user.Cart[i]}')
+        return redirect(url_for('cart'))
+    except:
+        return redirect(url_for('sign_in'))
 @app.route('/set_signup', methods=['POST'])
 def set_signup():
     global signup
@@ -664,10 +667,9 @@ def cart():
         return render_template('cart.html',active_page='cart', products=all_products, cart = cart, subtotal = subtotal, codes = codes, voucherUsed = voucherUsed
                                , discount = discount, gifts = gifts, freeShipping = freeShipping, codeUsed = codeUsed, current_user = current_user, addresses = Addresses, selected_address = selected_address)
 
-    except KeyError as e:
+    except Exception as e:
         print(e)
-        signup = True
-        return redirect(url_for('catalog'))
+        return redirect(url_for('sign_in'))
 
 selected_address = None
 
