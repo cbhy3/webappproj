@@ -12,7 +12,7 @@ pip install qrcode[pil]
 
 
 todo:  
-
+admin able to assign other users as admin
 user support tickets  
 catalog sorting  
 
