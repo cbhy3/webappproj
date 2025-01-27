@@ -198,8 +198,12 @@ def split_camel_case(value):
 app.jinja_env.filters['split_camel_case'] = split_camel_case
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
-
-
+    try:
+        with shelve.open('admin') as adminDB:
+            admin = adminDB[session.get('current_user')]
+        isAdmin = True
+    except:
+        isAdmin = False
     global current_tab
     print(current_tab)
     current_user = None
@@ -301,7 +305,8 @@ def profile():
     return render_template('profile.html', active_page='profile',signoutform = signoutform, current_tab = current_tab,
                            current_user=current_user,  otpform=otpform, change_email = change_email,
                            change_emailEmail = change_emailEmail, change_password = change_password, cart = cart, codes = codes,
-                           cooldown = cooldown, delete_account = delete_account, toggleEmail = toggleEmail, success = success, add_address = add_address, addresses = addresses, orders = users_orders, totalCodes= totalCodes)
+                           cooldown = cooldown, delete_account = delete_account, toggleEmail = toggleEmail, success = success, add_address = add_address, addresses = addresses, orders = users_orders, totalCodes= totalCodes
+                           ,isAdmin = isAdmin)
 
 @app.route('/updatep', methods = ['POST'])
 def update_profile_tab():
@@ -363,8 +368,16 @@ def parse_order(s):
 def change_order_status(order_id, new_status):
     Order.updateStatus(order_id, new_status)
     return redirect(url_for('Admin'))
+
+
+@app.route('/admin/download_orders', methods = ['GET', 'POST'])
+def download_orders():
+    from BizStats import exportXL
+    return exportXL()
+
 @app.route('/admin', methods=['GET', 'POST'])
 def Admin():
+    from BizStats import GetStats
     try:
 
         with shelve.open('admin') as adminDB:
@@ -374,6 +387,8 @@ def Admin():
 
     except:
         return redirect(url_for('about_us'))
+
+    stats = GetStats()
     add_product = addProduct()
     modify_product = modifyProduct()
     global sort_orders
@@ -504,7 +519,7 @@ def Admin():
             return redirect(url_for('Admin'))
         else:
             print('form validation failed', add_product.errors)
-    return render_template('admin.html', add_product = add_product, action=action , modify_product = modify_product, orders = orders)
+    return render_template('admin.html', add_product = add_product, action=action , modify_product = modify_product, orders = orders, stats = stats)
 
 @app.route('/catalog/product/<int:product_id>', methods = ['GET', 'POST'])
 def product_detail(product_id):

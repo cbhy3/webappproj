@@ -12,8 +12,7 @@ pip install qrcode[pil]
 
 
 todo:  
-admin dashboard viewing sales statistics,  
-admin able to modify and view all orders  
+
 user support tickets  
 catalog sorting  
 

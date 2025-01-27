@@ -69,6 +69,8 @@
         <br>
          <button class="btn btn-custom" onclick = "update_action('ViewOrders')">View Orders</button>
         <br>
+         <button class="btn btn-custom" onclick = "update_action('Dashboard')">Dashboard</button>
+         <br>
           <a class="btn btn-custom" href = "{{ url_for("about_us") }}">Home</a>
         <br>
      {% elif action == 'AddProduct' %}
@@ -500,6 +502,111 @@ hr {
         </script>
     {% endfor %}
 </div>
+
+
+         {% elif action == "Dashboard" %}
+         <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(to bottom right, #ffffff, #f1f1f1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #343a40;
+        }
+        p, ul {
+            font-size: 1.1rem;
+            color: #495057;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .list-group-item {
+            border: none;
+            background-color: #f8f9fa;
+        }
+        .list-group-item .badge {
+            font-size: 0.9rem;
+            background-color: #6c757d;
+        }
+        .text-success {
+            font-weight: bold;
+            color: #28a745 !important;
+        }
+        .text-primary {
+            font-weight: bold;
+            color: #007bff !important;
+        }
+        .text-info {
+            font-weight: bold;
+            color: #17a2b8 !important;
+        }
+        .mb-3, .mb-4 {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+    </style>
+         <div class="container my-5">
+        <div class="card shadow-lg p-4">
+            <h1 class="text-center mb-4">TossedOut Dashboard</h1>
+
+            <!-- Download Orders Button -->
+            <div class="text-center mb-4">
+                <a href="{{ url_for('download_orders') }}" class="btn btn-primary">Download Orders</a>
+            </div>
+
+            <!-- Lifetime Sales -->
+            <div class="mb-3">
+                <p><strong>Lifetime Sales:</strong> <span class="text-success">${{ stats['LifetimeSales'] }}</span></p>
+            </div>
+
+            <!-- Monthly Sales -->
+            <div class="mb-3">
+                <p><strong>Monthly Sales:</strong> <span class="text-primary">${{ stats['MonthlySales'] }}</span></p>
+            </div>
+
+            <!-- Top Selling Products -->
+            <div class="mb-4">
+                <p><strong>Top Selling Products:</strong></p>
+                <ul class="list-group">
+                    {% for i in stats['TopSelling'] %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ i.name }}
+                        <span class="badge">{{ stats['TopSelling'][i] }} sold</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- CO2 Emissions Saved -->
+            <div class="mb-3">
+                <p><strong>CO2 Emissions Saved:</strong> <span class="text-info">{{ stats['Co2'] }} kg</span></p>
+            </div>
+
+            <!-- Water Saved -->
+            <div class="mb-3">
+                <p><strong>Water Saved:</strong> <span class="text-info">{{ stats['Water'] }} litres</span></p>
+            </div>
+        </div>
+    </div>
+         <div class="text-center mb-4">
+                <button onclick = "update_action('Default')" class="btn btn-primary">Back</button>
+            </div>
     {% endif %}
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -3,7 +3,7 @@ import copy
 from Product import Product
 import shelve
 import datetime
-
+from generateOTP import updateOrderStatus
 
 class Order:
     with shelve.open('Orders') as Orders:
@@ -48,6 +48,8 @@ class Order:
             order = Orders[id]
             order.status = status
             Orders[id] = order
+            updateOrderStatus.sendEmail(order.user, order)
+            print("email sent")
     @staticmethod
     def getStatus(id):
         with shelve.open('Orders') as Orders:
