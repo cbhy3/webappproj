@@ -374,7 +374,31 @@ def change_order_status(order_id, new_status):
 def download_orders():
     from BizStats import exportXL
     return exportXL()
+@app.route('/addAdmin/<user>', methods = ['GET', 'POST'])
+def add_admin(user):
+    try:
+        with shelve.open('admin') as adminDB:
+            admin = adminDB[session.get('current_user')]
+        with shelve.open('users') as usersDB:
+            print(usersDB[user].isAdmin())
+            usersDB[user].addAdmin()
+            print(usersDB[user].isAdmin()) #debug
+        return redirect(url_for('Admin'))
+    except:
+        return redirect(url_for('about_us'))
 
+@app.route('/removeAdmin/<user>', methods = ['GET', 'POST'])
+def remove_admin(user):
+    try:
+        with shelve.open('admin') as adminDB:
+            admin = adminDB[session.get('current_user')]
+        with shelve.open('users') as usersDB:
+            print(usersDB[user].isAdmin())
+            usersDB[user].removeAdmin()
+            print(usersDB[user].isAdmin()) #debug
+        return redirect(url_for('Admin'))
+    except:
+        return redirect(url_for('about_us'))
 @app.route('/admin', methods=['GET', 'POST'])
 def Admin():
     from BizStats import GetStats
@@ -382,9 +406,13 @@ def Admin():
 
         with shelve.open('admin') as adminDB:
             admin = adminDB[session.get('current_user')]
+            all_admins = {key: adminDB[key] for key in adminDB}
+
             for i in adminDB:
                 print(i)
-
+        with shelve.open('users') as usersDB:
+            all_users = {key: usersDB[key] for key in usersDB}
+            current_user = usersDB[session.get('current_user')]
     except:
         return redirect(url_for('about_us'))
 
@@ -402,11 +430,12 @@ def Admin():
             if sort_conditions['user']:
                 v+=1
                 for i in ordersDB:
-
                     first_u = sort_conditions['user'].index('_')
                     print(ordersDB[i].user, sort_conditions['user'][:first_u])
                     if ordersDB[i].user == sort_conditions['user'][:first_u]:
                         orders.append(copy.deepcopy(ordersDB[i]))
+                for i in orders:
+                    print(i)
             if sort_conditions['orderId']:
                 if v == 0:
                     v += 1
@@ -415,10 +444,11 @@ def Admin():
                         if str(ordersDB[i].id) == str(sort_conditions['orderId']):
                             orders.append(copy.deepcopy(ordersDB[i]))
                 else:
-                    for i in orders:
+                    for x in orders[:]:
+                        print(x.id)
 
-                        if str(i.id) != str(sort_conditions['orderId']):
-                            orders.remove(i)
+                        if str(x.id) != str(sort_conditions['orderId']):
+                            orders.remove(x)
             if sort_conditions['refNum']:
                 if v == 0:
                     v += 1
@@ -428,15 +458,15 @@ def Admin():
                             orders.append(copy.deepcopy(ordersDB[i]))
                 else:
                     print(orders)
-                    for z in orders:
+                    for z in orders[:]:
                         print(z.payment_method, sort_conditions['refNum'])
                         if z.payment_method != sort_conditions['refNum']:
-
                             orders.remove(z)
             if v == 0:
                 for i in ordersDB:
                     orders.append(copy.deepcopy(ordersDB[i]))
         orders.sort(key=lambda order: order.datetime, reverse=True)
+
     elif sort_conditions['state'] == 'date_earliest':
         with shelve.open('Orders') as ordersDB:
             if sort_conditions['user']:
@@ -455,7 +485,7 @@ def Admin():
                         if str(ordersDB[i].id) == str(sort_conditions['orderId']):
                             orders.append(copy.deepcopy(ordersDB[i]))
                 else:
-                    for i in orders:
+                    for i in orders[:]:
 
                         if str(i.id) != str(sort_conditions['orderId']):
                             orders.remove(i)
@@ -468,7 +498,7 @@ def Admin():
                             orders.append(copy.deepcopy(ordersDB[i]))
                 else:
                     print(orders)
-                    for z in orders:
+                    for z in orders[:]:
                         print(z.payment_method, sort_conditions['refNum'])
                         if z.payment_method != sort_conditions['refNum']:
                             orders.remove(z)
@@ -519,7 +549,7 @@ def Admin():
             return redirect(url_for('Admin'))
         else:
             print('form validation failed', add_product.errors)
-    return render_template('admin.html', add_product = add_product, action=action , modify_product = modify_product, orders = orders, stats = stats)
+    return render_template('admin.html', add_product = add_product, action=action , modify_product = modify_product, orders = orders, stats = stats, all_users = all_users, all_admins = all_admins, current_user = current_user)
 
 @app.route('/catalog/product/<int:product_id>', methods = ['GET', 'POST'])
 def product_detail(product_id):

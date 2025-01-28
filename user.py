@@ -44,11 +44,14 @@ class User:
     def comparePassword(plainPassword, encryptedPassword):
         return bcrypt.checkpw(plainPassword.encode('utf-8'), encryptedPassword.encode('utf-8'))
     ##
-    @staticmethod
+
 
     def isAdmin(self):
-        return False
-
+        with shelve.open('admin') as adminDB:
+            if self.email not in adminDB.keys():
+                return False
+            else:
+                return True
     def addToCart(self, product):
         try:
             self.Cart.get(product)
@@ -97,3 +100,9 @@ class User:
         self.Addresses.pop(address)
         with shelve.open('users') as usersDB:
             usersDB[self.email] = self
+    def addAdmin(self):
+        with shelve.open('admin') as adminsDB:
+            adminsDB[self.email] = self
+    def removeAdmin(self):
+        with shelve.open('admin') as adminsDB:
+            adminsDB.pop(self.email)

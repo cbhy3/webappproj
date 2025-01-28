@@ -71,6 +71,10 @@
         <br>
          <button class="btn btn-custom" onclick = "update_action('Dashboard')">Dashboard</button>
          <br>
+         <button class="btn btn-custom" onclick = "update_action('Users')">View Users</button>
+         <br>
+         <button class="btn btn-custom" onclick = "update_action('Admins')">View Admins</button>
+         <br>
           <a class="btn btn-custom" href = "{{ url_for("about_us") }}">Home</a>
         <br>
      {% elif action == 'AddProduct' %}
@@ -393,11 +397,7 @@ hr {
 
 </div>
          <script>
-         document.addEventListener("DOMContentLoaded", function(event) {
-             document.getElementById("search_orders").value = ""
-             document.getElementById("order-id-input").value = ""
-             document.getElementById("reference-input").value = ""
-         })
+
          function update_search_orders(action){
         fetch('update_orders_sort', {
             method: 'POST',
@@ -607,7 +607,172 @@ hr {
          <div class="text-center mb-4">
                 <button onclick = "update_action('Default')" class="btn btn-primary">Back</button>
             </div>
-    {% endif %}
+         {% elif action == "Users" %}
+         <script>
+         function update_search_orders(action){
+        fetch('update_orders_sort', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                new_action: action
+            })
+        })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+        setTimeout(function(){
+            location.reload();
+        },50)
+    }
+         </script>
+         <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .user-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .user-card h5 {
+            margin-bottom: 15px;
+            font-size: 1.25rem;
+            color: #333;
+        }
+        .user-card ul {
+            padding-left: 20px;
+        }
+        .user-card ul li {
+            list-style-type: disc;
+        }
+        .user-card .btn {
+            margin-right: 10px;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+    </style>
+         <div class="container mt-4">
+        <h1 class="text-center mb-4">User Management</h1>
+         <div class="search-bar text-center">
+            <input type="text" class="form-control w-50 d-inline" id="searchInput" placeholder="Search users...">
+            <button class="btn btn-primary ms-2" onclick="performSearch()">Search</button>
+        </div>
+        {% for i in all_users %}
+        <div class="user-card">
+            <h5>User Email: {{ all_users[i].email }}</h5>
+            <button
+                onclick="update_search_orders('user_{{ all_users[i].email }}_date_latest'); update_action('ViewOrders')"
+                class="btn btn-primary">
+                View User's Orders
+            </button>
+            <p class="mt-3"><strong>User's Vouchers:</strong></p>
+            <div id="vouchers">
+                <ul>
+                    {% for x in all_users[i].Codes %}
+                    <li>{{ x }} : {{ all_users[i].Codes[x] }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% if not all_users[i].isAdmin() and current_user.email == "admin@tossedout.com"%}
+            <a href="{{ url_for('add_admin', user=all_users[i].email) }}" class="btn btn-outline-secondary">Add Admin</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+         <div class="text-center mb-4">
+                <button onclick = "update_action('Default')" class="btn btn-primary">Back</button>
+            </div>
+    </div>
+          <script>
+        function performSearch() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const userCards = document.querySelectorAll('.user-card');
+
+            userCards.forEach(card => {
+                const email = card.querySelector('h5').textContent.toLowerCase();
+                if (email.includes(input)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+         {% elif action == "Admins" %}
+         <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .user-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .user-card h5 {
+            margin-bottom: 15px;
+            font-size: 1.25rem;
+            color: #333;
+        }
+        .user-card ul {
+            padding-left: 20px;
+        }
+        .user-card ul li {
+            list-style-type: disc;
+        }
+        .user-card .btn {
+            margin-right: 10px;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+    </style>
+         <div class="container mt-4">
+        <h1 class="text-center mb-4">Admin Management</h1>
+         <div class="search-bar text-center">
+            <input type="text" class="form-control w-50 d-inline" id="searchInput" placeholder="Search admins...">
+            <button class="btn btn-primary ms-2" onclick="performSearch()">Search</button>
+        </div>
+        {% for i in all_admins %}
+        <div class="user-card">
+            <h5>Admin Email: {{ all_admins[i].email }}</h5>
+
+
+            {% if current_user.email == "admin@tossedout.com"%}
+            <a href="{{ url_for('remove_admin', user=all_admins[i].email) }}" class="btn btn-outline-secondary">Remove Admin</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+         <div class="text-center mb-4">
+                <button onclick = "update_action('Default')" class="btn btn-primary">Back</button>
+            </div>
+    </div>
+          <script>
+        function performSearch() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const userCards = document.querySelectorAll('.user-card');
+
+            userCards.forEach(card => {
+                const email = card.querySelector('h5').textContent.toLowerCase();
+                if (email.includes(input)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+{% endif %}
+
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -6,7 +6,7 @@ pip install wtforms
 pip install bcrypt  
 pip install email_validator  
 pip install qrcode[pil]  
-
+pip install openpyxl
 
 
 

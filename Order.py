@@ -84,3 +84,5 @@ class Order:
             order.payment_method = payment_method
             Orders[id] = order
 
+    def __str__(self):
+        return f'{self.id}, {self.user}'
