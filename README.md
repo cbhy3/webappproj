@@ -12,8 +12,7 @@ pip install openpyxl
 
 
 todo:  
-admin able to assign other users as admin
 user support tickets  
 catalog sorting  
-
+redesign profile page, notably sidebar
 
