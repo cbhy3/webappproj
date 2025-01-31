@@ -8,6 +8,9 @@ from wtforms.validators import DataRequired, Email, EqualTo, InputRequired, Leng
 from wtforms.fields import EmailField, PasswordField
 from flask import session
 import shelve
+
+from wtforms.widgets.core import TextArea
+
 from Product import Product
 from user import User
 from addressValidator import streetValidator
@@ -211,3 +214,9 @@ class addAddress(FlaskForm):
             return True
         else:
             raise ValidationError('Enter a valid Singapore Street Name')
+
+
+class openTicket(FlaskForm):
+    issue = StringField('Issue', validators=[InputRequired(), Length(min=12, max = 72)])
+    body = StringField('Body', validators=[InputRequired(),Length(min=50, max = 500)],widget=TextArea())
+    submit = SubmitField('Submit', name = 'open_ticket_submit')

@@ -5,6 +5,8 @@ import re
 from flask import Flask, render_template, redirect, request, redirect, url_for, session, jsonify, send_file
 from Forms import *
 import shelve as shelve
+
+from Ticket import Ticket
 from customer import Customer
 from currentUser import CurrentUser
 from generateOTP import generateOTP, generateOTPforReset
@@ -417,6 +419,7 @@ def Admin():
         return redirect(url_for('about_us'))
 
     stats = GetStats()
+    print(stats)
     add_product = addProduct()
     modify_product = modifyProduct()
     global sort_orders
@@ -552,7 +555,7 @@ def Admin():
     return render_template('admin.html', add_product = add_product, action=action , modify_product = modify_product, orders = orders, stats = stats, all_users = all_users, all_admins = all_admins, current_user = current_user)
 
 def getSimiliarProducts(product):
-    result = []
+
     weights = {}
     with shelve.open('products') as productsDB:
         categories = set(product.categories)
@@ -876,3 +879,20 @@ def confirm_order(orderid, ref):
         print('something went wrong')
         Order.cancel_order(orderid)
         return redirect(url_for('cart'))
+
+
+
+@app.route('/support', methods=['GET', 'POST'])
+def support():
+    try:
+        with shelve.open('users') as usersDB:
+            current_user = usersDB[session.get('current_user')]
+    except:
+        return redirect(url_for('sign_in'))
+
+    open_ticket = openTicket()
+    if request.method == 'POST':
+        if 'open_ticket_submit' in request.form and open_ticket.validate_on_submit():
+            print(Ticket(current_user.getEmail(), open_ticket.issue.data, open_ticket.body.data))
+
+    return render_template('support.html', open_ticket=open_ticket, current_user=current_user, active_page = "profile")

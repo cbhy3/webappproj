@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}
+Tossed Out! - Support
+{% endblock %}
+{% block content %}
+<style>
+ body {
+            background-color: #f8f9fa;
+     font-family:Garet;
+        }
+        .container {
+            max-width: 500px;
+            margin-top: 50px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+</style>
+<div class="container">
+        <h2 class="text-center">Support Ticket</h2>
+
+             <form method = "POST">
+         {{ open_ticket.hidden_tag() }}
+             <div class="mb-3">
+         {{ open_ticket.issue.label(class = "form-label") }}
+         {{ open_ticket.issue(class = "form-control", placeholder = "Summarize your issue here...") }}
+         {% for error in open_ticket.issue.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+         {% endfor %}
+             </div>
+             <div class="mb-3">
+         {{ open_ticket.body.label(class = "form-label") }}
+         {{ open_ticket.body(class = "form-control", placeholder = "Explain your issue here...", rows = 6) }}
+         {% for error in open_ticket.body.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+         {% endfor %}
+             </div>
+         {{ open_ticket.submit(class="btn btn-success w-100") }}
+     </form>
+</div>
+{% endblock %}
