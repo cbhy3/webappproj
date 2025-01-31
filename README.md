@@ -12,7 +12,6 @@ pip install openpyxl
 
 
 todo:  
-user support tickets  
-catalog sorting  
-redesign profile page, notably sidebar
+user support tickets
+decide what to do with profile page profile tab
 
