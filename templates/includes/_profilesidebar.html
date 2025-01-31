@@ -27,35 +27,104 @@
         };
     document.addEventListener('DOMContentLoaded', function() {
         if (localStorage.getItem('current_tab') == {{ current_tab }}) {
-        update_tab(localStorage.getItem('current_tab'));
-    }})
+
+            update_tab(localStorage.getItem('current_tab'));
+
+        }
+
+
+    })
+
+
+
+    // Close mobile nav after selection
+    if (window.innerWidth < 768) {
+        toggleNav();
+    }
 </script>
 <style>
     .side-nav {
-      height: 100vh;
-      width: 350px;
-      background-color: #efefef;
-      position: fixed;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        border-radius: 10px;
-    }
-    .side-nav a {
-      text-decoration: none;
-      color: #000;
-    }
-    .side-nav a:hover {
-      background-color: #e9ecef;
-    }
-    .sidenav-item {
-        font-family: Garet;
-        font-size: 20px;
-        margin-left: 40px;
-        margin-top: 25px;
+    background-color: #f8f9fa;
+    width: 250px;
+    min-height: 100vh;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+    position: fixed;
+    z-index: 1000;
+}
 
+.sidenav-item {
+    padding: 0.5rem 1rem;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.sidenav-item a {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    display: block;
+    transition: all 0.2s;
+}
+
+.sidenav-item:hover {
+    background-color: #e9ecef;
+    border-left-color: #0d6efd;
+}
+
+.sidenav-item .btn {
+    width: 100%;
+    margin: 0.25rem 0;
+    text-align: center;
+
+}
+
+/* Active state */
+.sidenav-item.active {
+    background-color: #e9ecef;
+    border-left-color: #0d6efd;
+}
+
+.sidenav-item.active a {
+    color: #0d6efd;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .side-nav {
+        margin-left: -250px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1050;
     }
-    #sideNavBar{
-        margin-top: 40px;
+
+    .side-nav.active {
+        margin-left: 0;
     }
+
+    /* Mobile toggle button */
+    .nav-toggle-btn {
+        position: fixed;
+        left: 10px;
+        top: 10px;
+        z-index: 1100;
+        display: block !important;
+    }
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+    .nav-toggle-btn {
+        display: none !important;
+    }
+
+    /* Add padding to main content to account for fixed nav */
+    main {
+        margin-left: 250px;
+    }
+}
     #deleteModal .modal-content {
     padding: 20px;
     text-align: center; /* Ensure all text inside is centered */
@@ -123,35 +192,58 @@
     </div>
 </div>
 
-  <div class="side-nav d-flex flex-column" id="sideNav">
-      <div id="sideNavBar">
-    <div class="sidenav-item d-flex align-items-center">
-      <a href="#profile" onclick="update_tab('profile')" class="flex-grow-1">Profile</a>
+ <button class="btn btn-primary nav-toggle-btn d-none" onclick="toggleNav()">
+    ☰
+</button>
+
+<!-- Modified Side Nav -->
+<div class="side-nav d-flex flex-column" id="sideNav">
+    <div id="sideNavBar" class="p-3">
+        <div class="sidenav-item active" data-tab = "profile">
+            <a href="#profile" onclick="update_tab('profile')">Profile</a>
+        </div>
+        <div class="sidenav-item" data-tab = "personal_details">
+            <a href="#personal-details" onclick="update_tab('personal_details')">Personal Details</a>
+        </div>
+        <div class="sidenav-item" data-tab = "order_history">
+            <a href="#order-history" onclick="update_tab('order_history')">Order History</a>
+        </div>
+        <div class="sidenav-item" data-tab = "coupons">
+            <a href="#coupons" onclick="update_tab('coupons')">Coupons</a>
+        </div>
+
+        <div class="mt-auto"> <!-- Push buttons to bottom -->
+            {% if isAdmin %}
+            <div class="sidenav-item">
+                <a class="btn btn-info" href="{{ url_for('Admin') }}" style="color: white">Admin Panel</a>
+            </div>
+            {% endif %}
+            <div class="sidenav-item">
+                <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#signOutModal" style="color: white">Sign Out</a>
+            </div>
+            <div class="sidenav-item">
+                <a class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#deleteModal" style="color: white">Delete Account</a>
+            </div>
+        </div>
     </div>
-    <div class="sidenav-item">
-      <a href="#personal-details" onclick="update_tab('personal_details')">Personal Details</a>
-    </div>
-    <div class="sidenav-item">
-      <a href="#order-history" onclick="update_tab('order_history')">Order History</a>
-    </div>
-    <div class="sidenav-item">
-      <a href="#coupons" onclick="update_tab('coupons')">Coupons</a>
-    </div>
-          {% if isAdmin %}
-          <div class="sidenav-item">
-      <a class="btn btn-info" href = "{{ url_for("Admin")}}" style="color: white">Admin Panel</a>
-    </div>
-          {% endif %}
-    <div class="sidenav-item">
-      <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#signOutModal" style="color: white">Sign Out</a>
-    </div>
-          <div class="sidenav-item">
-      <a class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#deleteModal" style="color: white">Delete Account</a>
-    </div>
-      </div>
-  </div>
 </div>
-</div>
+
+<script>
+// Toggle mobile nav
+function toggleNav() {
+    document.getElementById('sideNav').classList.toggle('active');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.sidenav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    const targetTab = document.querySelector(`[data-tab="${localStorage.getItem('current_tab')}"]`);
+            targetTab.classList.add('active');
+})
+
+
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {

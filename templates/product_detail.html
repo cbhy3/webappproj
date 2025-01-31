@@ -4,9 +4,152 @@
 Tossed Out! - Profile
 {% endblock %}
 {% block content %}
-<h1> {{ product.name }}</h1>
-    <p>Price: ${{ product.price }}</p>
-    <p>Quantity: {{ product.quantity }}</p>
-    <p>Categories: {{ ', '.join(product.categories) }}</p>
-    <p>Description: {{ product.description }}</p>
+<div class="container mt-5">
+    <div class="row">
+        <!-- Left Column: Product Image and Expiry Date -->
+        <div class="col-md-4 d-flex flex-column align-items-center">
+            <img src="{{ product.imageUrl }}" class="product-image" alt="{{ product.name }}">
+            <p class="text-danger mt-2 product-expiry"><strong>Expiry Date:</strong> {{ product.expiry }}</p>
+        </div>
+
+        <!-- Right Column: Product Name and Details -->
+        <div class="col-md-8">
+            <h3 class="product-title">{{ product.name }}</h3>
+            <div class="product-details p-3 border rounded">
+                <p class="text-muted"><strong>Price:</strong> ${{ product.price }}</p>
+                <p class="badge bg-secondary">Stock: {{ product.quantity }}</p>
+                <p class="text-muted"><strong>Categories:</strong> {{ ', '.join(product.categories) }}</p>
+                <p class="text-muted"><strong>Weight:</strong> {{ product.weight }} G</p>
+                <p class="card-text">{{ product.description }}</p>
+            </div>
+
+            <!-- Add to Cart Button -->
+            <div class="mt-3">
+                <a href="{{ url_for('addtocart', product_id=product.id) }}" class="btn btn-primary">
+                    Add to Cart
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <h4 class="mt-5 similiar-products">Similar Products</h4>
+<div class="container similiar" id = "similiar" >
+    <div class="row flex-nowrap" onWheel= "this.scrollLeft+=event.deltaY>0?100:-100">
+        {% for i in similiar %}
+            <div class="col-md-3 col-sm-6">
+                <div class="card product-card shadow-sm">
+                    <a href="{{ url_for('product_detail', product_id=i) }}" class="text-decoration-none text-dark">
+                        <img src="{{ all_products[i].imageUrl }}" class="card-img-top product-image" alt="{{ all_products[i].name }}">
+                        <div class="card-body">
+                            <h5 class="card-title mb-1">${{ all_products[i].price }}</h5>
+                            <p class="card-text product-name">{{ all_products[i].name }}</p>
+                            <p class="text-muted product-weight">{{ all_products[i].weight }} G</p>
+                            <p class="text-danger product-expiry">Expiry Date: <strong>{{ all_products[i].expiry }}</strong></p>
+                        </div>
+                    </a>
+                    <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
+                        <a class="btn btn-outline-primary btn-sm" href="{{ url_for('addtocart', product_id=i) }}">
+                            Add to Cart
+                        </a>
+                        <button class="btn btn-outline-danger btn-sm">
+                            <span style="text-align: center; color: red">&#9829;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.similiar {
+    margin-top:35px;
+}
+.similiar-products{
+    text-align: center;
+    font-family:Garet;
+}
+.similiar .row{
+
+    overflow-x:auto;
+    overflow-y:hidden;
+}
+.similiar .product-card {
+    width: 100%; /* Allow Bootstrap grid to control width */
+    max-width: 250px; /* Limit max size */
+    border-radius: 8px;
+    font-family:Garet;
+}
+
+.similiar .product-image {
+    border-radius: 8px 8px 0 0;
+    height: 200px;
+    object-fit: cover;
+}
+
+.similiar .row.flex-nowrap {
+    flex-wrap: nowrap;
+    overflow-x: auto; /* Allow horizontal scrolling if necessary */
+    gap: 10px;
+}
+
+.similiar .product-name {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #555;
+}
+
+.similiar .product-weight, .product-expiry {
+    font-size: 0.9rem;
+}
+
+
+.product-card {
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+    font-family:Garet;
+}
+
+.product-card:hover {
+    transform: scale(1.02);
+}
+
+.product-image {
+    height: 300px;
+    object-fit: fill;
+}
+.product-image {
+    max-width: 100%;
+
+    border-radius: 10px;
+}
+
+.product-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.product-details {
+    background-color: #f8f9fa;
+}
+
+.product-expiry {
+    font-size: 14px;
+    font-weight: bold;
+}
+.card-body h3 {
+    font-weight: 600;
+}
+
+.card-text {
+    font-size: 14px;
+    color: #666;
+}
+
+.btn-primary {
+    border-radius: 20px;
+}
+</style>
 {% endblock %}

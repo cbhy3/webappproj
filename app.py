@@ -551,12 +551,37 @@ def Admin():
             print('form validation failed', add_product.errors)
     return render_template('admin.html', add_product = add_product, action=action , modify_product = modify_product, orders = orders, stats = stats, all_users = all_users, all_admins = all_admins, current_user = current_user)
 
+def getSimiliarProducts(product):
+    result = []
+    weights = {}
+    with shelve.open('products') as productsDB:
+        categories = set(product.categories)
+        keys = list(productsDB.keys())
+        keys.pop(keys.index(product.id))
+
+        for i in productsDB:
+            if product.id != i and productsDB[i].quantity > 0:
+                p_cat = set(productsDB[i].categories)
+                weight = len(p_cat & categories) / len(p_cat | categories)   #jaccard similiarity
+                weights[i] = weight
+
+        total_weight = sum(weights.values())
+        if total_weight == 0:  #avoid zero probabilities
+            weights = {key: 1 for key in weights}
+            total_weight = sum(weights.values())
+        selected_object = random.choices(list(keys), weights=list(weights.values()), k = 8)
+    return selected_object
+
+
 @app.route('/catalog/product/<int:product_id>', methods = ['GET', 'POST'])
 def product_detail(product_id):
     with shelve.open('products') as productsDB:
         product = productsDB[str(product_id)]
+        all_products = {key: productsDB[key] for key in productsDB}
+
         if not product:
             return "Product not found",404
+        similiar = getSimiliarProducts(product)
     with shelve.open('users') as usersDB:
         for i in usersDB:
             print(i)
@@ -568,7 +593,7 @@ def product_detail(product_id):
         cart = None
 
     return render_template('product_detail.html', product = product,active_page='catalog',
-                           current_user=current_user, cart = cart)
+                           current_user=current_user, cart = cart, similiar = similiar, all_products = all_products)
 
 
 

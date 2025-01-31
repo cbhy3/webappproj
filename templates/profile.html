@@ -135,12 +135,12 @@ Tossed Out! - Profile
 }.address-list {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Space between items */
-    padding: 20px;
+    gap: 5px; /* Reduce space between items */
+    padding: 10px;
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
+    max-width: 400px; /* Adjust width */
     margin: auto;
 }
 
@@ -148,14 +148,27 @@ Tossed Out! - Profile
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px;
+    padding: 8px 12px; /* Reduce padding */
     background-color: #ffffff;
     border: 1px solid #ddd;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    font-size: 16px;
+    font-size: 15px; /* Slightly smaller text */
     color: #333;
-    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.delete-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px; /* Smaller button */
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.delete-button:hover {
+    background-color: darkred;
 }
 
 .address-item:hover {
@@ -187,7 +200,9 @@ Tossed Out! - Profile
 }
 
 #orders-container {
-    padding: 20px;
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-bottom: 20px;
     background-color: #f9f9f9;
     border-radius: 8px;
 }
@@ -498,7 +513,7 @@ document.getElementById('toggle-address-form').addEventListener('click', functio
 
 </div>
 {% elif current_tab == 'order_history' %}
-<div id="orders-container" class="container my-5">
+<div id="orders-container" class="container py-5">
     <div id="orders-wrapper" class="overflow-auto">
         <div class="row">
             {% for order in orders %}
@@ -539,7 +554,7 @@ document.getElementById('toggle-address-form').addEventListener('click', functio
 
 
 {% elif current_tab == 'coupons' %}
-    <div class="container mt-5">
+    <div class="container py-5">
     <h2 class="text-center mb-4" style = "font-family: Lexend">Your Vouchers</h2>
     <div class="row justify-content-center">
         <div class="col-md-8">
