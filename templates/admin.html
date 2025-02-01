@@ -75,6 +75,8 @@
          <br>
          <button class="btn btn-custom" onclick = "update_action('Admins')">View Admins</button>
          <br>
+         <button class="btn btn-custom" onclick = "update_action('Ticket')">View Tickets</button>
+         <br>
           <a class="btn btn-custom" href = "{{ url_for("about_us") }}">Home</a>
         <br>
      {% elif action == 'AddProduct' %}
@@ -771,7 +773,112 @@ hr {
             });
         }
     </script>
+
+
+         {% elif action == "Ticket" %}
+         <style>
+        .ticket-card {
+            transition: transform 0.2s;
+            border-left: 4px solid transparent;
+        }
+        .ticket-card:hover {
+            transform: translateY(-3px);
+        }
+        .status-badge {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+        }
+        .reply-section {
+            background-color: #f8f9fa;
+            border-left: 3px solid #0d6efd;
+            border-radius: 4px;
+        }
+        .ticket-meta {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+    </style>
+         <div class="container py-5">
+         <div class="text-center mb-4">
+                <button onclick = "update_action('Default')" class="btn btn-primary">Back</button>
+            </div>
+        <h2 class="text-center mb-4">Support Tickets</h2>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                {% for ticket in tickets %}
+                <div class="card mb-4 ticket-card">
+                    <div class="card-body position-relative">
+                        <!-- Status Badge -->
+                        <span class="badge status-badge
+                            {% if tickets[ticket].status == 'Open' %}bg-success
+                            {% elif tickets[ticket].status == 'Closed' %}bg-danger
+                            {% else %}bg-warning text-dark{% endif %}">
+                            {{ tickets[ticket].status }}
+                        </span>
+
+                        <!-- Ticket Meta -->
+                        <div class="ticket-meta mb-3">
+                            <span class="fw-bold">{{ tickets[ticket].user }}</span>
+                            <span class="mx-2">•</span>
+                            <span>{{ tickets[ticket].created_date }}</span>
+                        </div>
+
+                        <!-- Ticket Content -->
+                        <h4 class="card-title mb-3">{{ tickets[ticket].head }}</h4>
+                        <p class="card-text mb-4">{{ tickets[ticket].body }}</p>
+
+                        <!-- Reply Section -->
+                        {% if tickets[ticket].reply %}
+                            {% for replies in tickets[ticket].reply %}
+                        <div class="reply-section p-4 mt-4">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="badge bg-primary me-2">Response</span>
+                                <span class="fw-bold">{{ replies['replied_by'] }}</span>
+                            </div>
+                            <p class="mb-0">{{ replies['reply_content'] }}</p>
+                        </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <!-- Action Buttons -->
+                        {% if tickets[ticket].status != 'Closed' %}
+                        <div class="mt-4">
+                            <button class="btn btn-sm btn-outline-primary"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#replyForm{{ ticket }}">
+                Add Response
+            </button>
+
+                            <a class="btn btn-sm btn-outline-danger float-end" href = "{{ url_for('close_ticket', id = ticket) }}">Close Ticket</a>
+                            {% elif tickets[ticket].status == 'Closed' %}
+                            <a class="btn btn-sm btn-outline-danger float-end" href = "{{ url_for('open_ticket', id = ticket) }}">Re-Open Ticket</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                   <div class="collapse mt-3" id="replyForm{{ ticket }}">
+            <div class="card card-body">
+                <form action="{{ url_for('reply_ticket', id = ticket) }}" method = "POST">
+                    {{ reply_ticket.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ reply_ticket.body.label(class="form-label") }}
+                        {{ reply_ticket.body(class="form-control", rows=6) }}
+                    </div>
+                    <div>
+                        {{ reply_ticket.submit(class="btn btn-success w-100") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 {% endif %}
+
 
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

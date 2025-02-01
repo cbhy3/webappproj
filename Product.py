@@ -5,7 +5,7 @@ import shelve
 class Product:
     with shelve.open('products') as db:
         count = len(db)
-    valid_categories = ['Fruits', 'Beverages', 'Vegetables', 'Meats' , 'Canned Food', 'Local', 'Discounted']
+    valid_categories = ['Dairy', 'Bakery & Grains', 'Meat & Seafood', 'Pantry and Cooking Essentials', 'Snacks & Sweets', 'Beverages' , 'Frozen Foods', 'Fruits & Vegetables', 'Household & Cleaning Supplies', 'Locally Sourced', 'Canned Foods']
     def __init__(self, name: str, price: float, quantity: int, categories: [str], imageUrl: str, description: str ,expiry: datetime, weight: int):
         self.id = None
         while self.id is None:

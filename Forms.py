@@ -217,6 +217,10 @@ class addAddress(FlaskForm):
 
 
 class openTicket(FlaskForm):
-    issue = StringField('Issue', validators=[InputRequired(), Length(min=12, max = 72)])
-    body = StringField('Body', validators=[InputRequired(),Length(min=50, max = 500)],widget=TextArea())
+    issue = StringField('Issue', validators=[InputRequired(), Length(min=6, max = 72)])
+    body = StringField('Body', validators=[InputRequired(),Length(min=25, max = 500)],widget=TextArea())
     submit = SubmitField('Submit', name = 'open_ticket_submit')
+
+class replyTicket(FlaskForm):
+    body = StringField('Reply', validators=[InputRequired(),Length(min=25, max = 3000)],widget=TextArea())
+    submit = SubmitField('Submit', name = 'reply_ticket_submit')

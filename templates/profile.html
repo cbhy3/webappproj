@@ -354,8 +354,8 @@ document.getElementById('toggle-address-form').addEventListener('click', functio
     </div>
   </div>
 {% if current_tab == 'profile' %}
-    <h1 style = "text-align: center">ball</h1>
-    <h3 style = "text-align: center">yeah</h3>
+    <h2 style = "text-align: center">Welcome, {{ current_user.email.split('@')[0] }}</h2>
+
 {% elif current_tab == 'personal_details' %}
 
 <div class="container py-5">

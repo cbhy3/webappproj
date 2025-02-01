@@ -415,9 +415,11 @@ def Admin():
         with shelve.open('users') as usersDB:
             all_users = {key: usersDB[key] for key in usersDB}
             current_user = usersDB[session.get('current_user')]
+        with shelve.open('tickets') as ticketDB:
+            all_tickets = {key: ticketDB[key] for key in ticketDB}
     except:
         return redirect(url_for('about_us'))
-
+    reply_ticket = replyTicket()
     stats = GetStats()
     print(stats)
     add_product = addProduct()
@@ -552,7 +554,8 @@ def Admin():
             return redirect(url_for('Admin'))
         else:
             print('form validation failed', add_product.errors)
-    return render_template('admin.html', add_product = add_product, action=action , modify_product = modify_product, orders = orders, stats = stats, all_users = all_users, all_admins = all_admins, current_user = current_user)
+    return render_template('admin.html', add_product = add_product, action=action , modify_product = modify_product, orders = orders, stats = stats, all_users = all_users, all_admins = all_admins, current_user = current_user, tickets = all_tickets
+                           ,reply_ticket= reply_ticket)
 
 def getSimiliarProducts(product):
 
@@ -777,7 +780,7 @@ def giveVoucher():
         with shelve.open('users') as usersDB:
             print(usersDB[session.get('current_user')].Codes[code])
             usersDB[session.get('current_user')].addCode(code)
-            usersDB[session.get('current_user')].updateCooldown(10)
+            usersDB[session.get('current_user')].updateCooldown(90)
             print(usersDB[session.get('current_user')].Codes[code])
     except KeyError as e:
           return jsonify({'error': 'Database error', 'details': str(e)}), 500
@@ -894,5 +897,48 @@ def support():
     if request.method == 'POST':
         if 'open_ticket_submit' in request.form and open_ticket.validate_on_submit():
             print(Ticket(current_user.getEmail(), open_ticket.issue.data, open_ticket.body.data))
+            open_ticket.body.data = ""
+            open_ticket.issue.data = ""
+            global success
+            success = "Ticket successfully submitted!"
+            return redirect(url_for('profile'))
 
     return render_template('support.html', open_ticket=open_ticket, current_user=current_user, active_page = "profile")
+
+@app.route('/reply_ticket/<id>', methods=['GET', 'POST'])
+def reply_ticket(id):
+    try:
+        with shelve.open('admin') as adminDB:
+            admin = adminDB[session.get('current_user')]
+    except:
+        return redirect(url_for('about_us'))
+    open_ticket = openTicket()
+    with shelve.open("tickets") as tickets:
+        ticket = tickets[str(id)]
+        ticket.add_reply(session.get('current_user'), open_ticket.body.data)
+    return redirect(url_for('Admin'))
+
+@app.route('/close_ticket/<id>', methods=['GET', 'POST'])
+def close_ticket(id):
+    try:
+        with shelve.open('admin') as adminDB:
+            admin = adminDB[session.get('current_user')]
+    except:
+        return redirect(url_for('about_us'))
+
+    with shelve.open("tickets") as tickets:
+        ticket = tickets[str(id)]
+        ticket.change_status("Closed")
+    return redirect(url_for('Admin'))
+@app.route('/open_ticket/<id>', methods=['GET', 'POST'])
+def open_ticket(id):
+    try:
+        with shelve.open('admin') as adminDB:
+            admin = adminDB[session.get('current_user')]
+    except:
+        return redirect(url_for('about_us'))
+
+    with shelve.open("tickets") as tickets:
+        ticket = tickets[str(id)]
+        ticket.change_status("Open")
+    return redirect(url_for('Admin'))

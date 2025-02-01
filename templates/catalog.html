@@ -63,11 +63,12 @@ body{
 
             userCards.forEach(card => {
                 const name = card.querySelector('.product-name').textContent.toLowerCase();
+                const liElement = card.closest('li');
                 if (name.includes(input)) {
-                    card.style.display = '';
-                } else {
-                    card.style.display = 'none';
-                }
+                   liElement.classList.remove('d-none');
+} else {
+    liElement.classList.add('d-none');
+}
             });
         }
  function toggleSidebar() {
@@ -82,11 +83,12 @@ body{
         userCards.forEach(card => {
             const categories = card.dataset.categories;
             console.log(categories)
-            if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.includes(cat))) {
-                card.style.display = '';
-            } else {
-                card.style.display = 'none';
-            }
+            const liElement = card.closest('li');
+if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.includes(cat))) {
+    liElement.classList.remove('d-none');
+} else {
+    liElement.classList.add('d-none');
+}
         });
     }
     </script>
@@ -164,13 +166,17 @@ body{
 
 <div class="sidebar" id="sidebar">
     <h4>Categories</h4>
-    <label class="category-label"><input type="checkbox" value="Fruits" onclick="filterProducts()"> Fruits</label>
-    <label class="category-label"><input type="checkbox" value="Beverages" onclick="filterProducts()"> Beverages</label>
-    <label class="category-label"><input type="checkbox" value="Vegetables" onclick="filterProducts()"> Vegetables</label>
-    <label class="category-label"><input type="checkbox" value="Meats" onclick="filterProducts()"> Meats</label>
-    <label class="category-label"><input type="checkbox" value="Canned Food" onclick="filterProducts()"> Canned Food</label>
-    <label class="category-label"><input type="checkbox" value="Local" onclick="filterProducts()"> Local</label>
-    <label class="category-label"><input type="checkbox" value="Discounted" onclick="filterProducts()"> Discounted</label>
+    <label class="category-label"><input type="checkbox" value="Dairy" onclick="filterProducts()">  Dairy</label>
+    <label class="category-label"><input type="checkbox" value="Bakery & Grains" onclick="filterProducts()">  Bakery & Grains</label>
+    <label class="category-label"><input type="checkbox" value="Meat & Seafood" onclick="filterProducts()">  Meat & Seafood</label>
+    <label class="category-label"><input type="checkbox" value="Pantry and Cooking Essentials" onclick="filterProducts()">  Pantry and Cooking Essentials</label>
+    <label class="category-label"><input type="checkbox" value="Snacks & Sweets" onclick="filterProducts()">  Snacks & Sweets</label>
+    <label class="category-label"><input type="checkbox" value="Beverages" onclick="filterProducts()">  Beverages</label>
+    <label class="category-label"><input type="checkbox" value="Frozen Foods" onclick="filterProducts()">  Frozen Foods</label>
+    <label class="category-label"><input type="checkbox" value="Fruits & Vegetables" onclick="filterProducts()">  Fruits & Vegetables</label>
+    <label class="category-label"><input type="checkbox" value="Household & Cleaning Supplies" onclick="filterProducts()">  Household & Cleaning Supplies</label>
+    <label class="category-label"><input type="checkbox" value="Locally Sourced" onclick="filterProducts()">  Locally Sourced</label>
+    <label class="category-label"><input type="checkbox" value="Canned Foods" onclick="filterProducts()">  Canned Foods</label>
 </div>
 
 <div class="search-container">
