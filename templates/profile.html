@@ -140,7 +140,7 @@ Tossed Out! - Profile
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 400px; /* Adjust width */
+    max-width: 600px; /* Adjust width */
     margin: auto;
 }
 
@@ -254,6 +254,8 @@ Tossed Out! - Profile
 
     </style>
     <script>
+
+
     document.addEventListener("DOMContentLoaded", function(event) {
 
          var cooldown = {{ cooldown }}
@@ -353,164 +355,170 @@ document.getElementById('toggle-address-form').addEventListener('click', functio
         <div id="progress-bar" class="progress-bar"></div>
     </div>
   </div>
-{% if current_tab == 'profile' %}
-    <h2 style = "text-align: center">Welcome, {{ current_user.email.split('@')[0] }}</h2>
 
-{% elif current_tab == 'personal_details' %}
 
+{% if current_tab == 'personal_details' %}
 <div class="container py-5">
-
-            <div class="row align-items-center mb-3">
-    <div class="col-md-4 text-end fw-bold">Email Address:</div>
-    <div class="col-md-4" id="account-email">{{ current_user.email }}</div>
-    <div class="col-md-4 text-start">
-        <a class="btn btn-secondary" id = "toggle-email-form">Change Email</a>
+    <!-- Email Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="card-title">Email Address</h5>
+                    <p class="card-text" id="account-email">{{ current_user.email }}</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-outline-primary" id="toggle-email-form">
+                        <i class="fas fa-envelope"></i> Change Email
+                    </button>
+                </div>
+            </div>
+            <div  id="email-form-container">
+                <form method="POST" class="mt-3">
+                    {{ change_email.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ change_email.password.label(class="form-label") }}
+                        {{ change_email.password(class="form-control", placeholder="Enter your password") }}
+                        {% for error in change_email.password.errors %}
+                        <span class="text-danger">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ change_email.email.label(class="form-label") }}
+                        {{ change_email.email(class="form-control", placeholder="Enter your new email") }}
+                        {% for error in change_email.email.errors %}
+                        <span class="text-danger">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    {{ change_email.submit(class="btn btn-primary w-100", autofocus="autofocus") }}
+                </form>
+                <form method="POST" class="mt-3">
+                    {{ otpform.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ otpform.otp.label(class="form-label") }}
+                        {{ otpform.otp(class="form-control", placeholder="Enter the 6-digit code sent to your new email") }}
+                        {% for error in otpform.otp.errors %}
+                        <span class="text-danger">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    {{ otpform.submit(class="btn btn-primary w-100", autofocus="autofocus") }}
+                </form>
+            </div>
+        </div>
     </div>
-</div>
-<div class="d-flex flex-column align-items-center" id="email-form-container">
-    <form method="POST" class="w-50 mb-4">
-        {{ change_email.hidden_tag() }}
 
-        <div class="mb-3">
-            {{ change_email.password.label(class="form-label") }}
-            {{ change_email.password(class="form-control", placeholder="Enter your password") }}
-            {% for error in change_email.password.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
+    <!-- Password Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="card-title">Password</h5>
+                    <p class="card-text" id="password">●●●●●●●●●</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-outline-warning" id="toggle-password-form">
+                        <i class="fas fa-lock"></i> Change Password
+                    </button>
+                </div>
+            </div>
+            <div id="password-form-container">
+                <form method="POST" class="mt-3">
+                    {{ change_password.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ change_password.oldPassword.label(class="form-label") }}
+                        {{ change_password.oldPassword(class="form-control", placeholder="Enter your old password") }}
+                        {% for error in change_password.oldPassword.errors %}
+                        <span class="text-danger">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ change_password.newPassword.label(class="form-label") }}
+                        {{ change_password.newPassword(class="form-control", placeholder="Enter your new password") }}
+                        {% for error in change_password.newPassword.errors %}
+                        <span class="text-danger">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ change_password.verifyPassword.label(class="form-label") }}
+                        {{ change_password.verifyPassword(class="form-control", placeholder="Re-enter your new password") }}
+                        {% for error in change_password.verifyPassword.errors %}
+                        <span class="text-danger">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                      {{ change_password.submit(class="btn btn-warning w-100", autofocus="autofocus") }}
+                </form>
+            </div>
         </div>
-
-        <div class="mb-3">
-            {{ change_email.email.label(class="form-label") }}
-            {{ change_email.email(class="form-control", placeholder="Enter your new email") }}
-            {% for error in change_email.email.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
-
-
-        <div>
-            {{ change_email.submit(class="btn w-100", style="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px; margin-bottom: 60px;", autofocus="autofocus") }}
-        </div>
-    </form>
-    <form method="POST" class="w-50">
-    {{ otpform.hidden_tag() }}
-         <div class="mb-3">
-            {{ otpform.otp.label(class="form-label") }}
-            {{ otpform.otp(class="form-control", placeholder="Enter the 6 digit code sent to your new email") }}
-            {% for error in otpform.otp.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
-    <div>
-            {{ otpform.submit(class="btn w-100", style="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px; margin-bottom: 60px;", autofocus="autofocus") }}
-        </div>
-    </form>
-</div>
-
-              <div class="row align-items-center mb-3">
-    <div class="col-md-4 text-end fw-bold">Password:</div>
-    <div class="col-md-4" id="password">●●●●●●●●●</div>
-    <div class="col-md-4 text-start">
-        <a class="btn btn-warning" id="toggle-password-form">Change Password</a>
     </div>
-</div>
-<div class="d-flex justify-content-center" id="password-form-container">
-    <form method="POST" class="w-50">
-        {{ change_password.hidden_tag() }}
 
-        <div class="mb-3">
-            {{ change_password.oldPassword.label(class="form-label") }}
-            {{ change_password.oldPassword(class="form-control", placeholder="Enter your old password") }}
-            {% for error in change_password.oldPassword.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
+    <!-- Shipping Addresses Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="card-title">Shipping Addresses</h5>
+                    <div class="address-list" style="margin-left:0px">
+                        {% for address in addresses %}
+                        <div class="address-item mb-2">
+                            <span>{{ address }}</span>
+                            <a class="btn btn-sm btn-outline-danger ms-2" href="{{ url_for('remove_address', addresss=addresses.index(address)) }}">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    {% if addresses|length < 6 %}
+                    <button class="btn btn-outline-secondary" id="toggle-address-form">
+                        <i class="fas fa-plus"></i> Add Address
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            <div id="address-form-container">
+                <form method="POST" class="mt-3">
+                    {{ add_address.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ add_address.zip.label(class="form-label") }}
+                        {{ add_address.zip(class="form-control", placeholder="Enter your zip code") }}
+                        {% for error in add_address.zip.errors %}
+                        <span class="text-danger">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ add_address.street.label(class="form-label") }}
+                        {{ add_address.street(class="form-control", placeholder="Enter your street name") }}
+                        {% for error in add_address.street.errors %}
+                        <span class="text-danger">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ add_address.buildingName.label(class="form-label") }}
+                        {{ add_address.buildingName(class="form-control", placeholder="Enter your building name") }}
+                        {% for error in add_address.buildingName.errors %}
+                        <span class="text-danger">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ add_address.blockNumber.label(class="form-label") }}
+                        {{ add_address.blockNumber(class="form-control", placeholder="Enter your block number") }}
+                        {% for error in add_address.blockNumber.errors %}
+                        <span class="text-danger">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ add_address.unitNumber.label(class="form-label") }}
+                        {{ add_address.unitNumber(class="form-control", placeholder="Enter your unit number") }}
+                        {% for error in add_address.unitNumber.errors %}
+                        <span class="text-danger">[{{ error }}]</span>
+                        {% endfor %}
+                    </div>
+                    {{ add_address.submit(class="btn btn-secondary w-100", autofocus="autofocus") }}
+                </form>
+            </div>
         </div>
-
-        <div class="mb-3">
-            {{ change_password.newPassword.label(class="form-label") }}
-            {{ change_password.newPassword(class="form-control", placeholder="Enter your new password") }}
-            {% for error in change_password.newPassword.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
-
-        <div class="mb-3">
-            {{ change_password.verifyPassword.label(class="form-label") }}
-            {{ change_password.verifyPassword(class="form-control", placeholder="Re-enter your new password") }}
-            {% for error in change_password.verifyPassword.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
-
-        <div>
-            {{ change_password.submit(class="btn w-100", style="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px; margin-bottom: 60px;", autofocus="autofocus") }}
-        </div>
-    </form>
-</div>
-    <div class="row align-items-center mb-3">
-    <div class="col-md-4 text-end fw-bold">Shipping Addresses:</div>
-    <div class="col-md-4" id="shippingaddress"><div class="address-list">
-    {% for address in addresses %}
-        <div class="address-item">
-            <span>{{ address }} </span>
-        <a class="delete-button" href = "{{ url_for('remove_address', addresss = addresses.index(address)) }}">Delete</a>
-        </div>
-    {% endfor %}
-</div>
     </div>
-    {% if addresses|length < 6 %}
-    <div class="col-md-4 text-start">
-        <a class="btn btn-secondary" id = "toggle-address-form">Add Shipping Address</a>
-    </div>
-        {% endif %}
-</div>
-<div class="d-flex justify-content-center" id="address-form-container">
-    <form method="POST" class="w-50">
-        {{ add_address.hidden_tag() }}
-
-        <div class="mb-3">
-            {{ add_address.zip.label(class="form-label") }}
-            {{ add_address.zip(class="form-control", placeholder="Enter your zip code") }}
-            {% for error in add_address.zip.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
-
-        <div class="mb-3">
-            {{ add_address.street.label(class="form-label") }}
-            {{ add_address.street(class="form-control", placeholder="Enter your street name") }}
-            {% for error in add_address.street.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
-
-        <div class="mb-3">
-            {{ add_address.buildingName.label(class="form-label") }}
-            {{ add_address.buildingName(class="form-control", placeholder="Enter your building name") }}
-            {% for error in add_address.buildingName.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
-        <div class="mb-3">
-            {{ add_address.blockNumber.label(class="form-label") }}
-            {{ add_address.blockNumber(class="form-control", placeholder="Enter your block number") }}
-            {% for error in add_address.blockNumber.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
-        <div class="mb-3">
-            {{ add_address.unitNumber.label(class="form-label") }}
-            {{ add_address.unitNumber(class="form-control", placeholder="Enter your unit number") }}
-            {% for error in add_address.unitNumber.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
-        <div>
-            {{ add_address.submit(class="btn w-100", style="background-color: #ff4d6d; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px; margin-bottom: 60px;", autofocus="autofocus") }}
-        </div>
-    </form>
-</div>
-
 </div>
 {% elif current_tab == 'order_history' %}
 <div id="orders-container" class="container py-5">
@@ -518,15 +526,21 @@ document.getElementById('toggle-address-form').addEventListener('click', functio
         <div class="row">
             {% for order in orders %}
             <div id="order-card-{{ order.id }}" class="col-md-8 mx-auto mb-4">
-                <div class="card shadow">
+                <div class="card shadow-sm hover-shadow transition-all">
                     <div class="card-body">
-                        <h5 class="card-title">Order ID: {{ order.id }}</h5>
-                        <hr>
-                        <h6 class="mb-3">Products:</h6>
+                        <!-- Order Header -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Order #{{ order.id }}</h5>
+                            <span class="badge bg-{{ order.status }} text-uppercase">{{ order.status|split_camel_case }}</span>
+                        </div>
+                        <hr class="mt-1 mb-3">
+
+                        <!-- Products Section -->
+                        <h6 class="mb-3 fw-bold">Products</h6>
                         <div class="row">
                             {% for i in order.Products %}
                             <div class="col-md-12 d-flex align-items-center mb-3">
-                                <img src="{{ order.Products[i][1].imageUrl }}" class="product-img me-3" width="80" height="80" alt="Product Image">
+                                <img src="{{ order.Products[i][1].imageUrl }}" class="product-img me-3 rounded" width="80" height="80" alt="Product Image">
                                 <div>
                                     <strong>{{ order.Products[i][0] }} x</strong> - {{ order.Products[i][1].name }}<br>
                                     <span class="text-muted">${{ order.Products[i][1].price }}</span>
@@ -534,69 +548,160 @@ document.getElementById('toggle-address-form').addEventListener('click', functio
                             </div>
                             {% endfor %}
                         </div>
-                        <hr>
-                        <p><strong>Shipping Address: </strong> {{ order.address }}</p>
-                        <p><strong>Subtotal:</strong> ${{ order.subtotal }}</p>
-                        {% if order.voucher %}
-                        <p><strong>Vouchers:</strong> {{ order.voucher }}</p>
-                        {% endif %}
-                        <p><strong>Status:</strong> {{ order.status|split_camel_case }}</p>
-                        <p><strong>Payment Reference Number:</strong> {{ order.payment_method }}</p>
-                        <p><strong>Date Placed:</strong> <span class="text-muted">{{ order.date }}</span></p>
+                        <hr class="my-3">
 
+                        <!-- Order Details (Collapsible) -->
+                       <div class="accordion" id="orderDetails-{{ order.id }}">
+                            <div class="accordion-item border-0">
+                                <h6 class="accordion-header" id="heading-{{ order.id }}">
+                                    <button class="accordion-button collapsed bg-transparent shadow-none p-0 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ order.id }}" aria-expanded="false" aria-controls="collapse-{{ order.id }}">
+                                        View Order Details
+                                    </button>
+                                </h6>
+                                <div id="collapse-{{ order.id }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ order.id }}" data-bs-parent="#orderDetails-{{ order.id }}">
+                                    <div class="accordion-body p-0 pt-3">
+                                        <p><strong>Shipping Address:</strong> {{ order.address }}</p>
+                                        <p><strong>Subtotal:</strong> ${{ order.subtotal }}</p>
+                                        {% if order.voucher %}
+                                        <p><strong>Vouchers:</strong> {{ order.voucher }}</p>
+                                        {% endif %}
+                                        <p><strong>Payment Reference Number:</strong> {{ order.payment_method }}</p>
+                                        <p><strong>Date Placed:</strong> <span class="text-muted">{{ order.date }}</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+
             </div>
             {% endfor %}
         </div>
     </div>
 </div>
 
+<!-- Custom CSS for Enhancements -->
+<style>
+    .hover-shadow:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+    }
+    .bg-PaymentProcessing {
+        background-color: #ffc107;
+    }
+    .bg-OrderProcessed {
+        background-color: #0d6efd;
+    }
+    .bg-InPreparation{
+        background-color: #2c4c6f;
+    }
+    .bg-OutForDelivery {
+        background-color: #4b8a76;
+    }
+    .bg-Delivered {
+        background-color: #369f36;
+    }
+    .accordion-button:not(.collapsed) {
+        color: #000;
+        background-color: transparent;
+    }
+    .accordion-button:focus {
+        box-shadow: none;
+    }
+</style>
+
 
 {% elif current_tab == 'coupons' %}
+    <style>
+
+        .voucher-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        .voucher-card:hover {
+            transform: translateY(-5px);
+        }
+        .voucher-title {
+            font-family: 'Garet', sans-serif;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #333;
+        }
+        .badge {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+        }
+        .btn-earn {
+            font-size: 1rem;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+        }
+        .cooldown-timer {
+            font-size: 1rem;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            background-color: #6c757d;
+            color: white;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
     <div class="container py-5">
-    <h2 class="text-center mb-4" style = "font-family: Lexend">Your Vouchers</h2>
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-        {% if totalCodes > 0 %}
-            <div class="list-group">
-                {% for code in codes %}
-                    {% if codes[code] > 0 %}
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
+        <h2 class="text-center mb-4" style="font-family: 'Lexend', sans-serif;">Your Vouchers</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                {% if totalCodes > 0 %}
+                    <div class="list-group">
+                        {% for code in codes %}
+                            {% if codes[code] > 0 %}
+                                <div class="list-group-item voucher-card mb-3 p-3 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        {% if code == 'TOTE' %}
+                                            <span class="voucher-title">Complimentary Tote Bag on Next Purchase ({{ code }})</span>
+                                        {% elif code == '10OFF' %}
+                                            <span class="voucher-title">10% Off ({{ code }})</span>
+                                        {% elif code == '15OFF' %}
+                                            <span class="voucher-title">15% Off ({{ code }})</span>
+                                        {% elif code == 'CHOC' %}
+                                            <span class="voucher-title">Complimentary Chocolate Bar on Next Purchase ({{ code }})</span>
+                                        {% elif code == '50OFF' %}
+                                            <span class="voucher-title">50% Off ({{ code }})</span>
+                                        {% elif code == 'SHIP' %}
+                                            <span class="voucher-title">Free Shipping ({{ code }})</span>
+                                        {% elif code == '5OFF' %}
+                                            <span class="voucher-title">5% Off ({{ code }})</span>
+                                        {% endif %}
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">{{ codes[code] }}</span>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <h3 class="text-center" style="font-family: 'Garet', sans-serif;">You have no vouchers. Start earning now!</h3>
+                {% endif %}
 
-                            {% if code == 'TOTE' %}
-                                <span class="fw-bold" style = "font-family: Garet; font-size: 20px;">Complimentary Tote Bag on Next Purchase ({{ code }})</span>
-                                {% elif code == '10OFF'%}
-                                <span class="fw-bold" style = "font-family: Garet; font-size: 20px;">10% Off ({{ code }})</span>
-                                {% elif code == '15OFF'%}
-                                <span class="fw-bold" style = "font-family: Garet; font-size: 20px;">15% Off ({{ code }})</span>
-                                {% elif code == 'CHOC'%}
-                                <span class="fw-bold" style = "font-family: Garet; font-size: 20px;">Complimentary Chocolate Bar on Next Purchase ({{ code }})</span>
-                                {% elif code == '50OFF' %}
-                                <span class="fw-bold" style = "font-family: Garet; font-size: 20px;">50% Off ({{ code }})</span>
-                                {% elif code == 'SHIP'%}
-                                <span class="fw-bold" style = "font-family: Garet; font-size: 20px;">Free Shipping ({{ code }})</span>
-                                {% elif code == '5OFF' %}
-                                <span class="fw-bold" style = "font-family: Garet; font-size: 20px;">5% Off ({{ code }})</span>
-                                {% endif %}
-                            <span class="badge bg-primary rounded-pill" style="font-size: 20px">{{ codes[code] }}</span> <!-- Voucher quantity -->
-                        </div>
+                <div class="text-center mt-4">
+                    {% if cooldown == 0 %}
+                        <a class="btn btn-success btn-earn" href="{{ url_for('game') }}">Earn Vouchers</a>
+                    {% else %}
+                        <button class="btn btn-secondary btn-md" id = "timer"></button>
                     {% endif %}
-                {% endfor %}
-        {% else %}
-            <h3 style="text-align: center; font-family: Garet">You have no vouchers. Start earning now!</h3>
-            {% endif %}
+                </div>
             </div>
-        {% if cooldown == 0 %}
-            <a class="btn btn-success btn-md" href = {{ url_for('game') }}>Earn Vouchers</a>
-            {% else %}
-            <button class="btn btn-secondary btn-md" id = "timer"></button>
-            {% endif %}
         </div>
-
     </div>
-
-</div>
 {% endif %}
 
     <script>

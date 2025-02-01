@@ -177,7 +177,7 @@ def catalog():
 
 
 
-current_tab = 'profile'
+current_tab = 'personal_details'
 toggleEmail = None
 success = None
 @app.route('/change_success', methods = ['GET', 'POST'])
@@ -558,7 +558,6 @@ def Admin():
                            ,reply_ticket= reply_ticket)
 
 def getSimiliarProducts(product):
-
     weights = {}
     with shelve.open('products') as productsDB:
         categories = set(product.categories)

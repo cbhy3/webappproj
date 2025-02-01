@@ -63,22 +63,101 @@
 </script>
 <div class="container mt-5">
      {% if action == 'Default' %}
-        <button class="btn btn-custom" onclick = "update_action('AddProduct')">Add Product</button>
-        <br>
-        <button class="btn btn-custom" onclick = "update_action('ModifyProduct')">Modify/ Delete Product</button>
-        <br>
-         <button class="btn btn-custom" onclick = "update_action('ViewOrders')">View Orders</button>
-        <br>
-         <button class="btn btn-custom" onclick = "update_action('Dashboard')">Dashboard</button>
-         <br>
-         <button class="btn btn-custom" onclick = "update_action('Users')">View Users</button>
-         <br>
-         <button class="btn btn-custom" onclick = "update_action('Admins')">View Admins</button>
-         <br>
-         <button class="btn btn-custom" onclick = "update_action('Ticket')">View Tickets</button>
-         <br>
-          <a class="btn btn-custom" href = "{{ url_for("about_us") }}">Home</a>
-        <br>
+         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    .dashboard-container {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card {
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #0d6efd;
+    }
+    .btn-home {
+      margin-top: 2rem;
+      width: 100%;
+      max-width: 200px;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <h1 class="text-center mb-4">Admin Dashboard</h1>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <!-- Add Product -->
+      <div class="col">
+        <div class="card h-100 text-center p-4" onclick="update_action('AddProduct')">
+          <i class="fas fa-plus-circle card-icon"></i>
+          <h5 class="card-title">Add Product</h5>
+          <p class="card-text">Add new products to the inventory.</p>
+        </div>
+      </div>
+      <!-- Modify/Delete Product -->
+      <div class="col">
+        <div class="card h-100 text-center p-4" onclick="update_action('ModifyProduct')">
+          <i class="fas fa-edit card-icon"></i>
+          <h5 class="card-title">Modify/Delete Product</h5>
+          <p class="card-text">Edit or remove existing products.</p>
+        </div>
+      </div>
+      <!-- View Orders -->
+      <div class="col">
+        <div class="card h-100 text-center p-4" onclick="update_action('ViewOrders')">
+          <i class="fas fa-shopping-cart card-icon"></i>
+          <h5 class="card-title">View Orders</h5>
+          <p class="card-text">Manage and track customer orders.</p>
+        </div>
+      </div>
+      <!-- Dashboard -->
+      <div class="col">
+        <div class="card h-100 text-center p-4" onclick="update_action('Dashboard')">
+          <i class="fas fa-tachometer-alt card-icon"></i>
+          <h5 class="card-title">Dashboard</h5>
+          <p class="card-text">Overview of key metrics and insights.</p>
+        </div>
+      </div>
+      <!-- View Users -->
+      <div class="col">
+        <div class="card h-100 text-center p-4" onclick="update_action('Users')">
+          <i class="fas fa-users card-icon"></i>
+          <h5 class="card-title">View Users</h5>
+          <p class="card-text">Manage registered users.</p>
+        </div>
+      </div>
+      <!-- View Admins -->
+      <div class="col">
+        <div class="card h-100 text-center p-4" onclick="update_action('Admins')">
+          <i class="fas fa-user-shield card-icon"></i>
+          <h5 class="card-title">View Admins</h5>
+          <p class="card-text">Manage admin accounts.</p>
+        </div>
+      </div>
+      <!-- View Tickets -->
+      <div class="col">
+        <div class="card h-100 text-center p-4" onclick="update_action('Ticket')">
+          <i class="fas fa-ticket-alt card-icon"></i>
+          <h5 class="card-title">View Tickets</h5>
+          <p class="card-text">Handle customer support tickets.</p>
+        </div>
+      </div>
+    </div>
+    <!-- Home Button -->
+    <div class="text-center mt-4">
+      <a class="btn btn-primary btn-home" href="{{ url_for('about_us') }}">
+        <i class="fas fa-home me-2"></i>Home
+      </a>
+    </div>
+  </div>
      {% elif action == 'AddProduct' %}
     <h1 class="mb-4">Add Product</h1>
     <form method="POST">
