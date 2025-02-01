@@ -78,7 +78,7 @@ TossedOut! - Cart
         <h5 class="mb-0">Comes with {{ gifts }}</h5>
        <a href="{{ url_for('removeVoucher', code = codeUsed) }}" class="btn btn-sm btn-primary me-2">Remove Voucher</a>
     </div><h5 class="mb-0">Shipping -  $5</h5>
-    <h5 class="mb-0">Subtotal: ${{ subtotal  }}</h5>
+    <h5 class="mb-0">Subtotal: ${{ subtotal|round(2)  }}</h5>
 </div>
     {% elif discount %}
 <div class="d-flex flex-column align-items-end mb-2">
@@ -88,7 +88,7 @@ TossedOut! - Cart
     <a href="{{ url_for('removeVoucher', code = codeUsed) }}" class="btn btn-sm btn-primary me-2">Remove Voucher</a>
     </div>
         </div><h5 class="mb-0">Shipping -  $5</h5>
-    <h5 class="mb-0">Subtotal: ${{ subtotal }}</h5>
+    <h5 class="mb-0">Subtotal: ${{ subtotal|round(2) }}</h5>
         </div>
     {% elif freeShipping %}
 <div class="d-flex flex-column align-items-end mb-2">
@@ -97,14 +97,14 @@ TossedOut! - Cart
         <h5 class="mb-0">Free Shipping</h5>
     <a href="{{ url_for('removeVoucher', code = codeUsed) }}" class="btn btn-sm btn-primary me-2">Remove Voucher</a>
     </div>
-    <h5 class="mb-0">Subtotal: ${{ subtotal }}</h5>
+    <h5 class="mb-0">Subtotal: ${{ subtotal|round(2) }}</h5>
 </div>
     {% else %}
 
     <div class="d-flex align-items-center justify-content-end mb-2">
     </div>
         <h5 class="mb-0">Shipping -  $5</h5>
-        <h5 class="mb-0">Subtotal: ${{ subtotal }}</h5>
+        <h5 class="mb-0">Subtotal: ${{ subtotal|round(2) }}</h5>
     </div>
     {% endif %}
 </div>

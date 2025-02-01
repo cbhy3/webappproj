@@ -574,12 +574,12 @@ hr {
 
             <!-- Lifetime Sales -->
             <div class="mb-3">
-                <p><strong>Lifetime Sales:</strong> <span class="text-success">${{ stats['LifetimeSales'] }}</span></p>
+                <p><strong>Lifetime Sales:</strong> <span class="text-success">${{ stats['LifetimeSales']|round(2) }}</span></p>
             </div>
 
             <!-- Monthly Sales -->
             <div class="mb-3">
-                <p><strong>Monthly Sales:</strong> <span class="text-primary">${{ stats['MonthlySales'] }}</span></p>
+                <p><strong>Monthly Sales:</strong> <span class="text-primary">${{ stats['MonthlySales']|round(2) }}</span></p>
             </div>
 
             <!-- Top Selling Products -->
@@ -597,12 +597,12 @@ hr {
 
             <!-- CO2 Emissions Saved -->
             <div class="mb-3">
-                <p><strong>CO2 Emissions Saved:</strong> <span class="text-info">{{ stats['Co2'] }} kg</span></p>
+                <p><strong>CO2 Emissions Saved:</strong> <span class="text-info">{{ stats['Co2']|round(2) }} kg</span></p>
             </div>
 
             <!-- Water Saved -->
             <div class="mb-3">
-                <p><strong>Water Saved:</strong> <span class="text-info">{{ stats['Water'] }} litres</span></p>
+                <p><strong>Water Saved:</strong> <span class="text-info">{{ stats['Water']|round(2) }} litres</span></p>
             </div>
         </div>
     </div>
