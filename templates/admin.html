@@ -61,9 +61,10 @@
 
 
 </script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 <div class="container mt-5">
      {% if action == 'Default' %}
-         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
   <style>
     .dashboard-container {
       padding: 2rem;
@@ -322,7 +323,8 @@
             break;
 
     }}
-             changeField.addEventListener('change', function (){
+
+             changeField.addEventListener('click', function (){
                  hideAllCollections(allFields);
                  update_change();
              })
@@ -587,107 +589,99 @@ hr {
 
          {% elif action == "Dashboard" %}
          <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
+        .card-metric {
+            transition: transform 0.2s;
         }
-        .card {
-            border: none;
-            border-radius: 15px;
-            background: linear-gradient(to bottom right, #ffffff, #f1f1f1);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        .card-metric:hover {
+            transform: translateY(-5px);
         }
-        h1 {
+        .metric-icon {
             font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #6c757d;
+        }
+        .metric-value {
+            font-size: 1.5rem;
             font-weight: bold;
-            color: #343a40;
         }
-        p, ul {
-            font-size: 1.1rem;
-            color: #495057;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-            border-radius: 25px;
-            padding: 10px 20px;
+        .metric-label {
             font-size: 1rem;
-            transition: background-color 0.3s ease;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        .list-group-item {
-            border: none;
-            background-color: #f8f9fa;
-        }
-        .list-group-item .badge {
-            font-size: 0.9rem;
-            background-color: #6c757d;
-        }
-        .text-success {
-            font-weight: bold;
-            color: #28a745 !important;
-        }
-        .text-primary {
-            font-weight: bold;
-            color: #007bff !important;
-        }
-        .text-info {
-            font-weight: bold;
-            color: #17a2b8 !important;
-        }
-        .mb-3, .mb-4 {
-            border-bottom: 1px solid #e9ecef;
-            padding-bottom: 10px;
+            color: #6c757d;
         }
     </style>
-         <div class="container my-5">
+</head>
+<body>
+    <div class="container my-5">
         <div class="card shadow-lg p-4">
             <h1 class="text-center mb-4">TossedOut Dashboard</h1>
 
             <!-- Download Orders Button -->
             <div class="text-center mb-4">
-                <a href="{{ url_for('download_orders') }}" class="btn btn-primary">Download Orders</a>
+                <a href="{{ url_for('download_orders') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-download"></i> Download Orders
+                </a>
             </div>
 
-            <!-- Lifetime Sales -->
-            <div class="mb-3">
-                <p><strong>Lifetime Sales:</strong> <span class="text-success">${{ stats['LifetimeSales']|round(2) }}</span></p>
-            </div>
+            <!-- Metrics Grid -->
+            <div class="row g-4 mb-4">
+                <!-- Lifetime Sales -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card card-metric text-center p-3">
+                        <i class="fas fa-chart-line metric-icon"></i>
+                        <p class="metric-value text-success">${{ stats['LifetimeSales']|round(2) }}</p>
+                        <p class="metric-label">Lifetime Sales</p>
+                    </div>
+                </div>
 
-            <!-- Monthly Sales -->
-            <div class="mb-3">
-                <p><strong>Monthly Sales:</strong> <span class="text-primary">${{ stats['MonthlySales']|round(2) }}</span></p>
+                <!-- Monthly Sales -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card card-metric text-center p-3">
+                        <i class="fas fa-calendar-alt metric-icon"></i>
+                        <p class="metric-value text-primary">${{ stats['MonthlySales']|round(2) }}</p>
+                        <p class="metric-label">Monthly Sales</p>
+                    </div>
+                </div>
+
+                <!-- CO2 Emissions Saved -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card card-metric text-center p-3">
+                        <i class="fas fa-leaf metric-icon"></i>
+                        <p class="metric-value text-info">{{ stats['Co2']|round(2) }} kg</p>
+                        <p class="metric-label">CO2 Emissions Saved</p>
+                    </div>
+                </div>
+
+                <!-- Water Saved -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card card-metric text-center p-3">
+                        <i class="fas fa-tint metric-icon"></i>
+                        <p class="metric-value text-info">{{ stats['Water']|round(2) }} litres</p>
+                        <p class="metric-label">Water Saved</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Top Selling Products -->
-            <div class="mb-4">
-                <p><strong>Top Selling Products:</strong></p>
+            <div class="card shadow-lg p-4 mb-4">
+                <h3 class="text-center mb-4"><i class="fas fa-star"></i> Top Selling Products</h3>
                 <ul class="list-group">
                     {% for i in stats['TopSelling'] %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         {{ i.name }}
-                        <span class="badge">{{ stats['TopSelling'][i] }} sold</span>
+                        <span class="badge bg-primary rounded-pill">{{ stats['TopSelling'][i] }} sold</span>
                     </li>
                     {% endfor %}
                 </ul>
             </div>
 
-            <!-- CO2 Emissions Saved -->
-            <div class="mb-3">
-                <p><strong>CO2 Emissions Saved:</strong> <span class="text-info">{{ stats['Co2']|round(2) }} kg</span></p>
-            </div>
-
-            <!-- Water Saved -->
-            <div class="mb-3">
-                <p><strong>Water Saved:</strong> <span class="text-info">{{ stats['Water']|round(2) }} litres</span></p>
+            <!-- Back Button -->
+            <div class="text-center">
+                <button onclick="update_action('Default')" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
             </div>
         </div>
     </div>
-         <div class="text-center mb-4">
-                <button onclick = "update_action('Default')" class="btn btn-primary">Back</button>
-            </div>
          {% elif action == "Users" %}
          <script>
          function update_search_orders(action){
@@ -739,51 +733,79 @@ hr {
             margin-bottom: 20px;
         }
     </style>
-         <div class="container mt-4">
-        <h1 class="text-center mb-4">User Management</h1>
-         <div class="search-bar text-center">
-            <input type="text" class="form-control w-50 d-inline" id="searchInput" placeholder="Search users...">
-            <button class="btn btn-primary ms-2" onclick="performSearch()">Search</button>
-        </div>
-        {% for i in all_users %}
-        <div class="user-card">
-            <h5>User Email: {{ all_users[i].email }}</h5>
-            <button
-                onclick="update_search_orders('user_{{ all_users[i].email }}_date_latest'); update_action('ViewOrders')"
-                class="btn btn-primary">
-                View User's Orders
+        <div class="container mt-4">
+    <h1 class="text-center mb-4">User Management</h1>
+
+    <!-- Improved Search Bar -->
+    <div class="search-bar text-center mb-4">
+        <div class="input-group w-50 mx-auto">
+            <input type="text" class="form-control" id="searchInput" placeholder="Search users...">
+            <button class="btn btn-primary" >
+                <i class="fas fa-search"></i> Search
             </button>
-            <p class="mt-3"><strong>User's Vouchers:</strong></p>
-            <div id="vouchers">
-                <ul>
-                    {% for x in all_users[i].Codes %}
-                    <li>{{ x }} : {{ all_users[i].Codes[x] }}</li>
-                    {% endfor %}
-                </ul>
+        </div>
+    </div>
+
+    <!-- User Cards Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for i in all_users %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title email" >{{ all_users[i].email }}</h5>
+
+                    <!-- View Orders Button -->
+                    <button onclick="update_search_orders('user_{{ all_users[i].email }}_date_latest'); update_action('ViewOrders')"
+                            class="btn btn-primary w-100 mb-3">
+                        <i class="fas fa-list-alt me-2"></i> View User's Orders
+                    </button>
+
+                    <!-- Vouchers Section -->
+                    <div class="mb-3">
+                        <h6 class="fw-bold">User's Vouchers:</h6>
+                        <ul class="list-group">
+                            {% for x in all_users[i].Codes %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>{{ x }}</span>
+                                <span class="badge bg-secondary">{{ all_users[i].Codes[x] }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <!-- Add Admin Button (Conditional) -->
+                    {% if not all_users[i].isAdmin() and current_user.email == "admin@tossedout.com" %}
+                    <a href="{{ url_for('add_admin', user=all_users[i].email) }}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-user-plus me-2"></i> Add Admin
+                    </a>
+                    {% endif %}
+                </div>
             </div>
-            {% if not all_users[i].isAdmin() and current_user.email == "admin@tossedout.com"%}
-            <a href="{{ url_for('add_admin', user=all_users[i].email) }}" class="btn btn-outline-secondary">Add Admin</a>
-            {% endif %}
         </div>
         {% endfor %}
-         <div class="text-center mb-4">
-                <button onclick = "update_action('Default')" class="btn btn-primary">Back</button>
-            </div>
     </div>
+
+    <!-- Back Button -->
+    <div class="text-center mt-4">
+        <button onclick="update_action('Default')" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back
+        </button>
+    </div>
+</div>
           <script>
-        function performSearch() {
+        document.getElementById('searchInput').addEventListener('input', function(e) {
             const input = document.getElementById('searchInput').value.toLowerCase();
-            const userCards = document.querySelectorAll('.user-card');
+            const userCards = document.querySelectorAll('.col');
 
             userCards.forEach(card => {
-                const email = card.querySelector('h5').textContent.toLowerCase();
+                const email = card.querySelector('.email').textContent.toLowerCase();
                 if (email.includes(input)) {
                     card.style.display = '';
                 } else {
                     card.style.display = 'none';
                 }
             });
-        }
+        })
     </script>
          {% elif action == "Admins" %}
          <style>
@@ -833,9 +855,11 @@ hr {
             {% endif %}
         </div>
         {% endfor %}
-         <div class="text-center mb-4">
-                <button onclick = "update_action('Default')" class="btn btn-primary">Back</button>
-            </div>
+         <div class="text-center mt-4">
+        <button onclick="update_action('Default')" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back
+        </button>
+    </div>
     </div>
           <script>
         function performSearch() {
@@ -879,9 +903,11 @@ hr {
         }
     </style>
          <div class="container py-5">
-         <div class="text-center mb-4">
-                <button onclick = "update_action('Default')" class="btn btn-primary">Back</button>
-            </div>
+         <div class="text-center mt-4">
+        <button onclick="update_action('Default')" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back
+        </button>
+    </div>
         <h2 class="text-center mb-4">Support Tickets</h2>
 
         <div class="row justify-content-center">
@@ -959,7 +985,9 @@ hr {
 {% endif %}
 
 
-</div>
+
+</body>
+    </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -157,9 +157,11 @@ def about_us():
 
     return render_template('aboutus.html', active_page='aboutus',
                            current_user=current_user, cart = cart)
-## copy this shit into the other pages when finished making them
 @app.route('/catalog', methods=['GET', 'POST'])
 def catalog():
+
+
+    global success
     with shelve.open('products') as products:
         all_products = {key: products[key] for key in products}
     with shelve.open('users') as usersDB:
@@ -173,7 +175,7 @@ def catalog():
         current_user = None
 
 
-    return render_template('catalog.html', active_page='catalog', products=all_products, cart = cart, current_user = current_user)
+    return render_template('catalog.html', active_page='catalog', products=all_products, cart = cart, current_user = current_user, success =success)
 
 
 
@@ -204,6 +206,7 @@ def profile():
         with shelve.open('admin') as adminDB:
             admin = adminDB[session.get('current_user')]
         isAdmin = True
+
     except:
         isAdmin = False
     global current_tab
@@ -227,8 +230,10 @@ def profile():
         cooldown = current_user.Cooldown
         addresses = current_user.Addresses
         print(codes)
+
     except:
         current_user = None
+
     otpform = Otp()
     signoutform  = signOut()
     change_email = changeEmail()
@@ -308,7 +313,7 @@ def profile():
                            current_user=current_user,  otpform=otpform, change_email = change_email,
                            change_emailEmail = change_emailEmail, change_password = change_password, cart = cart, codes = codes,
                            cooldown = cooldown, delete_account = delete_account, toggleEmail = toggleEmail, success = success, add_address = add_address, addresses = addresses, orders = users_orders, totalCodes= totalCodes
-                           ,isAdmin = isAdmin)
+                           ,isAdmin = isAdmin, )
 
 @app.route('/updatep', methods = ['POST'])
 def update_profile_tab():
@@ -611,6 +616,8 @@ def addtocart(product_id):
             for i in current_user.Cart:
                 with shelve.open('products') as productsDB:
                     print(f'{productsDB[str(i)]},,,, quantity: {current_user.Cart[i]}')
+        global success
+        success = "Product Added Successfully!"
         return redirect(url_for('catalog'))
 
     except:
@@ -624,6 +631,7 @@ def removefromcart(product_id):
         for i in current_user.Cart:
             with shelve.open('products') as productsDB:
                 print(f'{productsDB[str(i)]},,,, quantity: {current_user.Cart[i]}')
+
     return redirect(url_for('cart'))
 
 @app.route('/catalog/addtocart_cart/<int:product_id>', methods=['GET', 'POST'])
@@ -635,17 +643,12 @@ def addtocart_cart(product_id):
             for i in current_user.Cart:
                 with shelve.open('products') as productsDB:
                     print(f'{productsDB[str(i)]},,,, quantity: {current_user.Cart[i]}')
+
         return redirect(url_for('cart'))
+
     except:
         return redirect(url_for('sign_in'))
-@app.route('/set_signup', methods=['POST'])
-def set_signup():
-    global signup
-    data = request.get_json()
-    if 'signup' in data:
-        signup = data['signup']
-        return jsonify({'message': 'Signup status updated', 'signup': signup}), 200
-    return jsonify({'error': 'Invalid data'}), 400
+
 
 voucherUsed = False
 codeUsed = None
@@ -847,6 +850,8 @@ def cancel_order(orderid):
     if Order.getUser(orderid) == session.get('current_user') and Order.getStatus(orderid) == "PaymentPending":
         Order.cancel_order(str(orderid))
         payment_session.pop(session.get('current_user'))
+        global success
+        success = "Order Cancelled."
         return redirect(url_for('cart'))
     else:
         return redirect(url_for('cart'))
@@ -889,9 +894,11 @@ def support():
     try:
         with shelve.open('users') as usersDB:
             current_user = usersDB[session.get('current_user')]
+        with shelve.open('tickets') as ticketDB:
+            all_tickets = {key: ticketDB[key] for key in ticketDB if ticketDB[key].user == current_user.getEmail()}
     except:
         return redirect(url_for('sign_in'))
-
+    reply_ticket = replyTicket()
     open_ticket = openTicket()
     if request.method == 'POST':
         if 'open_ticket_submit' in request.form and open_ticket.validate_on_submit():
@@ -902,8 +909,24 @@ def support():
             success = "Ticket successfully submitted!"
             return redirect(url_for('profile'))
 
-    return render_template('support.html', open_ticket=open_ticket, current_user=current_user, active_page = "profile")
-
+    return render_template('support.html', open_ticket=open_ticket, current_user=current_user, active_page = "profile", reply_ticket = reply_ticket, tickets = all_tickets
+                           )
+@app.route('/reply_ticket_user/<id>', methods=['GET', 'POST'])
+def reply_ticket_user(id):
+    try:
+        with shelve.open('users') as usersDB:
+            current_user = usersDB[session.get('current_user')]
+    except:
+        return redirect(url_for('about_us'))
+    open_ticket = replyTicket()
+    global success
+    with shelve.open("tickets") as tickets:
+        ticket = tickets[str(id)]
+    if ticket.user != current_user.getEmail():
+        return redirect(url_for('about_us'))
+    ticket.add_reply(session.get('current_user'), open_ticket.body.data)
+    success = "Reply added successfully!"
+    return redirect(url_for('profile'))
 @app.route('/reply_ticket/<id>', methods=['GET', 'POST'])
 def reply_ticket(id):
     try:

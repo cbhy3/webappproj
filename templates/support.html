@@ -10,14 +10,106 @@ Tossed Out! - Support
      font-family:Garet;
         }
         .container {
-            max-width: 500px;
+            max-width: 1000px;
             margin-top: 50px;
             background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: white;
+}
 
+.bg-gradient-success {
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+    color: white;
+}
+
+/* Hover Effect for Cards */
+.hover-effect {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Fade-In Animation for Replies */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Custom Button Styles */
+.btn-gradient-primary {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: white;
+    border: none;
+    transition: opacity 0.2s ease;
+}
+
+.btn-gradient-primary:hover {
+    opacity: 0.9;
+}
+
+.btn-gradient-success {
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+    color: white;
+    border: none;
+    transition: opacity 0.2s ease;
+}
+
+.btn-gradient-success:hover {
+    opacity: 0.9;
+}
+
+/* Status Badge Enhancements */
+.status-badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Styling */
+.ticket-card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Form Styling */
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: #6a11cb;
+    box-shadow: 0 0 5px rgba(106, 17, 203, 0.2);
+}
+#tickets{
+    margin-top: 35px;
+    max-width:1000px;
+    margin-bottom:150px;
+    margin-left: auto;
+    margin-right: auto;
+    display:flex;
+}
 </style>
 <div class="container">
         <h2 class="text-center">Support Ticket</h2><br>
@@ -42,4 +134,74 @@ Tossed Out! - Support
          {{ open_ticket.submit(class="btn btn-success w-100") }}
      </form>
 </div>
+
+    <h3 class="text-center mb-4 fw-bold text-primary" style="margin-top:85px;">Your Tickets</h3>
+<div class="row justify-content-center" id ="tickets">
+    <div class="col-lg-10">
+        {% for ticket in tickets %}
+        <div class="card mb-4 shadow-sm ticket-card hover-effect">
+            <div class="card-body position-relative">
+                <!-- Status Badge -->
+                <span class="badge status-badge position-absolute top-0 end-0 m-3
+                    {% if tickets[ticket].status == 'Open' %}bg-success
+                    {% elif tickets[ticket].status == 'Closed' %}bg-danger
+                    {% else %}bg-warning text-dark{% endif %}">
+                    {{ tickets[ticket].status }}
+                </span>
+
+                <!-- Ticket Meta -->
+                <div class="ticket-meta mb-3 text-muted">
+                    <span class="fw-bold">{{ tickets[ticket].user }}</span>
+                    <span class="mx-1">•</span>
+                    <span>{{ tickets[ticket].created_date }}</span>
+                </div>
+
+                <!-- Ticket Content -->
+                <h4 class="card-title mb-3 text-dark">{{ tickets[ticket].head }}</h4>
+                <p class="card-text mb-4 text-secondary">{{ tickets[ticket].body }}</p>
+
+                <!-- Reply Section -->
+                {% if tickets[ticket].reply %}
+                    {% for replies in tickets[ticket].reply %}
+                    <div class="reply-section bg-light p-3 rounded mb-3 fade-in">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge bg-gradient-primary me-2">Response</span>
+                            <span class="fw-bold">{{ replies['replied_by'] }}</span>
+                        </div>
+                        <p class="mb-0">{{ replies['reply_content'] }}</p>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Action Buttons -->
+                {% if tickets[ticket].status != 'Closed' %}
+                <div class="mt-4">
+                    <button class="btn btn-sm btn-gradient-primary"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#replyForm{{ ticket }}">
+                        Add Response
+                    </button>
+                    <div class="collapse mt-3" id="replyForm{{ ticket }}">
+                        <div class="card card-body border-0 shadow-sm">
+                            <form action="{{ url_for('reply_ticket_user', id = ticket) }}" method="POST">
+                                {{ reply_ticket.hidden_tag() }}
+                                <div class="mb-3">
+                                    {{ reply_ticket.body.label(class="form-label fw-bold") }}
+                                    {{ reply_ticket.body(class="form-control", rows=4, placeholder="Enter your response...") }}
+                                </div>
+                                <div>
+                                    {{ reply_ticket.submit(class="btn btn-gradient-success w-100") }}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
 {% endblock %}

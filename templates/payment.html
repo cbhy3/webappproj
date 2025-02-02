@@ -88,7 +88,7 @@
             <p class="voucher">Voucher used - {{ order.voucher }}</p>
         {% endif %}
 
-        <p><strong>Subtotal:</strong> ${{ order.subtotal }}</p>
+        <p><strong>Subtotal:</strong> ${{ order.subtotal|round(2) }}</p>
         <p><strong>Shipping Address: </strong> {{ order.address }}</p>
         <div class="qr-code">
             <p>Please scan this code using your banking app to pay. Ensure the reference number on screen and the reference number in the app is the same.</p>

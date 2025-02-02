@@ -5,49 +5,92 @@ Tossed Out! - Catalog
 {% endblock %}
 {% block content %}
     <style>
-    .product-card {
-    width: 18rem; /* Adjust the width of the card */
-    border-radius: 8px;
-}
-.product-card:hover{
-    cursor: pointer;
-    transition: 0.3s;
-    transform: scale(1.02);
-}
-.product-image {
-    border-radius: 8px 8px 0 0; /* Rounded corners for the image */
-    height: 250px; /* Fixed height for consistency */
-    object-fit: cover; /* Ensures image scaling */
-}
 
-.product-name {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #555;
-}
+.product-card {
+        width: 18rem; /* Adjust the width of the card */
+        border-radius: 12px; /* Slightly larger radius for a modern look */
+        border: 1px solid #e0e0e0; /* Subtle border */
+        overflow: hidden; /* Ensures the image respects the border radius */
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
+    }
 
-.product-weight {
-    font-size: 0.9rem;
-    margin-top: -8px;
-}
+    .product-card:hover {
+        transform: translateY(-5px); /* Lift the card on hover */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+        cursor: pointer;
+    }
 
-.product-expiry {
-    font-size: 0.9rem;
-    margin-top: 4px;
-}
+    .product-image {
+        border-radius: 12px 12px 0 0; /* Rounded corners for the image */
+        height: 250px; /* Fixed height for consistency */
+        object-fit: cover; /* Ensures image scaling */
+    }
 
-.card-footer button {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
+    .card-body {
+        padding: 1.25rem; /* Consistent padding */
+    }
+
+    .product-name {
+        font-size: 1.1rem;
+        font-weight: 600; /* Slightly bolder for emphasis */
+        color: #333; /* Darker text for better readability */
+        margin-bottom: 0.5rem; /* Spacing below the name */
+    }
+
+    .product-price {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #007bff; /* Primary color for price */
+        margin-bottom: 0.75rem; /* Spacing below the price */
+    }
+
+    .product-weight, .product-expiry {
+        font-size: 0.9rem;
+        color: #666; /* Muted text color */
+        margin-bottom: 0.25rem; /* Spacing between details */
+    }
+
+    .product-expiry {
+        color: #dc3545; /* Red for expiry date to stand out */
+        font-weight: 500; /* Slightly bolder */
+    }
+
+    .card-footer {
+        background-color: #f8f9fa; /* Light background for footer */
+        border-top: 1px solid #e0e0e0; /* Subtle border */
+        padding: 0.75rem 1.25rem; /* Consistent padding */
+    }
+
+    .btn-outline-primary {
+        border-color: #007bff; /* Primary color for button */
+        color: #007bff; /* Primary color for text */
+        font-weight: 500; /* Slightly bolder */
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #007bff; /* Primary color on hover */
+        color: #fff; /* White text on hover */
+    }
+
+    .btn-outline-danger {
+        border-color: #dc3545; /* Danger color for button */
+        color: #dc3545; /* Danger color for text */
+        font-weight: 500; /* Slightly bolder */
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #dc3545; /* Danger color on hover */
+        color: #fff; /* White text on hover */
+    }
 body{
     font-family: Garet;
 }
+
     </style>
 <body>
 
       <script>
+
         document.addEventListener("DOMContentLoaded", function(event) {
             var scrollpos = localStorage.getItem('scrollpos');
             if (scrollpos) window.scrollTo(0, scrollpos);
@@ -56,6 +99,10 @@ body{
         window.onbeforeunload = function(e) {
             localStorage.setItem('scrollpos', window.scrollY);
         };
+
+
+
+
 
         function performSearch() {
             const input = document.getElementById('input').value.toLowerCase();
@@ -161,23 +208,160 @@ if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.i
     transform: scale(1.1);
 
 }
+.sidebar {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        font-family: Arial, sans-serif;
+    }
+
+    .sidebar-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .collapse-btn {
+        display: none; /* Hidden by default, shown on smaller screens */
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    #products{
+        padding-left:130px;
+        padding-right:130px;
+    }
+    .category-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .category-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        color: #555;
+        cursor: pointer;
+    }
+
+    .category-label input {
+        display: none; /* Hide default checkbox */
+    }
+
+    .checkmark {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        position: relative;
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .category-label input:checked + .checkmark {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 5px;
+        top: 2px;
+        width: 4px;
+        height: 8px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    .category-label input:checked + .checkmark:after {
+        display: block;
+    }
+
+    .category-label i {
+        font-size: 16px;
+        color: #007bff;
+    }
+
+
 </style>
 
 
 <div class="sidebar" id="sidebar">
-    <h4>Categories</h4>
-    <label class="category-label"><input type="checkbox" value="Dairy" onclick="filterProducts()">  Dairy</label>
-    <label class="category-label"><input type="checkbox" value="Bakery & Grains" onclick="filterProducts()">  Bakery & Grains</label>
-    <label class="category-label"><input type="checkbox" value="Meat & Seafood" onclick="filterProducts()">  Meat & Seafood</label>
-    <label class="category-label"><input type="checkbox" value="Pantry and Cooking Essentials" onclick="filterProducts()">  Pantry and Cooking Essentials</label>
-    <label class="category-label"><input type="checkbox" value="Snacks & Sweets" onclick="filterProducts()">  Snacks & Sweets</label>
-    <label class="category-label"><input type="checkbox" value="Beverages" onclick="filterProducts()">  Beverages</label>
-    <label class="category-label"><input type="checkbox" value="Frozen Foods" onclick="filterProducts()">  Frozen Foods</label>
-    <label class="category-label"><input type="checkbox" value="Fruits & Vegetables" onclick="filterProducts()">  Fruits & Vegetables</label>
-    <label class="category-label"><input type="checkbox" value="Household & Cleaning Supplies" onclick="filterProducts()">  Household & Cleaning Supplies</label>
-    <label class="category-label"><input type="checkbox" value="Locally Sourced" onclick="filterProducts()">  Locally Sourced</label>
-    <label class="category-label"><input type="checkbox" value="Canned Foods" onclick="filterProducts()">  Canned Foods</label>
+    <h4 class="sidebar-title">Categories</h4>
+
+    <div class="category-list" id="categoryList">
+        <label class="category-label">
+            <input type="checkbox" value="Dairy" onclick="filterProducts()">
+            <span class="checkmark"></span>
+            <i class="fas fa-cheese"></i> Dairy
+        </label>
+        <label class="category-label">
+            <input type="checkbox" value="Bakery & Grains" onclick="filterProducts()">
+            <span class="checkmark"></span>
+            <i class="fas fa-bread-slice"></i> Bakery & Grains
+        </label>
+        <label class="category-label">
+            <input type="checkbox" value="Meat & Seafood" onclick="filterProducts()">
+            <span class="checkmark"></span>
+            <i class="fas fa-drumstick-bite"></i> Meat & Seafood
+        </label>
+        <label class="category-label">
+            <input type="checkbox" value="Pantry and Cooking Essentials" onclick="filterProducts()">
+            <span class="checkmark"></span>
+            <i class="fas fa-utensils"></i> Pantry & Cooking
+        </label>
+        <label class="category-label">
+            <input type="checkbox" value="Snacks & Sweets" onclick="filterProducts()">
+            <span class="checkmark"></span>
+            <i class="fas fa-cookie"></i> Snacks & Sweets
+        </label>
+        <label class="category-label">
+            <input type="checkbox" value="Beverages" onclick="filterProducts()">
+            <span class="checkmark"></span>
+            <i class="fas fa-coffee"></i> Beverages
+        </label>
+        <label class="category-label">
+            <input type="checkbox" value="Frozen Foods" onclick="filterProducts()">
+            <span class="checkmark"></span>
+            <i class="fas fa-snowflake"></i> Frozen Foods
+        </label>
+        <label class="category-label">
+            <input type="checkbox" value="Fruits & Vegetables" onclick="filterProducts()">
+            <span class="checkmark"></span>
+            <i class="fas fa-carrot"></i> Fruits & Vegetables
+        </label>
+        <label class="category-label">
+            <input type="checkbox" value="Household & Cleaning Supplies" onclick="filterProducts()">
+            <span class="checkmark"></span>
+            <i class="fas fa-broom"></i> Household & Cleaning
+        </label>
+        <label class="category-label">
+            <input type="checkbox" value="Locally Sourced" onclick="filterProducts()">
+            <span class="checkmark"></span>
+            <i class="fas fa-tractor"></i> Locally Sourced
+        </label>
+        <label class="category-label">
+            <input type="checkbox" value="Canned Foods" onclick="filterProducts()">
+            <span class="checkmark"></span>
+            <i class="fas fa-can-food"></i> Canned Foods
+        </label>
+    </div>
 </div>
+
+
+
+
 
 <div class="search-container">
   <div class="input-group">
@@ -185,6 +369,7 @@ if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.i
   </div>
   <button class="toggle-btn" onclick="toggleSidebar()">Categories</button>
 </div>
+      <div id = "products">
 <ul class="list-unstyled d-flex flex-wrap justify-content-start">
     {% for product in products %}
         {% if products[product].quantity > 0 %}
@@ -193,18 +378,18 @@ if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.i
                 <a href="{{ url_for('product_detail', product_id=product) }}" class="text-decoration-none text-dark">
                     <img src="{{ products[product].imageUrl }}" class="card-img-top product-image" alt="{{ products[product].name }}">
                     <div class="card-body">
-                        <h5 class="card-title mb-1">${{ products[product].price }}</h5>
-                        <p class="card-text product-name">{{ products[product].name }}</p>
-                        <p class="text-muted product-weight">{{ products[product].weight }} G</p>
-                        <p class="text-danger product-expiry">Expiry Date: <strong>{{ products[product].expiry }}</strong></p>
+                        <h5 class="product-price">${{ products[product].price }}</h5>
+                        <p class="product-name">{{ products[product].name }}</p>
+                        <p class="product-weight">{{ products[product].weight }} G</p>
+                        <p class="product-expiry">Expiry Date: <strong>{{ products[product].expiry }}</strong></p>
                     </div>
                 </a>
                 <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
-                    <a class="btn btn-outline-primary btn-sm" href = "{{ url_for('addtocart', product_id=product) }}">
-                         Add to Cart
+                    <a class="btn btn-outline-primary btn-sm" href="{{ url_for('addtocart', product_id=product) }}">
+                        <i class="fa-sharp fa-solid fa-cart-plus"></i> Add to Cart
                     </a>
                     <button class="btn btn-outline-danger btn-sm">
-                        <span style = "text-align: center; color: red">&#9829;</span>
+                        <span style="text-align: center; color: red">&#9829;</span>
                     </button>
                 </div>
             </div>
@@ -212,7 +397,7 @@ if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.i
         {% endif %}
     {% endfor %}
 </ul>
-
+      </div>
 </body>
 
 {% endblock %}
