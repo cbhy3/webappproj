@@ -62,7 +62,30 @@ def sign_in():
     reset_password_otp = resetPasswordOTP()
     reset_password = resetPassword()
     otp_form = Otp()
-
+    try:
+        for i in session['sign_in_errors']:
+            if session['sign_in_errors'][i] is not None:
+                if i == 'sign_in_form.email.errors':
+                    sign_in_form.email.errors = session['sign_in_errors'][i]
+                elif i == 'sign_in_form.password.errors':
+                    sign_in_form.password.errors = session['sign_in_errors'][i]
+                elif i == 'sign_up_form.email.errors':
+                    sign_up_form.email.errors = session['sign_in_errors'][i]
+                elif i == 'sign_up_form.password.errors':
+                    sign_up_form.password.errors = session['sign_in_errors'][i]
+                elif i == 'otp_form.otp.errors':
+                    otp_form.otp.errors = session['sign_in_errors'][i]
+                elif i == ' reset_password_email.email.errors':
+                    reset_password_email.email.errors = session['sign_in_errors'][i]
+                elif i == 'reset_password_otp.otp.errors':
+                    reset_password_otp.otp.errors = session['sign_in_errors'][i]
+                elif i == 'reset_password.password.errors':
+                    reset_password.password.errors = session['sign_in_errors'][i]
+                elif i == 'reset_password.verifypassword.errors':
+                    reset_password.verifypassword.errors = session['sign_in_errors'][i]
+        session.pop('sign_in_errors')
+    except Exception as e:
+        print(f"Error: {e}")
     if request.method == 'POST':
         if 'signin_submit' in request.form and sign_in_form.validate_on_submit() :
             print("sign in attempt, ", sign_in_form.email.data)
@@ -110,6 +133,17 @@ def sign_in():
             login = "SignIn"
             return redirect(url_for('sign_in'))
         else:
+            session['sign_in_errors'] = {
+                'sign_in_form.email.errors' : sign_in_form.email.errors,
+                'sign_in_form.password.errors' : sign_in_form.password.errors,
+                'sign_up_form.email.errors' : sign_up_form.email.errors,
+                'sign_up_form.password.errors' : sign_up_form.password.errors,
+                'otp_form.otp.errors' : otp_form.otp.errors,
+                'reset_password_email.email.errors' : reset_password_email.email.errors,
+                'reset_password_otp.otp.errors' : reset_password_otp.otp.errors,
+                'reset_password.password.errors' : reset_password.password.errors,
+                'reset_password.verifypassword.errors' : reset_password.verifypassword.errors,
+            }
             sign_in_form.email.data = ""
             sign_in_form.password.data = ""
             sign_up_form.password.data = ""
@@ -119,7 +153,9 @@ def sign_in():
             reset_password_otp.otp.data = ""
             reset_password.password.data = ""
             reset_password.verifypassword.data = ""
+
             print("something went wrong somewhere")
+            return redirect(url_for('sign_in'))
 
     return render_template('signin.html', sign_in_form = sign_in_form, sign_up_form = sign_up_form, reset_password = reset_password, reset_password_otp = reset_password_otp, reset_password_email = reset_password_email, login = login, otp_form = otp_form)
 
@@ -244,6 +280,32 @@ def profile():
     global success
     global toggleEmail
     print(success)
+    try:
+        for i in session['profile_errors']:
+            if session['profile_errors'][i] is not None:
+                if i == 'change_email.email.errors':
+                    change_email.email.errors = session['profile_errors'][i]
+                elif i == 'change_email.password.errors':
+                    change_email.password.errors = session['profile_errors'][i]
+                elif i == 'change_password.oldPassword.errors':
+                    change_password.oldPassword.errors = session['profile_errors'][i]
+                elif i == 'change_password.newPassword.errors':
+                    change_password.newPassword.errors = session['profile_errors'][i]
+                elif i == 'otp_form.otp.errors':
+                    otpform.otp.errors = session['profile_errors'][i]
+                elif i == 'change_password.verifyPassword.errors':
+                    change_password.verifyPassword.errors = session['profile_errors'][i]
+                elif i == 'add_address.zip.errors':
+                    add_address.zip.errors = session['profile_errors'][i]
+                elif i == 'add_address.street.errors':
+                    add_address.street.errors = session['profile_errors'][i]
+                elif i == 'add_address.blockNumber.errors':
+                    add_address.blockNumber.errors = session['profile_errors'][i]
+                elif i == 'add_address.unitNumber.errors':
+                    add_address.unitNumber.errors = session['profile_errors'][i]
+        session.pop('profile_errors')
+    except Exception as e:
+        print(f"Error: {e}")
     if request.method == 'POST' :
         if 'signout_submit' in request.form and signoutform.validate_on_submit():
             current_user = None
@@ -306,7 +368,20 @@ def profile():
             success = "Address added successfully"
             return redirect(url_for('profile'))
         else:
+            session['profile_errors'] = {
+                'change_email.email.errors' : change_email.email.errors,
+                'change_email.password.errors' : change_email.password.errors,
+                'otpform.otp.errors' : otpform.otp.errors,
+                'change_password.oldPassword.errors' : change_password.oldPassword.errors,
+                'change_password.newPassword.errors' : change_password.newPassword.errors,
+                'change_password.verifyPassword.errors' : change_password.verifyPassword.errors,
+                'add_address.zip.errors' : add_address.zip.errors,
+                'add_address.street.errors' : add_address.street.errors,
+                'add_address.blockNumber.errors' : add_address.blockNumber.errors,
+                'add_address.unitNumber.errors' : add_address.unitNumber.errors,
+            }
             print("Form validation failed:", otpform.errors, change_email.errors)
+            return redirect(url_for('profile'))
     if current_user is None:
         return redirect(url_for('sign_in'))
     return render_template('profile.html', active_page='profile',signoutform = signoutform, current_tab = current_tab,
@@ -616,8 +691,7 @@ def addtocart(product_id):
             for i in current_user.Cart:
                 with shelve.open('products') as productsDB:
                     print(f'{productsDB[str(i)]},,,, quantity: {current_user.Cart[i]}')
-        global success
-        success = "Product Added Successfully!"
+
         return redirect(url_for('catalog'))
 
     except:
@@ -725,25 +799,25 @@ def cart():
 
         subtotal = 0
         for i in cart:
-            if all_products[str(i)].quantity > cart.get(i):
+            if all_products[str(i)].quantity >= cart.get(i):
                 subtotal += all_products[str(i)].price * cart.get(i)
             else:
                 print("out of stock")
-        subtotal += 5
+        total = subtotal + 5
         global voucherUsed
         global discount
         global gifts
         global freeShipping
         global selected_address
         if discount:
-            subtotal -= round((subtotal*(discount/100)),2)
+            total = subtotal - round((subtotal*(discount/100)),2) + 5
         if freeShipping:
-            subtotal -= 5
+            total -= 5
 
         global codeUsed
 
         return render_template('cart.html',active_page='cart', products=all_products, cart = cart, subtotal = subtotal, codes = codes, voucherUsed = voucherUsed
-                               , discount = discount, gifts = gifts, freeShipping = freeShipping, codeUsed = codeUsed, current_user = current_user, addresses = Addresses, selected_address = selected_address)
+                               , discount = discount, gifts = gifts, freeShipping = freeShipping, codeUsed = codeUsed, current_user = current_user, addresses = Addresses, selected_address = selected_address, total = total)
 
     except Exception as e:
         print(e)
@@ -782,7 +856,7 @@ def giveVoucher():
         with shelve.open('users') as usersDB:
             print(usersDB[session.get('current_user')].Codes[code])
             usersDB[session.get('current_user')].addCode(code)
-            usersDB[session.get('current_user')].updateCooldown(90)
+            usersDB[session.get('current_user')].updateCooldown(60)
             print(usersDB[session.get('current_user')].Codes[code])
     except KeyError as e:
           return jsonify({'error': 'Database error', 'details': str(e)}), 500
@@ -827,6 +901,7 @@ def updatePaymentSession(user_id, orderid):
 @app.route('/payment/<orderid>' , methods = ['GET', 'POST'])
 def payment(orderid):
     try:
+
         if payment_session[session.get('current_user')] > 0:
             with shelve.open('Orders') as orders:
                 order = orders[str(orderid)]
@@ -850,8 +925,7 @@ def cancel_order(orderid):
     if Order.getUser(orderid) == session.get('current_user') and Order.getStatus(orderid) == "PaymentPending":
         Order.cancel_order(str(orderid))
         payment_session.pop(session.get('current_user'))
-        global success
-        success = "Order Cancelled."
+
         return redirect(url_for('cart'))
     else:
         return redirect(url_for('cart'))

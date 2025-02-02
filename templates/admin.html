@@ -880,9 +880,13 @@ hr {
 
          {% elif action == "Ticket" %}
          <style>
+         .container{
+             max-width: 1200px;
+         }
         .ticket-card {
             transition: transform 0.2s;
             border-left: 4px solid transparent;
+            max-width: 1235px;
         }
         .ticket-card:hover {
             transform: translateY(-3px);
@@ -911,7 +915,7 @@ hr {
         <h2 class="text-center mb-4">Support Tickets</h2>
 
         <div class="row justify-content-center">
-            <div class="col-lg-10">
+            <div class="container col-lg-10">
                 {% for ticket in tickets %}
                 <div class="card mb-4 ticket-card">
                     <div class="card-body position-relative">
@@ -959,6 +963,12 @@ hr {
 
                             <a class="btn btn-sm btn-outline-danger float-end" href = "{{ url_for('close_ticket', id = ticket) }}">Close Ticket</a>
                             {% elif tickets[ticket].status == 'Closed' %}
+                            <div class="mt-4">
+                            <button class="btn btn-sm btn-outline-secondary"
+                            type="button"
+                            >
+                            Add Response
+                            </button>
                             <a class="btn btn-sm btn-outline-danger float-end" href = "{{ url_for('open_ticket', id = ticket) }}">Re-Open Ticket</a>
                             {% endif %}
                         </div>

@@ -17,15 +17,7 @@ Tossed Out! - Support
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
-    color: white;
-}
 
-.bg-gradient-success {
-    background: linear-gradient(135deg, #00b09b, #96c93d);
-    color: white;
-}
 
 /* Hover Effect for Cards */
 .hover-effect {
@@ -53,28 +45,7 @@ Tossed Out! - Support
     }
 }
 
-/* Custom Button Styles */
-.btn-gradient-primary {
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
-    color: white;
-    border: none;
-    transition: opacity 0.2s ease;
-}
 
-.btn-gradient-primary:hover {
-    opacity: 0.9;
-}
-
-.btn-gradient-success {
-    background: linear-gradient(135deg, #00b09b, #96c93d);
-    color: white;
-    border: none;
-    transition: opacity 0.2s ease;
-}
-
-.btn-gradient-success:hover {
-    opacity: 0.9;
-}
 
 /* Status Badge Enhancements */
 .status-badge {
@@ -104,7 +75,7 @@ Tossed Out! - Support
 }
 #tickets{
     margin-top: 35px;
-    max-width:1000px;
+    max-width:1235px;
     margin-bottom:150px;
     margin-left: auto;
     margin-right: auto;
@@ -165,7 +136,7 @@ Tossed Out! - Support
                     {% for replies in tickets[ticket].reply %}
                     <div class="reply-section bg-light p-3 rounded mb-3 fade-in">
                         <div class="d-flex align-items-center mb-2">
-                            <span class="badge bg-gradient-primary me-2">Response</span>
+                            <span class="badge bg-primary me-2">Response</span>
                             <span class="fw-bold">{{ replies['replied_by'] }}</span>
                         </div>
                         <p class="mb-0">{{ replies['reply_content'] }}</p>
@@ -176,7 +147,7 @@ Tossed Out! - Support
                 <!-- Action Buttons -->
                 {% if tickets[ticket].status != 'Closed' %}
                 <div class="mt-4">
-                    <button class="btn btn-sm btn-gradient-primary"
+                    <button class="btn btn-sm btn-primary"
                         type="button"
                         data-bs-toggle="collapse"
                         data-bs-target="#replyForm{{ ticket }}">
@@ -191,7 +162,7 @@ Tossed Out! - Support
                                     {{ reply_ticket.body(class="form-control", rows=4, placeholder="Enter your response...") }}
                                 </div>
                                 <div>
-                                    {{ reply_ticket.submit(class="btn btn-gradient-success w-100") }}
+                                    {{ reply_ticket.submit(class="btn btn-success w-100") }}
                                 </div>
                             </form>
                         </div>
