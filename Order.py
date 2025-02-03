@@ -23,7 +23,7 @@ class Order:
         i = 0
         for products in cart:
             with shelve.open('products') as Products:
-                if Products[str(products)].quantity > cart[products]:
+                if Products[str(products)].quantity >= cart[products]:
                     Product.add_quantity(str(products), -(cart[products]))
                     self.Products[i] = (cart[products],copy.deepcopy(Products[str(products)]))
                 else:
