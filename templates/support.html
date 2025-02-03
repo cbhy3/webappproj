@@ -82,6 +82,25 @@ Tossed Out! - Support
     display:flex;
 }
 </style>
+    <script>
+         function search(){
+             const input = document.getElementById('searchInput').value.toLowerCase();
+             const ticketCards = document.querySelectorAll('.ticket-card');
+             ticketCards.forEach(card => {
+                 const subject = card.dataset.subject.toLowerCase();
+                 console.log(subject);
+                 console.log(input);
+                 if (!input) {
+                     card.style.display = 'block'
+                 }
+                 if (subject.includes(input)) {
+                     card.style.display = 'block';
+                 } else {
+                     card.style.display = 'none';
+                 }
+             })
+         }
+         </script>
 <div class="container">
         <h2 class="text-center">Support Ticket</h2><br>
 <h4 class="text-center">We will get back to you as soon as possible.</h4>
@@ -107,10 +126,18 @@ Tossed Out! - Support
 </div>
 
     <h3 class="text-center mb-4 fw-bold text-primary" style="margin-top:85px;">Your Tickets</h3>
+    <div class="row justify-content-center mb-4">
+    <div class="col-lg-4">
+        <form class="d-flex">
+            <input type="text" id = "searchInput" class="form-control me-2" placeholder="Search by ticket subject" oninput="search()" >
+
+        </form>
+    </div>
+</div>
 <div class="row justify-content-center" id ="tickets">
     <div class="col-lg-10">
         {% for ticket in tickets %}
-        <div class="card mb-4 shadow-sm ticket-card hover-effect">
+        <div class="card mb-4 shadow-sm ticket-card hover-effect ticket-card" data-subject = {{ tickets[ticket].head | replace(" ",'') }}>
             <div class="card-body position-relative">
                 <!-- Status Badge -->
                 <span class="badge status-badge position-absolute top-0 end-0 m-3
@@ -125,6 +152,8 @@ Tossed Out! - Support
                     <span class="fw-bold">{{ tickets[ticket].user }}</span>
                     <span class="mx-1">•</span>
                     <span>{{ tickets[ticket].created_date }}</span>
+                    <span class="mx-1">•</span>
+                    <span>Ticket #{{ tickets[ticket].id }}</span>
                 </div>
 
                 <!-- Ticket Content -->

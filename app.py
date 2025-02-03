@@ -969,7 +969,8 @@ def support():
         with shelve.open('users') as usersDB:
             current_user = usersDB[session.get('current_user')]
         with shelve.open('tickets') as ticketDB:
-            all_tickets = {key: ticketDB[key] for key in ticketDB if ticketDB[key].user == current_user.getEmail()}
+            all_ticketss = {key: ticketDB[key] for key in ticketDB if ticketDB[key].user == current_user.getEmail()}
+            all_tickets = dict(reversed(list(all_ticketss.items())))
     except:
         return redirect(url_for('sign_in'))
     reply_ticket = replyTicket()

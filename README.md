@@ -12,6 +12,8 @@ pip install openpyxl
 
 
 todo:  
-user support tickets
-decide what to do with profile page profile tab
+search tickets for both admins and users  
+
+
+
 
