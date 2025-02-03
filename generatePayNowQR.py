@@ -8,7 +8,6 @@ import datetime
 import qrcode
 from PIL import Image
 
-#shamelessly stolen from https://github.com/poonchuanan/Python-PayNow-QR-Code-Generator, my glorious king, my hero
 
 
 point_of_initiation = '12'

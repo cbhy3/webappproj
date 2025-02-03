@@ -140,7 +140,7 @@ if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.i
     }
     </script>
       <style>
-          .input-group {
+          .search-container .input-group {
     margin-top: 50px; /* Adjust as needed */
               margin-bottom: 50px;
     width: 25%; /* Adjust the width */
@@ -177,7 +177,7 @@ if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.i
         display: block;
         margin-bottom: 10px;
     }
-    .toggle-btn {
+    .search-container .toggle-btn {
 
         background: #007bff;
         color: white;
@@ -195,11 +195,11 @@ if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.i
     gap:10px;
 }
 
-.input-group {
+.search-container .input-group {
   display: flex;
   align-items: center; /* Ensure the input and button are vertically aligned */
 }
-.toggle-btn {
+.search-container .toggle-btn {
   white-space: nowrap; /* Prevent the button text from wrapping */
 }
 .toggle-btn:hover {

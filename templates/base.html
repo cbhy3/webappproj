@@ -33,7 +33,149 @@
         href="https://site-assets.fontawesome.com/releases/v6.5.1/css/brands.css"
       />
 </head>
+
+<style>
+ .chatbot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+     font-family: Garet;
+    }
+
+    /* Chat button with a clean circular design */
+    .chatbot-button {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #0052cc; /* A professional blue */
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .chatbot-button:hover {
+      background-color: #003d99;
+      transform: scale(1.05);
+    }
+
+    /* Chat window with a minimalist look */
+    .chat-window {
+      width: 350px;
+      height: 500px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      position: absolute;
+      bottom: 80px;
+      right: 0;
+      overflow: hidden;
+      transform-origin: bottom right;
+      transform: scale(0) translate(20px, 20px);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* When the chat is active, show the window */
+    .chat-window.active {
+      transform: scale(1) translate(0, 0);
+      opacity: 1;
+    }
+
+    /* Header styling with a solid background and clear close button */
+    .chat-header {
+      background-color: #0052cc;
+      color: #fff;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-header .close-btn {
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: color 0.2s ease;
+    }
+
+    .chat-header .close-btn:hover {
+      color: #ccc;
+    }
+
+    /* Body of the chat with clean spacing and subtle scroll behavior */
+    .chat-body {
+      height: calc(100% - 120px);
+      overflow-y: auto;
+      padding: 15px;
+      background-color: #f9f9f9;
+    }
+
+    /* Input area with a top border and ample padding */
+    .chat-input {
+      border-top: 1px solid #e0e0e0;
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      background-color: #fff;
+    }
+
+    /* Input styling for a clean text field */
+    .chat-input input {
+      flex: 1;
+      border: none;
+      padding: 10px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    /* Send button styling */
+    .chat-input button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #0052cc;
+      font-size: 1.2rem;
+      margin-left: 10px;
+      transition: color 0.2s ease;
+    }
+
+    .chat-input button:hover {
+      color: #fff;
+        background: #003d99;
+    }
+
+    /* Message bubbles with a minimalist style */
+    .message {
+      margin-bottom: 15px;
+      padding: 10px 15px;
+      border-radius: 20px;
+      max-width: 80%;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .bot-message {
+      background-color: #eaeaea;
+      color: #333;
+      margin-right: auto;
+    }
+
+    .user-message {
+      background-color: #0052cc;
+      color: #fff;
+      margin-left: auto;
+    }
+    </style>
+</head>
 <body>
+
+
+
 
 {% block navbar %}
     {% include 'includes/_navbar.html' %}
@@ -43,8 +185,117 @@
     {% block content %}
 
     {% endblock %}
+<div class="chatbot-container">
+    <div class="chat-window">
+        <div class="chat-header">
+            <span>Support Bot</span>
+            <span class="close-btn" onclick="toggleChat()">&times;</span>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="message bot-message">
+                Hello! How can I help you today?
+            </div>
+            <!-- More messages would go here -->
+        </div>
+        <div class="chat-input">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Type your message..." id = "chat-input">
+                <button class="btn btn-primary" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <button class="chatbot-button" onclick="toggleChat()">
+        <i class="fas fa-comment-dots fa-2x"></i>
+    </button>
+</div>
 </div>
 {% block scripts %}
+    <script>
+
+
+    function toggleChat() {
+        const chatWindow = document.querySelector('.chat-window');
+        chatWindow.classList.toggle('active');
+    }
+    function sendMessage() {
+
+        const message = document.getElementById('chat-input').value;
+        document.getElementById('chat-body').innerHTML += '<div class="message user-message">' + message + '</div>';
+        reply(document.getElementById('chat-input').value.replaceAll(" ", '').toLowerCase())
+        document.getElementById('chat-input').value = '';
+    }
+    function reply(msg) {
+        const question_map = new Map([
+        ['payment', 1],
+        ['paynow', 1],
+        ['reference', 1],
+        ['order', 2],
+        ['product', 3],
+        ['stock', 3],
+        ['voucher' ,4],
+        ['coupon', 4],
+        ['code', 4],
+        ['address', 5],
+        ['account', 6],
+        ['email', 6],
+        ['password', 6],
+        ['personaldetails', 6]
+    ])
+        const answer_map = new Map([
+        [0, 'I\'m sorry, I couldn\'t quite understand that. Please rephrase your question or <a href = "{{ url_for('support') }}">submit a support ticket </a> so we can assist you directly. '],
+        [1, 'It seems like you are having issues with payment! Let me assist you.| During the payment process, you have 10 minutes to scan the PayNow QR code provided and pay the described amount. After you pay, please click the button that says "I\'ve finished paying, go back"|' +
+        'Once you press this button, your order will be labelled as Payment Processing. This is normal and the status will change once an employee has confirmed the status of your payment, which should take less than an hour during business hours.|' +
+        ' Should you not pay for your order, your order will be cancelled.'],
+        [2, 'It seems like you are having issues with your order! Let me assist you.| After you place an order, your order will be marked as Payment Processing, until an employee verifies the status of your payment and updates it to Order Processed.|' +
+        ' Order Processed means that payment has been acknowledged but the order has not begun to be prepared. In the event that your order is marked as Order Processed for more than 3 hours during business hours, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> for us to assist you.|' +
+        ' Order status In Preparation means that your order is currently being prepared in our store. This stage should normally take less than 5 hours during business hours. If this does not happen, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> for us to assist you.| ' +
+        ' If your order status is marked as Out For Delivery, it means your order should be delivered to your listed address within 1 business day. If delivery takes longer than this, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> for us to assist you. '],
+        [3, 'It seems like you are having trouble with product availability! Let me assist you.| Products are only listed in our catalog page if we currently have stock availability. If a previously listed product is no longer available, please be patient while we work on restocking the product. '],
+        [4, 'It seems like you are having issues with the voucher system! Let me assist you.| Vouchers are earned by visiting the Coupons tab in your profile page, accessible by clicking the item in the navigation bar with your email on it.| ' +
+        'In the vouchers tab, you are able to play a game of Triple Match to win a voucher to be used with your order. This game may only be played once a day. '],
+        [5, 'It seems like you have issues with address management for your account! Let me assist you.| To add an address to your account, navigate to the Personal Details tab in your profile page, accessible from the navigation bar.|' +
+        'Addresses added may only be valid Singapore addresses. Should your address not be recognized by the system as a valid Singapore address, <a href = "{{ url_for('support') }}"> submit a support ticket </a> so we may assist you further.| ' +
+        'A valid Singapore address tied to your account is required to place an order.'],
+        [6, 'It seems like you are having issues with account management! Let me assist you.| Your account email and password are the ones set by you during the sign up process.|' +
+        ' To change your account email or password, navigate to the Personal Details tab in your profile page, accessible from the navigation bar.| ' +
+        'From here, you are able to view your account email, password and listed addresses. You are able to change your account email or password using the buttons listed beside your email or password.| ' +
+        'Do note that to change your email, you will need to be able to access your new email as a One-Time Verification code will be sent to your new email address which is required to finalize the change.| ' +
+        'You will also need to know your password to change both your account email and password.| ' +
+        'Should you forget your password but have access to your email, you are advised to log out of your account and click on the Forgot Password button on the Sign In page.| ' +
+        'If you do not have access to your email, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> so that we may assist you further.']
+
+    ])
+
+        let reply = 0;
+        const message = msg
+        let shuffledQuestionMap = [...question_map.entries()].sort(() => Math.random() - 0.5);
+
+        for (const [key, value] of shuffledQuestionMap) {
+            if (message.includes(key)) {
+                reply = value;
+                break;
+            }
+        }
+
+        let reply_list = answer_map.get(reply).split('|');
+
+        reply_list.forEach((text, index) => {
+            setTimeout(() => {
+                document.getElementById('chat-body').innerHTML +=
+                    '<div class="message bot-message">' + text + '</div>'
+                if (index === reply_list.length - 1) {
+                    setTimeout(() => {
+                        document.getElementById('chat-body').innerHTML += '<div class="message bot-message">' + `If this answer was not helpful, or you need more assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>so we can assist you directly.` + '</div>';
+
+                    }, 2000)
+                }
+            }, index * 2000);
+        });
+
+    }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 {% endblock %}
 </body>

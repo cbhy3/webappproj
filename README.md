@@ -12,8 +12,4 @@ pip install openpyxl
 
 
 todo:  
-search tickets for both admins and users  
-
-
-
-
+product favourite

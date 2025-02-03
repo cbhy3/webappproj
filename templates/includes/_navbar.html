@@ -1,22 +1,26 @@
 <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
 <style>
- body {
+     body {
   background-color: #f8f9fa;
 }
 .navbar-brand {
-  max-width: 150px; /* Constrain the logo size */
-    padding-left: 25px;
+  max-width: 180px;
+  padding-left: 25px;
 }
+
 .navbar {
-  background: url('{{ url_for('static',filename='wood.jpg') }}');
-
+  background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)),
+              url('{{ url_for('static',filename='wood.jpg') }}');
   background-size: cover;
-  padding: 10px 0; /* Increased padding to make the navbar taller */
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 15px 0;
+  border-bottom: 3px solid #5d432c;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
-
-  .navbar-nav {
+.navbar-nav {
     align-items: center;
     justify-content: center; /* Center the links */
     flex-grow: 1; /* Allow space for centering */
@@ -72,8 +76,8 @@ border-color:white;
  @media (max-width: 1547px) { /* lg and smaller */
     .nav-link {
       font-size: 16px; /* Smaller font size */
-      width: 150px;    /* Narrower width */
-      height: 100px;   /* Shorter height */
+      width: 200px;    /* Narrower width */
+      height: 110px;   /* Shorter height */
       padding: 40px 10px; /* Reduced padding */
     }
       .nav-link.active-link {
@@ -132,32 +136,10 @@ border-color:white;
   font-weight: bold;
   transition: all 0.3s ease-in-out;
 }
- .form-control, .form-label, .btn, .form-text{
-    font-family: Garet;
-}
-   #submit:hover{
-    background-color: #751106;
-}
-   #none:hover {
-       cursor: pointer;
-   }
-       .text-button:hover {
-       cursor: pointer;
 
-   }
-       .text-button {
-           color: #5694ff; text-align: center;
-
-    background: none;
-    border: none;
-
-    cursor: pointer;
-    padding: 0;
-    text-decoration: underline; /* Optional: Make it look like a link */
-
-       }
 
 </style>
+
 {% from "includes/_formHelper.html" import render_field %}
 
 <nav class="navbar navbar-expand-md navbar-light">
