@@ -12,4 +12,3 @@ pip install openpyxl
 
 
 todo:  
-product favourite
