@@ -213,7 +213,24 @@
 </div>
 {% block scripts %}
     <script>
+    window.addEventListener('beforeunload', () => {
+        sessionStorage.setItem('chat_history', document.getElementById('chat-body').innerHTML)
+        sessionStorage.setItem('current_node', JSON.stringify(currentNode))
+        sessionStorage.setItem('chatbot_state', JSON.stringify(document.querySelector('.chat-window').classList.contains('active')))
+    })
+    document.addEventListener('DOMContentLoaded', () => {
+        if (sessionStorage.getItem('chat_history') != null && sessionStorage.getItem('current_node') != null) {
 
+            document.getElementById('chat-body').innerHTML = sessionStorage.getItem('chat_history')
+
+            currentNode = JSON.parse(sessionStorage.getItem('current_node'))
+        }
+        if (sessionStorage.getItem('chatbot_state') == 'true'){
+            document.querySelector('.chat-window').classList.add('active')
+        } else if (sessionStorage.getItem('chatbot_state') == 'false'){
+            document.querySelector('.chat-window').classList.remove('active')
+        }
+    })
 
     function toggleChat() {
         const chatWindow = document.querySelector('.chat-window');
@@ -226,74 +243,177 @@
         reply(document.getElementById('chat-input').value.replaceAll(" ", '').toLowerCase())
         document.getElementById('chat-input').value = '';
     }
+    const decision_tree = {
+            id: 'root',
+            prompt: 'Hello! How can I assist you today?',
+            options: [
+                {
+                keywords: ['pay', 'payment', 'paynow', 'transaction'],
+                prompt: 'It seems like you are having issues with payment! Are you having trouble with the payment process or are you enquiring about refunds?',
+                options: [{
+                    keywords: ['pay', 'payment', 'paynow', 'transaction', 'process', 'qr', 'timer', 'session', 'code', 'reference'],
+                    prompt: 'During the payment process, you have 10 minutes to scan the PayNow QR Code shown on screen.| Once you have finished paying, please click the green button at the bottom right of the screen to confirm your order.| An employee will then verify your payment and your order will begin to be processed. |If your payment does not get processed within 1 business day, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> so we may assist you further',
+                    finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>. '
+                },
+                    {
+                    keywords: ['refund', 'moneyback'],
+                    prompt: 'Currently, we only accept refunds for non-perishable goods, or in rare cases where the items you received are in poor quality or not as described. To check whether you are eligible for a refund, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> and we will review your case manually',
+                    finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>. '
+                }
+                ]
+            }, {
+                keywords: ['order', 'delivery', 'preparation', 'tracking'],
+                prompt: 'It seems like you are enquiring about the status of your order. To check the status of your order, please visit the order history tab on your<a href = "{{ url_for('profile') }}"> profile page </a>.| For more assistance, please describe your order status.',
+                    options: [
+                        {
+                        keywords:['paymentprocessing','payment'],
+                        prompt: 'If your order has the \'Payment Processing\' status, it means that your payment is still being verified. This process can take up to 1 business day, so please be patient.| Should your order remain in this status for more than 1 business day, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> for us to assist you.',
+                        finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>. '
+                    },
+                        {
+                            keywords: ['orderprocessed'],
+                            prompt: 'If your order has the \'Order Processed\' status, it means that your payment has been verified but we have not begun to prepare your order. If this status remains on your order for more than 3 business hours, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> for us to assist you.',
+                            finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>.'
+                        },
+                        {
+                            keywords: ['preparation'],
+                            prompt: 'If your order has  the \'In Preparation\' status, it means we are currently working on preparing your order in our store. This process should not take longer than 5 business hours. If it does, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> for us to assist you.',
+                            finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>. '
+                        },
+                        {
+                            keywords: ['shipping', 'delivery', 'outfor'],
+                            prompt: 'If your order has the \'Out For Delivery\' status, it means that your order is currently being delivered to your listed shipping address. If your order has been out for delivery for more than 1 business day, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>. ',
+                            finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>. '
+                        },
+                        {
+                            keywords: ['delivered'],
+                            prompt: 'If your order has the \'Delivered\' status, it means that our rider has marked your delivery as complete. If you did not receive your order, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> and we will assist you.',
+                            finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>. '
+                        }
+                    ]
+                },
+                {
+                    keywords: ['account', 'details', 'email', 'password', 'reset', 'profile'],
+                    prompt: 'It seems like you are having issues with your account! Are you having trouble changing your account details or are you unable to access your account?',
+                    options: [
+                        {
+                            keywords: ['details', 'changing', 'update', 'change', 'updating'],
+                            prompt: 'To update your account details, please navigate to the personal details tab in your <a href = "{{ url_for('profile') }}"> profile </a> page and follow the instructions on screen. Do note you will need your account password to change your account details.',
+                            finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>. '
+                        },
+                        {
+                            keywords: ['forgot', 'reset', 'unable', 'access', 'cannot', 'remember', 'forget'],
+                            prompt: 'Do you still have access to the email linked to your account?',
+                            options: [
+                                {
+                                    keywords: ['yes', 'yea','yup','indeed','indubitably', 'mhm', 'correct', 'true', 'able'],
+                                    prompt: 'Please click the forgot password page in the sign in page, and follow the instructions on screen to proceed.',
+                                    finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>.'
+                                },
+                                {
+                                    keywords: ['no', 'nah', 'nuh', 'false', 'dont', 'not','unable'],
+                                    prompt: 'If you do not have access to the email tied to your account, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> with proof of ownership of the account and we will assist you further.',
+                                    finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>.'
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    keywords: ['address','residence', 'street', 'zip' ,'post', 'unit', 'block'],
+                    prompt: 'It seems like you are having trouble with your address! Do you need assistance adding addresses for your account or do you need to change the address on one of your orders? ',
+                    options: [
+                        {
+                            keywords: ['adding', 'account'],
+                            prompt: 'To add addresses to your account, please navigate to the <a href = "{{ url_for('profile') }}"> profile </a> page and click the button labelled Add Address.| Do you need help with specific fields in the address form? If so, please specify the field you need assistance in. ',
+                            options: [
+                                {
+                                    keywords: ['zip', 'post', 'code'],
+                                    prompt: 'Please ensure the zip code you provide is a 6 digit number, in accordance with Singapore\'s postal code format',
+                                    finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>.'
+                                },
+                                {
+                                    keywords: ['street', 'name'],
+                                    prompt: 'Please ensure the street name you provide is a valid street in Singapore. If your street name is not recognized, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>.',
+                                    finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>.'
+                                },
+                                {
+                                    keywords: ['block'],
+                                    prompt: 'Please ensure the block number you provide is a valid Singapore HDB Block Number. ',
+                                    finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>.'
+                                },
+                                {
+                                    keywords: ['unit'],
+                                    prompt: 'Please ensure the unit number you provide is in the format #[][]-[][?][?][?], where [] represents a mandatory number and [?] represents an optional number.',
+                                    finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>.'
+                                },
+                                {
+                                    keywords: ['no','nah'],
+                                    finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>.'
+                                }
+                            ]
+                        },
+                        {
+                            keywords: ['change', 'changing', 'order'],
+                            prompt: 'You may only change the address on an order that has not been sent for delivery yet. If you would like to change the shipping address on your order, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>.',
+                            finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>.'
+                        }
+                ]
+                },
+                {
+                    keywords: ['voucher', 'code', 'discount', 'coupon', 'copoun'],
+                    prompt: 'It seems like you are enquiring about our vouchers system.| To earn a voucher, please visit the Coupons tab in your <a href = "{{ url_for('profile') }}"> profile </a> page. Do you need further elaboration of the voucher system? ',
+                    options: [
+                        {
+                            keywords: ['yes', 'do', 'yea', 'ya'],
+                            prompt: 'In the vouchers tab, you are able to play a game of Triple Match to win a voucher to be used with your order. This game may only be played once a day.',
+                            finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>. '
+                        },
+                        {
+                            keywords: ['no','nah'],
+                            finalResponse: 'If this response was not helpful, or you need further assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>. '
+                        }
+                        ]
+                }
+            ]
+        }
+    let currentNode = decision_tree;
     function reply(msg) {
-        const question_map = new Map([
-        ['payment', 1],
-        ['paynow', 1],
-        ['pay',1],
-        ['reference', 1],
-        ['order', 2],
-        ['product', 3],
-        ['stock', 3],
-        ['voucher' ,4],
-        ['coupon', 4],
-        ['code', 4],
-        ['address', 5],
-        ['account', 6],
-        ['email', 6],
-        ['password', 6],
-        ['personaldetails', 6]
-    ])
-        const answer_map = new Map([
-        [0, 'I\'m sorry, I couldn\'t quite understand that. Please rephrase your question or <a href = "{{ url_for('support') }}">submit a support ticket </a> so we can assist you directly. '],
-        [1, 'It seems like you are having issues with payment! Let me assist you.| During the payment process, you have 10 minutes to scan the PayNow QR code provided and pay the described amount. After you pay, please click the button that says "I\'ve finished paying, go back"|' +
-        'Once you press this button, your order will be labelled as Payment Processing. This is normal and the status will change once an employee has confirmed the status of your payment, which should take less than an hour during business hours.|' +
-        ' Should you not pay for your order, your order will be cancelled.'],
-        [2, 'It seems like you are having issues with your order! Let me assist you.| After you place an order, your order will be marked as Payment Processing, until an employee verifies the status of your payment and updates it to Order Processed.|' +
-        ' Order Processed means that payment has been acknowledged but the order has not begun to be prepared. In the event that your order is marked as Order Processed for more than 3 hours during business hours, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> for us to assist you.|' +
-        ' Order status In Preparation means that your order is currently being prepared in our store. This stage should normally take less than 5 hours during business hours. If this does not happen, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> for us to assist you.| ' +
-        ' If your order status is marked as Out For Delivery, it means your order should be delivered to your listed address within 1 business day. If delivery takes longer than this, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> for us to assist you. '],
-        [3, 'It seems like you are having trouble with product availability! Let me assist you.| Products are only listed in our catalog page if we currently have stock availability. If a previously listed product is no longer available, please be patient while we work on restocking the product. '],
-        [4, 'It seems like you are having issues with the voucher system! Let me assist you.| Vouchers are earned by visiting the Coupons tab in your profile page, accessible by clicking the item in the navigation bar with your email on it.| ' +
-        'In the vouchers tab, you are able to play a game of Triple Match to win a voucher to be used with your order. This game may only be played once a day. '],
-        [5, 'It seems like you have issues with address management for your account! Let me assist you.| To add an address to your account, navigate to the Personal Details tab in your profile page, accessible from the navigation bar.|' +
-        'Addresses added may only be valid Singapore addresses. Should your address not be recognized by the system as a valid Singapore address, <a href = "{{ url_for('support') }}"> submit a support ticket </a> so we may assist you further.| ' +
-        'A valid Singapore address tied to your account is required to place an order.'],
-        [6, 'It seems like you are having issues with account management! Let me assist you.| Your account email and password are the ones set by you during the sign up process.|' +
-        ' To change your account email or password, navigate to the Personal Details tab in your profile page, accessible from the navigation bar.| ' +
-        'From here, you are able to view your account email, password and listed addresses. You are able to change your account email or password using the buttons listed beside your email or password.| ' +
-        'Do note that to change your email, you will need to be able to access your new email as a One-Time Verification code will be sent to your new email address which is required to finalize the change.| ' +
-        'You will also need to know your password to change both your account email and password.| ' +
-        'Should you forget your password but have access to your email, you are advised to log out of your account and click on the Forgot Password button on the Sign In page.| ' +
-        'If you do not have access to your email, please <a href = "{{ url_for('support') }}"> submit a support ticket </a> so that we may assist you further.']
-
-    ])
-
-        let reply = 0;
         const message = msg
-        let shuffledQuestionMap = [...question_map.entries()].sort(() => Math.random() - 0.5);
 
-        for (const [key, value] of shuffledQuestionMap) {
-            if (message.includes(key)) {
-                reply = value;
-                break;
+
+        if (!currentNode.options || currentNode.options.length === 0) {
+            return;
+        }
+        const nextOption = currentNode.options.find(option =>{
+             return option.keywords.some(keywords => message.includes(keywords));
+        })
+        if (nextOption) {
+            if (nextOption.prompt) {
+                currentNode = nextOption;
+                let reply_list = currentNode.prompt.split('|')
+                reply_list.forEach((text, index) => {
+                    setTimeout(() => {
+                        document.getElementById('chat-body').innerHTML +=
+                            '<div class="message bot-message">' + text + '</div>'
+
+                    }, index * 1000);
+                });
             }
+         if (nextOption.finalResponse) {
+             setTimeout(() => {
+                 document.getElementById('chat-body').innerHTML += '<div class="message bot-message">' + nextOption.finalResponse + '</div>'
+             }, 5000)
+             currentNode = decision_tree
+
+        }
+        } else {
+            setTimeout(() => {
+            document.getElementById('chat-body').innerHTML += '<div class="message bot-message">' + `I'm sorry, I didn't quite understand that. Please rephrase your question or <a href = "{{ url_for('support') }}"> submit a support ticket </a>` + '</div>'
+                }, 2000)
         }
 
-        let reply_list = answer_map.get(reply).split('|');
 
-        reply_list.forEach((text, index) => {
-            setTimeout(() => {
-                document.getElementById('chat-body').innerHTML +=
-                    '<div class="message bot-message">' + text + '</div>'
-                if (index === reply_list.length - 1) {
-                    setTimeout(() => {
-                        document.getElementById('chat-body').innerHTML += '<div class="message bot-message">' + `If this answer was not helpful, or you need more assistance, please <a href = "{{ url_for('support') }}"> submit a support ticket </a>so we can assist you directly.` + '</div>';
-
-                    }, 2000)
-                }
-            }, index * 2000);
-        });
 
     }
 </script>
