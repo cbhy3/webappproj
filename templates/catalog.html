@@ -138,6 +138,25 @@ if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.i
 }
         });
     }
+
+    function filterFavourites(){
+            const userCards = document.querySelectorAll('.product-card');
+            const favourites = {{ favourites | tojson }}
+
+            const favourite = document.getElementById('favourites');
+
+            userCards.forEach(card => {
+                const id = card.dataset.id;
+                const liElement = card.closest('li');
+                if (favourites.includes(id) || !favourite.checked) {
+                    liElement.classList.remove('d-none');
+                } else {
+                    liElement.classList.add('d-none');
+                }
+            })
+
+
+    }
     </script>
       <style>
           .search-container .input-group {
@@ -356,6 +375,11 @@ if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.i
             <span class="checkmark"></span>
             <i class="fas fa-can-food"></i> Canned Foods
         </label>
+        <label class="category-label">
+            <input type="checkbox" value="Favourite" onclick="filterFavourites()" id ="favourites">
+            <span class="checkmark"></span>
+            <i class="fa-solid fa-heart" style = "color:red"></i> Favourites
+        </label>
     </div>
 </div>
 
@@ -374,7 +398,7 @@ if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.i
     {% for product in products %}
         {% if products[product].quantity > 0 %}
         <li class="m-2">
-            <div class="card product-card shadow-sm" data-categories="{{ products[product].categories }}">
+            <div class="card product-card shadow-sm" data-categories="{{ products[product].categories }}" data-id = "{{ product }}">
                 <a href="{{ url_for('product_detail', product_id=product) }}" class="text-decoration-none text-dark">
                     <img src="{{ products[product].imageUrl }}" class="card-img-top product-image" alt="{{ products[product].name }}">
                     <div class="card-body">
@@ -388,9 +412,15 @@ if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.i
                     <a class="btn btn-outline-primary btn-sm" href="{{ url_for('addtocart', product_id=product) }}">
                         <i class="fa-sharp fa-solid fa-cart-plus"></i> Add to Cart
                     </a>
-                    <button class="btn btn-outline-danger btn-sm">
+                    {% if product not in favourites %}
+                    <a class="btn btn-outline-danger btn-sm" type="button" href="{{ url_for('add_to_favourite', product_id = product) }}">
                         <span style="text-align: center; color: red">&#9829;</span>
-                    </button>
+                    </a>
+                        {% else %}
+                      <a class="btn btn-danger btn-sm" type="button" href="{{ url_for('remove_from_favourite', product_id = product) }}">
+                        <span style="text-align: center; color: white">&#9829;</span>
+                    </a>
+                        {% endif %}
                 </div>
             </div>
         </li>

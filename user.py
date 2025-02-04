@@ -15,6 +15,7 @@ class User:
     Orders: [int]
     Cooldown: int
     def __init__(self, email,password):
+        self.Favourites = []
         self.email = email
         self.password = self.encryptPassword(password)
         self.Addresses = []
@@ -106,3 +107,31 @@ class User:
     def removeAdmin(self):
         with shelve.open('admin') as adminsDB:
             adminsDB.pop(self.email)
+
+    @staticmethod
+    def addFavourites(user, product_id):
+        with shelve.open('users') as usersDB:
+            try:
+                user.Favourites.append(product_id)
+            except:
+                user.Favourites = [product_id]
+            finally:
+                usersDB[user.email] = user
+    @staticmethod
+    def getFavourites(user):
+        with shelve.open('users') as usersDB:
+            try:
+                return user.Favourites
+            except:
+                user.Favourites = []
+                return user.Favourites
+
+    @staticmethod
+    def removeFavourites(user, product_id):
+        with shelve.open('users') as usersDB:
+            try:
+                user.Favourites.remove(product_id)
+            except:
+                print('wtf')
+            finally:
+                usersDB[user.email] = user

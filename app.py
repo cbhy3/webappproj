@@ -207,11 +207,12 @@ def catalog():
     try:
         current_user = CurrentUser.fromEmail(session.get('current_user'))
         cart = current_user.Cart
+        favourites = User.getFavourites(current_user)
     except:
         current_user = None
 
 
-    return render_template('catalog.html', active_page='catalog', products=all_products, cart = cart, current_user = current_user, success =success)
+    return render_template('catalog.html', active_page='catalog', products=all_products, cart = cart, current_user = current_user, success =success, favourites = favourites)
 
 
 
@@ -1039,3 +1040,28 @@ def open_ticket(id):
         ticket = tickets[str(id)]
         ticket.change_status("Open")
     return redirect(url_for('Admin'))
+
+@app.route('/add_to_favourite/<product_id>', methods=['GET', 'POST'])
+def add_to_favourite(product_id):
+    try:
+        with shelve.open('users') as usersDB:
+            current_user = usersDB[session.get('current_user')]
+            User.addFavourites(current_user, product_id)
+            print('success')
+        return redirect(url_for('catalog'))
+    except Exception as e:
+        print(e)
+        return redirect(url_for('sign_in'))
+
+
+@app.route('/remove_from_favourite/<product_id>', methods=['GET', 'POST'])
+def remove_from_favourite(product_id):
+    try:
+        with shelve.open('users') as usersDB:
+            current_user = usersDB[session.get('current_user')]
+            User.removeFavourites(current_user, product_id)
+            print('success')
+        return redirect(url_for('catalog'))
+    except Exception as e:
+        print(e)
+        return redirect(url_for('sign_in'))

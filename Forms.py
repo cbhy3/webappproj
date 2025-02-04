@@ -1,3 +1,4 @@
+from selectors import SelectSelector
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -191,6 +192,7 @@ class modifyProduct(FlaskForm):
         super().__init__(*args, **kwargs)
         with shelve.open('products') as products:
             self.product.choices = [
+                (prod, f'{prod} ID: {products[prod].name}, Expiry: {products[prod].expiry}' + '       !OUT OF STOCK!') if products[prod].quantity == 0 else
                 (prod, f'{prod} ID: {products[prod].name}, Expiry: {products[prod].expiry}')
                 for prod in products
             ]
