@@ -90,7 +90,7 @@ body{
 <body>
 
       <script>
-
+let favourites = {{ favourites | tojson }}
         document.addEventListener("DOMContentLoaded", function(event) {
             var scrollpos = localStorage.getItem('scrollpos');
             if (scrollpos) window.scrollTo(0, scrollpos);
@@ -141,14 +141,14 @@ if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.i
 
     function filterFavourites(){
             const userCards = document.querySelectorAll('.product-card');
-            const favourites = {{ favourites | tojson }}
-
             const favourite = document.getElementById('favourites');
-
+            console.log(favourites)
             userCards.forEach(card => {
                 const id = card.dataset.id;
                 const liElement = card.closest('li');
+
                 if (favourites.includes(id) || !favourite.checked) {
+
                     liElement.classList.remove('d-none');
                 } else {
                     liElement.classList.add('d-none');
@@ -157,6 +157,56 @@ if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.i
 
 
     }
+    function addToFavourite(productId) {
+    fetch(`/add_to_favourite/${productId}`, {
+        method: "POST",
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let btn = document.getElementById(`btn-${productId}`)
+            btn.innerHTML = `<span style="text-align: center; color: red">&#9829;</span> Added!`
+
+
+            btn.setAttribute("onclick", `removeFromFavourites(${productId})`);
+            favourites.push(`${productId}`);
+            console.log(favourites);
+        setTimeout(() => {
+            btn.innerHTML = `<span style="text-align: center; color: white">&#9829;</span>`
+            btn.className ="btn btn-danger btn-sm"
+        }, 1500);
+
+        } else {
+            alert(data.message || "Failed to add to favourites.");
+        }
+    })
+    .catch(error => console.error("Error:", error));
+}
+
+function removeFromFavourites(productId) {
+    fetch(`/remove_from_favourite/${productId}`, {
+        method: "POST",
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let btn = document.getElementById(`btn-${productId}`)
+            btn.innerHTML = `<span style="text-align: center; color: white">&#9829;</span> Removed!`
+            btn.setAttribute("onclick", `addToFavourite(${productId})`);
+            favourites.splice(favourites.indexOf(`${productId}`),1)
+        setTimeout(() => {
+            btn.innerHTML = `<span style="text-align: center; color: red">&#9829;</span>`
+            btn.className ="btn btn-outline-danger btn-sm"
+        }, 1500);
+
+        } else {
+            alert(data.message || "Failed to add to favourites.");
+        }
+    })
+    .catch(error => console.error("Error:", error));
+}
     </script>
       <style>
           .search-container .input-group {
@@ -413,13 +463,14 @@ if (checkedCategories.length === 0 || checkedCategories.some(cat => categories.i
                         <i class="fa-sharp fa-solid fa-cart-plus"></i> Add to Cart
                     </a>
                     {% if product not in favourites %}
-                    <a class="btn btn-outline-danger btn-sm" type="button" href="{{ url_for('add_to_favourite', product_id = product) }}">
+
+                    <button class="btn btn-outline-danger btn-sm" type="button" onclick="addToFavourite({{ product }})" id="btn-{{ product }}">
                         <span style="text-align: center; color: red">&#9829;</span>
-                    </a>
+                    </button>
                         {% else %}
-                      <a class="btn btn-danger btn-sm" type="button" href="{{ url_for('remove_from_favourite', product_id = product) }}">
+                      <button class="btn btn-danger btn-sm" type="button" onclick="removeFromFavourites({{ product }})" id="btn-{{ product }}">
                         <span style="text-align: center; color: white">&#9829;</span>
-                    </a>
+                    </button>
                         {% endif %}
                 </div>
             </div>

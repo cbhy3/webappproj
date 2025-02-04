@@ -1047,11 +1047,10 @@ def add_to_favourite(product_id):
         with shelve.open('users') as usersDB:
             current_user = usersDB[session.get('current_user')]
             User.addFavourites(current_user, product_id)
-            print('success')
-        return redirect(url_for('catalog'))
+            return jsonify({'success': True, 'product_id': product_id})
     except Exception as e:
         print(e)
-        return redirect(url_for('sign_in'))
+        return jsonify({'success': False, 'message': 'Error adding to favorites'}), 500
 
 
 @app.route('/remove_from_favourite/<product_id>', methods=['GET', 'POST'])
@@ -1060,8 +1059,7 @@ def remove_from_favourite(product_id):
         with shelve.open('users') as usersDB:
             current_user = usersDB[session.get('current_user')]
             User.removeFavourites(current_user, product_id)
-            print('success')
-        return redirect(url_for('catalog'))
+            return jsonify({'success': True, 'product_id': product_id})
     except Exception as e:
         print(e)
-        return redirect(url_for('sign_in'))
+        return jsonify({'success': False, 'message': 'Error removing to favorites'}), 500
