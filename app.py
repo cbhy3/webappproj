@@ -811,7 +811,7 @@ def cart():
         global freeShipping
         global selected_address
         if discount:
-            total = subtotal - round((subtotal*(discount/100)),2) + 5
+            total = round(subtotal - (subtotal*(discount/100)) + 5,2)
         if freeShipping:
             total -= 5
 
@@ -837,7 +837,7 @@ def game():
     try:
         with shelve.open('users') as usersDB:
             current_user = usersDB[session.get('current_user')]
-            if current_user.Cooldown != 0:
+            if current_user.Cooldown > 0:
                 return redirect(url_for('profile'))
     except KeyError as e:
         return redirect(url_for('sign_in'))
@@ -855,10 +855,10 @@ def giveVoucher():
     code = data['code']
     try:
         with shelve.open('users') as usersDB:
-            print(usersDB[session.get('current_user')].Codes[code])
+
             usersDB[session.get('current_user')].addCode(code)
             usersDB[session.get('current_user')].updateCooldown(60)
-            print(usersDB[session.get('current_user')].Codes[code])
+
     except KeyError as e:
           return jsonify({'error': 'Database error', 'details': str(e)}), 500
 
@@ -879,7 +879,7 @@ def checkOut(subtotal,address):
         with shelve.open('users') as usersDB:
             current_user = usersDB[session.get('current_user')]
             cart = current_user.Cart
-            newOrder = Order(subtotal, cart, voucher, session.get('current_user'), address)
+            newOrder = Order(round(subtotal,2), cart, voucher, session.get('current_user'), address)
         id = newOrder.id
         payment_session[session.get('current_user')] = 600
 
