@@ -846,19 +846,24 @@ def game():
     return render_template('game.html', active_page='profile',
                            current_user=current_user,)
 
+redeemed = False
 @app.route('/profile/givevoucher', methods = ['GET','POST'])
 def giveVoucher():
     data = request.get_json()
     if not data or 'code' not in data:
         return jsonify({'error': 'Invalid data'}), 400
-
+    global success
+    global redeemed
+    if redeemed:
+        return jsonify({'error': 'User already redeemed.'}), 400
     code = data['code']
     try:
         with shelve.open('users') as usersDB:
 
             usersDB[session.get('current_user')].addCode(code)
             usersDB[session.get('current_user')].updateCooldown(60)
-
+            success = "You won a voucher!"
+            redeemed = True
     except KeyError as e:
           return jsonify({'error': 'Database error', 'details': str(e)}), 500
 
