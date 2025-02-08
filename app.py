@@ -834,6 +834,8 @@ def update_address():
     return jsonify({"message": "Address updated successfully", "selected_address": selected_address})
 @app.route('/profile/game', methods = ['GET', 'POST'])
 def game():
+    global redeemed
+    redeemed = False
     try:
         with shelve.open('users') as usersDB:
             current_user = usersDB[session.get('current_user')]
@@ -856,6 +858,7 @@ def giveVoucher():
     global redeemed
     if redeemed:
         return jsonify({'error': 'User already redeemed.'}), 400
+
     code = data['code']
     try:
         with shelve.open('users') as usersDB:
