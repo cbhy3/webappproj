@@ -11,7 +11,7 @@ class generateOTP:
 
         mail_from = {
             "name": "Tossed Out!",
-            "email": "tossedout@trial-vywj2lpr3oq47oqz.mlsender.net ",
+            "email": "tossedout@trial-vywj2lpr3oq47oqz.mlsender.net",
         }
         recipients = [{
             "name" : "Customer",
@@ -36,7 +36,7 @@ class generateOTPforReset(generateOTP):
 
         mail_from = {
             "name": "Tossed Out!",
-            "email": "tossedout@trial-vywj2lpr3oq47oqz.mlsender.net ",
+            "email": "tossedout@trial-vywj2lpr3oq47oqz.mlsender.net",
         }
         recipients = [{
             "name": "Customer",
@@ -61,7 +61,7 @@ class updateOrderStatus(generateOTP):
 
         mail_from = {
             "name": "Tossed Out!",
-            "email": "tossedout@trial-vywj2lpr3oq47oqz.mlsender.net ",
+            "email": "tossedout@trial-vywj2lpr3oq47oqz.mlsender.net",
         }
         recipients = [{
             "name": "Customer",
@@ -174,7 +174,7 @@ class updateTicketStatus(generateOTP):
 
         mail_from = {
             "name": "Tossed Out!",
-            "email": "tossedout@trial-vywj2lpr3oq47oqz.mlsender.net ",
+            "email": "tossedout@trial-vywj2lpr3oq47oqz.mlsender.net",
         }
         recipients = [{
             "name": "Customer",
