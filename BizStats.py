@@ -15,7 +15,7 @@ def GetStats():
         for i in OrdersDB:
             order = OrdersDB[i]
             if order.status != "PaymentProcessing":
-                LifetimeSales += float(order.subtotal   )      #Lifetime Sales calculation
+                LifetimeSales += float(order.subtotal)      #Lifetime Sales calculation
         for i in OrdersDB:
             order = OrdersDB[i]
             if datetime.strptime(order.date, "%d/%m/%Y") - datetime.today() < timedelta(days=31) and order.status != "PaymentProcessing":
@@ -25,14 +25,14 @@ def GetStats():
             order = OrdersDB[i]
             for x in order.Products:
                 if order.status != "PaymentProcessing":
-                    TopSelling.setdefault(order.Products[x][1], 0)
-                    TopSelling[order.Products[x][1]] = order.Products[x][0]
+                    TopSelling.setdefault(order.Products[x][1].name, 0)
+                    TopSelling[order.Products[x][1].name] += order.Products[x][0]
         temp = dict(sorted(TopSelling.items(), key=lambda item: item[1], reverse=True))       #Top Selling Calculation
         RealTopSelling = dict(list(temp.items())[:10]) #Keep only top 10 selling products
 
-        for things in TopSelling:
-
-            weight += things.weight * TopSelling[things]
+        for i in OrdersDB:
+            for x in OrdersDB[i].Products:
+                weight += OrdersDB[i].Products[x][1].weight * OrdersDB[i].Products[x][0]
         Co2 = (weight/1000) * 4.5
         Water = (weight/1000) * 1500
     return {"LifetimeSales": LifetimeSales,

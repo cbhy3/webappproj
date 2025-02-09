@@ -6,12 +6,12 @@ class generateOTP:
     @staticmethod
     def __call__(email):
         otp = random.randint(100000, 999999)
-        mailer = emails.NewEmail("mlsn.09be3e7396b1e6326e1e88fb1917190f1dcb2c35e55991c736a52b1d8810aaf8")
+        mailer = emails.NewEmail("mlsn.6e72b40744b641b6ea62422ea824e063a1ebf8a160a1f8c93ec56379ffb2e69d")
         mail_body = {}
 
         mail_from = {
             "name": "Tossed Out!",
-            "email": "tossedout@trial-vywj2lpr3oq47oqz.mlsender.net",
+            "email": "tossedout@trial-3vz9dleozmqgkj50.mlsender.net ",
         }
         recipients = [{
             "name" : "Customer",
@@ -31,12 +31,12 @@ class generateOTPforReset(generateOTP):
     @staticmethod
     def __call__(email):
         otp = random.randint(100000, 999999)
-        mailer = emails.NewEmail("mlsn.09be3e7396b1e6326e1e88fb1917190f1dcb2c35e55991c736a52b1d8810aaf8")
+        mailer = emails.NewEmail("mlsn.6e72b40744b641b6ea62422ea824e063a1ebf8a160a1f8c93ec56379ffb2e69d")
         mail_body = {}
 
         mail_from = {
             "name": "Tossed Out!",
-            "email": "tossedout@trial-vywj2lpr3oq47oqz.mlsender.net",
+            "email": "tossedout@trial-3vz9dleozmqgkj50.mlsender.net",
         }
         recipients = [{
             "name": "Customer",
@@ -56,12 +56,12 @@ class generateOTPforReset(generateOTP):
 class updateOrderStatus(generateOTP):
     @staticmethod
     def sendEmail(email, order):
-        mailer = emails.NewEmail("mlsn.09be3e7396b1e6326e1e88fb1917190f1dcb2c35e55991c736a52b1d8810aaf8")
+        mailer = emails.NewEmail("mlsn.6e72b40744b641b6ea62422ea824e063a1ebf8a160a1f8c93ec56379ffb2e69d")
         mail_body = {}
 
         mail_from = {
             "name": "Tossed Out!",
-            "email": "tossedout@trial-vywj2lpr3oq47oqz.mlsender.net",
+            "email": "tossedout@trial-3vz9dleozmqgkj50.mlsender.net",
         }
         recipients = [{
             "name": "Customer",
@@ -168,13 +168,12 @@ class updateTicketStatus(generateOTP):
     @staticmethod
     def sendEmail(email, ticket):
         print("sending")
-        mailer = emails.NewEmail("mlsn.09be3e7396b1e6326e1e88fb1917190f1dcb2c35e55991c736a52b1d8810aaf8")
-
+        mailer = emails.NewEmail("mlsn.6e72b40744b641b6ea62422ea824e063a1ebf8a160a1f8c93ec56379ffb2e69d")
         mail_body = {}
 
         mail_from = {
             "name": "Tossed Out!",
-            "email": "tossedout@trial-vywj2lpr3oq47oqz.mlsender.net",
+            "email": "tossedout@trial-3vz9dleozmqgkj50.mlsender.net",
         }
         recipients = [{
             "name": "Customer",

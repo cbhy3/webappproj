@@ -887,7 +887,7 @@ def checkOut(subtotal,address):
         with shelve.open('users') as usersDB:
             current_user = usersDB[session.get('current_user')]
             cart = current_user.Cart
-            newOrder = Order(round(subtotal,2), cart, voucher, session.get('current_user'), address)
+            newOrder = Order(round(float(subtotal),2), cart, voucher, session.get('current_user'), address)
         id = newOrder.id
         payment_session[session.get('current_user')] = 600
 
