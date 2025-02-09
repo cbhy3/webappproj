@@ -307,23 +307,6 @@ ul li {
                             if (document.getElementById(card).getElementsByTagName("img")[0].getAttribute('src') === `/static/${chosen}.jpg`) document.getElementById(card).style.filter = "sepia(1) saturate(5) hue-rotate(80deg)";
                         })
                         const unrevealedCards = Object.keys(cardsList).filter(i => cardsList[i] === "Unflipped");
-                        setTimeout(() => {
-                            unrevealedCards.forEach((i, index) => {
-                                setTimeout(() => {
-                                    reveal(i, true);
-                                }, index * 1000);
-                            });
-                        },1000)
-
-                        const totalDelay = (unrevealedCards.length * 1000) + 1500;
-                        setTimeout(() => {
-                            showModal(`Congratulations! You won ${items[chosen][2]}!`);
-                            }, totalDelay);
-                        } else {
-                            setTimeout(() => {
-                                if (cardsList[id] === "Unflipped") reveal(id, true, true);
-            }               , 1000);
-                            }
                         switch (chosen) {
                             case "Apple":
                                 won = "10OFF"
@@ -346,6 +329,25 @@ ul li {
                             case "Mango":
                                 won = "50OFF"
                         }
+                        console.log(won)
+                        setTimeout(() => {
+                            unrevealedCards.forEach((i, index) => {
+                                setTimeout(() => {
+                                    reveal(i, true);
+                                }, index * 1000);
+                            });
+                        },1000)
+
+                        const totalDelay = (unrevealedCards.length * 1000) + 1500;
+                        setTimeout(() => {
+                            showModal(`Congratulations! You won ${items[chosen][2]}!`);
+                            }, totalDelay);
+                        } else {
+                            setTimeout(() => {
+                                if (cardsList[id] === "Unflipped") reveal(id, true, true);
+            }               , 1000);
+                            }
+
                     }
                     else{
                         if (cardsList[id] === "Unflipped") reveal(id, true, true);
