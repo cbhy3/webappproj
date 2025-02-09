@@ -2,9 +2,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
 <style>
-     body {
-  background-color: #f8f9fa;
-}
+
 .navbar-brand {
   max-width: 180px;
   padding-left: 25px;
@@ -17,14 +15,18 @@
   padding: 15px 0;
   border-bottom: 3px solid #5d432c;
   top: 0;
-
+    position:sticky;
+    z-index: 100;
+    transition: top 0.3s;
 }
 .navbar-nav {
     align-items: center;
     justify-content: center; /* Center the links */
     flex-grow: 1; /* Allow space for centering */
   }
-
+.hide{
+    top:-180px;
+}
 .tagline {
     font-family: Lexend;
   font-size: 17px;
@@ -179,3 +181,29 @@ border-color:white;
       </div>
     </div>
   </nav>
+<script>
+    let lastScrollY = window.scrollY;
+        let scrollThreshold = 300;
+        let isHidden = false;
+
+        window.addEventListener("scroll", () => {
+            const navbar = document.querySelector(".navbar");
+            let currentScrollY = window.scrollY;
+
+            if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
+
+                if (!isHidden) {
+                    navbar.classList.add("hide");
+                    isHidden = true;
+                }
+            } else {
+
+                if (isHidden) {
+                    navbar.classList.remove("hide");
+                    isHidden = false;
+                }
+            }
+
+            lastScrollY = currentScrollY;
+        });
+</script>

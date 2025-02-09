@@ -639,23 +639,29 @@ def Admin():
                            ,reply_ticket= reply_ticket)
 
 def getSimiliarProducts(product):
-    weights = {}
     with shelve.open('products') as productsDB:
         categories = set(product.categories)
-        keys = list(productsDB.keys())
-        keys.pop(keys.index(product.id))
+
+        weights = {}
+        keys = []
 
         for i in productsDB:
             if product.id != i and productsDB[i].quantity > 0:
                 p_cat = set(productsDB[i].categories)
-                weight = len(p_cat & categories) / len(p_cat | categories)   #jaccard similiarity
+                weight = len(p_cat & categories) / len(p_cat | categories)  # Jaccard similarity
                 weights[i] = weight
+                keys.append(i)  # Add to keys only if quantity > 0
+
+        if not weights:  # Edge case: all other products have quantity 0
+            return []
 
         total_weight = sum(weights.values())
-        if total_weight == 0:  #avoid zero probabilities
+        if total_weight == 0:  # Avoid zero probabilities
             weights = {key: 1 for key in weights}
             total_weight = sum(weights.values())
-        selected_object = random.choices(list(keys), weights=list(weights.values()), k = 8)
+
+        selected_object = random.choices(keys, weights=list(weights.values()), k=min(8, len(keys)))
+
     return selected_object
 
 
