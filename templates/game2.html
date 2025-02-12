@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tossed Out! - Game</title>
+    <style>
+      body {
+        background: linear-gradient(160deg, #0a3d1d, #1a5a2c);
+        color: white;
+        font-family: 'Arial', sans-serif;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        overflow-x: hidden;
+    }
+
+    button {
+        background: #d4af37;
+        border: none;
+        border-radius: 8px;
+        color: #1a472a;
+        padding: 15px 30px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        margin: 10px;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        background: #ffd700;
+    }
+
+
+       .card {
+    width: 100px;
+    height: 150px;
+    background-color: #fff;
+    border: 2px solid #ddd;
+    color: #333;
+    font-size: 18px;
+    text-align: center;
+    line-height: 150px;
+    cursor: pointer;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.8s;
+    display: inline-block;
+           margin-right:15px;
+}
+
+.card img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: fill;
+    visibility: hidden;
+    border-radius: 12px;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+}
+
+       .dealer, .player {
+        position: relative;
+        width: 90%;
+        min-height: 200px;
+        background: rgba(0,40,0,0.8);
+        border-radius: 16px;
+        padding: 20px;
+        margin: 20px auto;
+
+        box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        border: 2px solid #d4af37;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .dealer {
+        margin-top: 60px;
+    }
+
+    .player {
+        margin-top: 230px;
+
+    }
+
+    .button-container {
+        position: fixed;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 20px;
+        background: rgba(0,0,0,0.7);
+        padding: 15px 30px;
+        border-radius: 12px;
+    }
+
+    #hit { background: #28a745; color: white; visibility: hidden; }
+    #pass { background: #dc3545; color: white; visibility: hidden; }
+
+    h1 {
+        text-align: center;
+        color: #d4af37;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        margin: 20px 0;
+    }
+    </style>
+</head>
+<body> <!---TODO: Add voucher system to this, make the custom fruit cards and implement the winning streak system, where higher winning streak means better vouchers --->
+<button onclick="startGame()">Start Game</button>
+<div class ="dealer" id ="dealer"></div>
+<button id = "hit" class = "button">Hit</button>
+<button id = "pass" class = "button">Pass</button>
+<div class = "player" id = "player"></div>
+</body>
+<script>
+    var wins = 0
+async function waitForInput(){
+    return new Promise(resolve => {
+        function handleClick(event) {
+            buttons.forEach(button => button.removeEventListener("click", handleClick));
+            resolve(event.target.id);
+        }
+        const buttons = document.querySelectorAll(".button");
+        buttons.forEach(button => button.addEventListener("click", handleClick));
+    })
+}
+var dealer = []
+    var player = []
+    let p_passed = false
+    let d_passed = false
+    let turn = "player"
+    let cards
+let hit = document.getElementById("hit")
+    let pass = document.getElementById("pass")
+    hit.addEventListener("click", function(){
+           console.log("click")
+            let card = Math.floor(Math.random() * cards.length)
+            player.push(cards[card])
+        console.log(cards[card])
+            document.getElementById("player").innerHTML += "<div class = 'card'>" + cards[card] + "</div>";
+            cards.splice(card, 1);
+            hit.style.visibility = "hidden"
+            pass.style.visibility = "hidden"
+            turn = "dealer"
+        })
+         pass.addEventListener("click", function(){
+             console.log("click")
+            hit.style.visibility = "hidden"
+            pass.style.visibility = "hidden"
+            turn = "dealer"
+            p_passed = true
+        })
+async function startGame() {
+     cards = ["ace_of_bananas", "2_of_bananas", "3_of_bananas", "4_of_bananas", "5_of_bananas", "6_of_bananas", "7_of_bananas", "8_of_bananas", "9_of_bananas", "10_of_bananas", "j_of_bananas", "q_of_bananas", "k_of_bananas",
+        "ace_of_apple", "2_of_apple", "3_of_apple", "4_of_apple", "5_of_apple", "6_of_apple", "7_of_apple", "8_of_apple", "9_of_apple", "10_of_apple", "j_of_apple", "q_of_apple", "k_of_apple",
+        "ace_of_watermelon", "2_of_watermelon", "3_of_watermelon", "4_of_watermelon", "5_of_watermelon", "6_of_watermelon", "7_of_watermelon", "8_of_watermelon", "9_of_watermelon", "10_of_watermelon", "j_of_watermelon", "q_of_watermelon", "k_of_watermelon",
+        "ace_of_mango", "2_of_mango", "3_of_mango", "4_of_mango", "5_of_mango", "6_of_mango", "7_of_mango", "8_of_mango", "9_of_mango", "10_of_mango", "j_of_mango", "q_of_mango", "k_of_mango"
+    ];
+     dealer = []
+     player = []
+    document.getElementById("dealer").innerHTML = ""
+    document.getElementById("player").innerHTML = ""
+    setTimeout(function () {
+        let card1 = Math.floor(Math.random() * cards.length);
+        dealer.push(cards[card1])
+        document.getElementById("dealer").innerHTML += "<div class = 'card'>" + cards[card1] + "</div>";
+        cards.splice(card1, 1);
+    }, 500)
+    setTimeout(function () {
+        let card2 = Math.floor(Math.random() * cards.length);
+        player.push(cards[card2])
+        document.getElementById("player").innerHTML += "<div class = 'card'>" + cards[card2] + "</div>";
+        cards.splice(card2, 1);
+    }, 1000)
+    setTimeout(function () {
+        let card3 = Math.floor(Math.random() * cards.length);
+        dealer.push(cards[card3])
+        document.getElementById("dealer").innerHTML += "<div class = 'card'>" + cards[card3] + "</div>";
+        cards.splice(card3, 1);
+    }, 1500)
+    setTimeout(function () {
+        let card4 = Math.floor(Math.random() * cards.length);
+        player.push(cards[card4])
+        document.getElementById("player").innerHTML += "<div class = 'card'>" + cards[card4] + "</div>";
+        cards.splice(card4, 1);
+    }, 2000)
+
+    let round = true
+     p_passed = false
+     d_passed = false
+    let p_value = 0
+    let d_value = 0
+    setTimeout(function () {
+        for (var c of dealer) {
+            let v = c.split(/_(.*)/s)[0]
+            if (isNaN(v)) {
+                if (v === "j" || v === "k" || v === "q") {
+                    d_value += 10
+                } else {
+                    if ((d_value + 10) < 21 && dealer.length > 2) {
+                        d_value += 10
+                    } else if ((d_value + 10) > 21 && dealer.length > 2) {
+                        d_value += 1
+                    } else if (dealer.length === 2) {
+                        d_value += 11
+                    }
+                }
+            } else {
+                d_value += Number(v)
+            }
+        }
+
+    }, 2500)
+
+
+
+
+    while (round) {
+        if (turn === "player" && p_passed === false) {
+            hit.style.visibility = "visible"
+            pass.style.visibility = "visible"
+            await waitForInput()
+        }
+        if (p_passed === true && turn === "player") {
+            turn = "dealer"
+        }
+        if (turn === "dealer" && d_passed === false) {
+            if (d_value >= 16) {
+                d_passed = true
+                turn = "player"
+            } else {
+                let card = Math.floor(Math.random() * cards.length)
+                dealer.push(cards[card])
+                document.getElementById("dealer").innerHTML += "<div class = 'card'>" + cards[card] + "</div>";
+                cards.splice(card, 1);
+
+                let v = cards[card].split(/_(.*)/s)[0]
+                if (isNaN(v)) {
+                    if (v === "j" || v === "k" || v === "q") {
+                        d_value += 10
+                    } else {
+                        if ((d_value + 10) < 21 && dealer.length > 2) {
+                            d_value += 10
+                        } else if ((d_value + 10) > 21 && dealer.length > 2) {
+                            d_value += 1
+                        } else if (dealer.length === 2) {
+                            d_value += 11
+                        }
+                    }
+                } else {
+                    d_value += Number(v)
+                }
+
+
+                turn = "player"
+            }
+
+        }
+        if (d_passed === true && turn === "dealer") {
+            turn = "player"
+        }
+        if (p_passed === true && d_passed === true) {
+            round = false
+            for (var c of player) {
+            let v = c.split(/_(.*)/s)[0]
+            if (isNaN(v)) {
+                if (v === "j" || v === "k" || v === "q") {
+                    p_value += 10
+                } else {
+                    if ((p_value + 10) < 21 && player.length > 2) {
+                        p_value += 10
+                    } else if ((p_value + 10) > 21 && player.length > 2) {
+                        p_value += 1
+                    } else if (player.length === 2) {
+                        p_value += 11
+                    }
+                }
+            } else {
+                p_value += Number(v)
+            }
+        }
+            console.log(player)
+            if (p_value >21 && d_value >21){
+                alert(`player: ${p_value}, dealer: ${d_value}, both run`)
+            }
+            else if(p_value >21 && d_value <21){
+                alert(`player: ${p_value}, dealer: ${d_value}, player bursts, house wins`)
+            }
+            else if(p_value <21 && d_value >21){
+                alert(`player: ${p_value}, dealer: ${d_value}, dealer bursts, player wins`)
+                wins++
+            }
+            else if(p_value > d_value) {
+                alert(`player: ${p_value}, dealer: ${d_value}, player wins`)
+                wins++
+            }
+            else if(p_value < d_value) {
+                alert(`player: ${p_value}, dealer: ${d_value}, house wins`)
+            }
+            else if (p_value < 16) {
+                alert(`player: ${p_value}, dealer: ${d_value}, player short, house wins`)
+            }
+            else if (p_value === d_value) {
+                alert(`player: ${p_value}, dealer: ${d_value}, draw`)
+            }
+        }
+    }
+
+
+}
+
+</script>
+</html>

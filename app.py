@@ -1077,3 +1077,7 @@ def remove_from_favourite(product_id):
     except Exception as e:
         print(e)
         return jsonify({'success': False, 'message': 'Error removing to favorites'}), 500
+
+@app.route('/game2', methods=['GET', 'POST'])
+def game2():
+    return render_template('game2.html')
