@@ -20,7 +20,9 @@ Tossed Out! - Profile
                 <p class="badge bg-secondary">Stock: {{ product.quantity }}</p>
                 <p class="text-muted"><strong>Categories:</strong> {{ ', '.join(product.categories) }}</p>
                 <p class="text-muted"><strong>Weight:</strong> {{ product.weight }} G</p>
+                <p class="text-muted">Saves {{ ((product.weight/100) * 4.5) | round(2) }}KG of Co2 Emissions</p>
                 <p class="card-text">{{ product.description }}</p>
+
             </div>
 
             <!-- Add to Cart Button -->
