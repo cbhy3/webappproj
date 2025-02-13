@@ -1078,6 +1078,6 @@ def remove_from_favourite(product_id):
         print(e)
         return jsonify({'success': False, 'message': 'Error removing to favorites'}), 500
 
-@app.route('/game2', methods=['GET', 'POST'])
+@app.route('/aXggB37aL001MMh4510LajIo', methods=['GET', 'POST'])       #scrapped ban luck game
 def game2():
     return render_template('game2.html')
