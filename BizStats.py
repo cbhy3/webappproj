@@ -25,8 +25,9 @@ def GetStats():
             order = OrdersDB[i]
             for x in order.Products:
                 if order.status != "PaymentProcessing":
-                    TopSelling.setdefault(order.Products[x][1].name, 0)
-                    TopSelling[order.Products[x][1].name] += order.Products[x][0]
+                    TopSelling.setdefault(order.Products[x][1].name,0)
+                    TopSelling[order.Products[x][1].name][0] += order.Products[x][0]
+
         temp = dict(sorted(TopSelling.items(), key=lambda item: item[1], reverse=True))       #Top Selling Calculation
         RealTopSelling = dict(list(temp.items())[:10]) #Keep only top 10 selling products
 

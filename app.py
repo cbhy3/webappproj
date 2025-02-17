@@ -311,6 +311,8 @@ def profile():
         if 'signout_submit' in request.form and signoutform.validate_on_submit():
             current_user = None
             session.pop('current_user')
+            global login
+            login = "SignIn"
             return redirect(url_for('about_us'))
         elif 'signout_cancel_submit' in request.form and signoutform.validate_on_submit():
 
@@ -605,29 +607,28 @@ def Admin():
                 if modify_product.name.data:
                     Product.change_name(modify_product.product.data, modify_product.name.data)
                     print('name updated')
-                elif modify_product.price.data:
+                if modify_product.price.data:
                     Product.change_price(modify_product.product.data, modify_product.price.data)
                     print('price updated')
-                elif modify_product.quantity.data:
+                if modify_product.quantity.data:
                     Product.add_quantity(modify_product.product.data, modify_product.quantity.data)
                     print('quantity updated')
-                elif modify_product.categories.data:
+                if modify_product.categories.data:
                     Product.change_categories(modify_product.product.data, modify_product.categories.data)
                     print('categories updated')
-                elif modify_product.weight.data:
+                if modify_product.weight.data:
                     Product.change_weight(modify_product.product.data, modify_product.weight.data)
                     print('weight updated')
-                elif modify_product.expiry.data:
+                if modify_product.expiry.data:
                     Product.update_expiry(modify_product.product.data, modify_product.expiry.data)
                     print('expiry updated')
-                elif modify_product.description.data:
+                if modify_product.description.data:
                     Product.change_description(modify_product.product.data, modify_product.description.data)
                     print('quantity updated')
-                elif modify_product.image_url.data:
+                if modify_product.image_url.data:
                     Product.change_image(modify_product.product.data, modify_product.image_url.data)
                     print('image url updated')
-                else:
-                    print('error somewhere')
+
                 return redirect(url_for('Admin'))
         elif 'delete_submit' in request.form:
             with shelve.open('products') as productsDB:

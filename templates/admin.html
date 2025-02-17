@@ -250,86 +250,11 @@
          <button class="btn btn-custom" onclick = "update_action('Default')">Back</button>
      {% elif action == 'ModifyProduct' %}
          <script>
-         document.addEventListener('DOMContentLoaded', () => {
-             const changeField = document.getElementById('changeField');
-             const name = document.getElementsByClassName('name');
-             const price = document.getElementsByClassName('price');
-             const quantity = document.getElementsByClassName('quantity');
-             const categories = document.getElementsByClassName('categories');
-             const weight = document.getElementsByClassName('weight');
-             const expiry = document.getElementsByClassName('expiry');
-             const description = document.getElementsByClassName('description');
-             const image = document.getElementsByClassName('image');
 
-            function hideAllCollections(collections) {
-        for (const collection of collections) {
-            for (const element of collection) {
-                element.style.display = 'none';
-                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') {
-                    element.value = ''; // Reset value for inputs, textareas, and selects
-                }
-            }
 
-        }
-    }
 
-    // All collections to manage
-    const allFields = [name, price, quantity, categories, weight, expiry, description, image];
 
-    // Hide all elements first
 
-             function update_change() {
-                 switch (changeField.value) {
-        case 'name':
-            for (const element of name) {
-                element.style.display = 'block';
-
-            }
-
-            break;
-        case 'price':
-            for (const element of price) {
-                element.style.display = 'block';
-            }
-            break;
-        case 'quantity':
-            for (const element of quantity) {
-                element.style.display = 'block';
-            }
-            break;
-        case 'categories':
-            for (const element of categories) {
-                element.style.display = 'block';
-            }
-            break;
-        case 'weight':
-            for (const element of weight) {
-                element.style.display = 'block';
-            }
-            break;
-        case 'expiry':
-            for (const element of expiry) {
-                element.style.display = 'block';
-            }
-            break;
-        case 'description':
-            for (const element of description) {
-                element.style.display = 'block';
-            }
-            break;
-        case 'imageURL':
-            for (const element of image) {
-                element.style.display = 'block';
-            }
-            break;
-
-    }}
-
-             changeField.addEventListener('click', function (){
-                 hideAllCollections(allFields);
-                 update_change();
-             })
-         })
          </script>
          <form method = "POST">
          {{ modify_product.hidden_tag() }}
@@ -338,32 +263,29 @@
              {{ modify_product.product(class="form-select", placeholder = '') }}
 
 
-            {{ modify_product.change.label(class="form-label") }}
-            {{ modify_product.change(class="form-select", id = "changeField") }}
+            {{ modify_product.name.label(class = "form-label name balls" ,style = "") }}
+             {{ modify_product.name(class = "form-control nut name", placeholder = "Enter product new name" ,style = "") }}
 
-            {{ modify_product.name.label(class = "form-label name balls" ,style = "display: none") }}
-             {{ modify_product.name(class = "form-control nut name", placeholder = "Enter product new name" ,style = "display: none") }}
+             {{ modify_product.price.label(class = "form-label price balls" ,style = "") }}
+             {{ modify_product.price(class = "form-control nut price", placeholder = "Enter product new price", style = "") }}
 
-             {{ modify_product.price.label(class = "form-label price balls" ,style = "display: none") }}
-             {{ modify_product.price(class = "form-control nut price", placeholder = "Enter product new price", style = "display: none") }}
+             {{ modify_product.quantity.label(class = "form-label quantity balls" ,style = "") }}
+             {{ modify_product.quantity(class = "form-control nut quantity", placeholder = "Enter change in quantity" ,style = "") }}
 
-             {{ modify_product.quantity.label(class = "form-label quantity balls" ,style = "display: none") }}
-             {{ modify_product.quantity(class = "form-control nut quantity", placeholder = "Enter change in quantity" ,style = "display: none") }}
+             {{ modify_product.categories.label(class = "form-label categories balls" ,style = "") }}
+             {{ modify_product.categories(class = "form-select nut categories" ,style = "", placeholder = '') }}
 
-             {{ modify_product.categories.label(class = "form-label categories balls" ,style = "display: none") }}
-             {{ modify_product.categories(class = "form-select nut categories" ,style = "display: none", placeholder = '') }}
+             {{ modify_product.weight.label(class = "form-label weight balls" ,style = "") }}
+             {{ modify_product.weight(class = "form-control nut weight", placeholder = "Enter product new weight" ,style = "") }}
 
-             {{ modify_product.weight.label(class = "form-label weight balls" ,style = "display: none") }}
-             {{ modify_product.weight(class = "form-control nut weight", placeholder = "Enter product new weight" ,style = "display: none") }}
+             {{ modify_product.expiry.label(class = "form-label expiry balls" ,style = "") }}
+             {{ modify_product.expiry(class = "form-control nut expiry", placeholder = "Enter product new expiry" ,style = "") }}
 
-             {{ modify_product.expiry.label(class = "form-label expiry balls" ,style = "display: none") }}
-             {{ modify_product.expiry(class = "form-control nut expiry", placeholder = "Enter product new expiry" ,style = "display: none") }}
+             {{ modify_product.description.label(class = "form-label description balls" ,style = "") }}
+             {{ modify_product.description(class = "form-control nut description", placeholder = "Enter product new description" ,style = "") }}
 
-             {{ modify_product.description.label(class = "form-label description balls" ,style = "display: none") }}
-             {{ modify_product.description(class = "form-control nut description", placeholder = "Enter product new description" ,style = "display: none") }}
-
-             {{ modify_product.image_url.label(class = "form-label image balls" ,style = "display: none") }}
-             {{ modify_product.image_url(class = "form-control nut image", placeholder = "Enter product new image url" ,style = "display: none") }}
+             {{ modify_product.image_url.label(class = "form-label image balls" ,style = "") }}
+             {{ modify_product.image_url(class = "form-control nut image", placeholder = "Enter product new image url" ) }}
 
              {{ modify_product.submit(class = "btn w-100 mt-3", style ="background-color: #96d3ff; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;",autofocus="autofocus") }}
              {{ modify_product.delete_submit(class = "btn w-100 mt-3", style ="background-color: #ff1100; color: #fff; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 5px;",autofocus="autofocus") }}
